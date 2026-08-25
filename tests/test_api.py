@@ -78,3 +78,46 @@ def test_similar_users_endpoint():
     assert len(similar) == 2
     assert similar[0]["user_id"] == ids[1]
     assert similar[0]["score"] > similar[1]["score"]
+
+
+def test_context_endpoint_unknown_user_404():
+    assert client.get("/api/user/u_nope/context").status_code == 404
+
+
+def test_context_endpoint_returns_signal():
+    r = client.post(
+        "/onboarding",
+        data={"cuisines": ["Pakistani"], "favorite_foods": "karahi",
+              "dietary": [], "spice_pref": 2, "budget": 1000},
+        follow_redirects=False,
+    )
+    user_id = r.headers["location"].split("user_id=")[1]
+
+    sig = client.get(f"/api/user/{user_id}/context").json()
+    assert sig["user_id"] == user_id
+    assert sig["period_weights"] == {}
+    assert sig["preferred_period"] is None
+    assert sig["current_period"] in {"breakfast", "lunch", "dinner", "late_night"}
+
+
+def test_popularity_endpoints():
+    onboard = client.post(
+        "/onboarding",
+        data={"cuisines": ["Pakistani"], "favorite_foods": "karahi",
+              "dietary": [], "spice_pref": 2, "budget": 1000},
+        follow_redirects=False,
+    )
+    user_id = onboard.headers["location"].split("user_id=")[1]
+
+    client.post(f"/api/user/{user_id}/interaction", json={"dish_id": "d_001", "action": "order"})
+    client.post(f"/api/user/{user_id}/interaction", json={"dish_id": "d_002", "action": "click"})
+
+    all_scores = client.get("/api/popularity").json()
+    assert all_scores[0]["dish_id"] == "d_001"
+    assert all_scores[0]["score"] == 1.0
+
+    single = client.get("/api/popularity/d_002").json()
+    assert single["score"] < 1.0
+
+    unseen = client.get("/api/popularity/d_999").json()
+    assert unseen["score"] == 0.0

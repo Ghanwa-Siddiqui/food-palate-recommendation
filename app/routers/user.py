@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 
+from ..context import context_signal
 from ..dish_store import dish_vector
-from ..models import Interaction, InteractionAction, SimilarUser, UserTaste
+from ..models import ContextSignal, Interaction, InteractionAction, SimilarUser, UserTaste
 from ..personalization import apply_interaction_update
 from ..repositories import get_repository
 from ..vector_math import top_k_similar
@@ -74,3 +75,14 @@ def similar_users(user_id: str, k: int = 5) -> list[SimilarUser]:
     others = {u.user_id: u.taste_vector for u in repo.all_users() if u.user_id != user_id}
     ranked = top_k_similar(me.taste_vector, others, k=k)
     return [SimilarUser(user_id=uid, score=score) for uid, score in ranked]
+
+
+@router.get("/{user_id}/context", response_model=ContextSignal)
+def get_context(user_id: str) -> ContextSignal:
+    repo = get_repository()
+    user = repo.get_user(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail=f"user {user_id} not found")
+    interactions = repo.interactions_for_user(user_id)
+    signal = context_signal(interactions)
+    return ContextSignal(user_id=user_id, **signal)

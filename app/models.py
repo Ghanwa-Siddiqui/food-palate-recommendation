@@ -51,3 +51,16 @@ class Interaction(BaseModel):
 class SimilarUser(BaseModel):
     user_id: str
     score: float
+
+
+class ContextSignal(BaseModel):
+    user_id: str
+    current_period: str
+    preferred_period: str | None
+    period_weights: dict[str, float]
+    context_match: bool | None
+
+
+class PopularityEntry(BaseModel):
+    dish_id: str
+    score: float

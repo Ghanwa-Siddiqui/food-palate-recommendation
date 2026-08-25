@@ -55,6 +55,29 @@ strengths.
 ```
 `score` is cosine similarity in `[-1, 1]` — higher is more similar.
 
+### `ContextSignal`
+```json
+{
+  "user_id": "u_a1b2c3d4e5",
+  "current_period": "dinner",
+  "preferred_period": "dinner",
+  "period_weights": { "lunch": 0.2, "dinner": 0.8 },
+  "context_match": true
+}
+```
+`current_period`/`preferred_period` are one of `breakfast | lunch | dinner | late_night`
+(hour ranges: 5–11, 11–16, 16–22, 22–5). `preferred_period` and `context_match`
+are `null` until the user has at least one logged interaction.
+
+### `PopularityEntry`
+```json
+{ "dish_id": "d_003", "score": 0.72 }
+```
+`score` is in `[0, 1]`, normalized against the current highest-scoring dish.
+Underlying weights: `order=3, save=2, click=1`, summed per dish across all
+users. Recomputed on every request — there's no caching yet, fine at sprint
+scale.
+
 ---
 
 ## Endpoints
@@ -91,6 +114,19 @@ side (interaction is still logged; the vector just isn't nudged).
 ### `GET /api/user/{user_id}/similar?k=5`
 Cosine-similar users. Excludes the caller.
 
+### `GET /api/user/{user_id}/context`
+Context-aware signal (the 3rd personalization mode alongside content-based
+and collaborative): which meal period this user tends to interact in, vs.
+the current period right now. `404` if unknown user.
+
+### `GET /api/popularity`
+All dishes with at least one interaction, `PopularityEntry[]`, sorted
+descending by score. Source for the ranking engine's popularity weight.
+
+### `GET /api/popularity/{dish_id}`
+Single dish's popularity score. `0.0` if the dish has no interactions yet
+(not a 404 — an unseen dish is a valid, just-unpopular state).
+
 ---
 
 ## Onboarding (UI + form POST)
@@ -121,6 +157,12 @@ onboarding rather than driving the form.
 - After every user action in the feed, POST it back to
   `/api/user/{user_id}/interaction`. Fire-and-forget is fine; the endpoint
   is idempotent per-event (each POST creates one log row).
+- Popularity weight (5%): pull from `GET /api/popularity` instead of
+  computing your own — it's sourced from the same interaction log this
+  module owns, weighted `order=3, save=2, click=1`, normalized to [0,1].
+- Context-aware signal isn't in the weighted-score spec, but it's available
+  at `GET /api/user/{id}/context` if you want it as a tiebreaker or a small
+  boost for dishes tagged to the user's `preferred_period`.
 
 ## Notes for Ganva
 
