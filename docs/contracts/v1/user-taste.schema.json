@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaska.example/contracts/v1/user-taste.schema.json",
+  "title": "User taste onboarding handoff v1",
+  "description": "Storage-neutral contract for Manahil's onboarding and personalization module. This contract does not define how taste_vector is generated, stored, or updated.",
+  "type": "object",
+  "required": [
+    "user_id",
+    "preferred_cuisines",
+    "favourite_dishes",
+    "spice_preference",
+    "sweetness_preference",
+    "sourness_preference",
+    "saltiness_preference",
+    "oiliness_preference",
+    "preferred_textures",
+    "budget_min",
+    "budget_max",
+    "dietary_requirements",
+    "allergies",
+    "disliked_ingredients",
+    "taste_vector",
+    "last_updated"
+  ],
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "preferred_cuisines": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "favourite_dishes": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "spice_preference": {"type": "integer", "minimum": 0, "maximum": 5},
+    "sweetness_preference": {"type": "integer", "minimum": 0, "maximum": 5},
+    "sourness_preference": {"type": "integer", "minimum": 0, "maximum": 5},
+    "saltiness_preference": {"type": "integer", "minimum": 0, "maximum": 5},
+    "oiliness_preference": {"type": "integer", "minimum": 0, "maximum": 5},
+    "preferred_textures": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "budget_min": {"type": "number", "minimum": 0},
+    "budget_max": {"type": "number", "minimum": 0},
+    "dietary_requirements": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "allergies": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "disliked_ingredients": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "taste_vector": {
+      "type": "array",
+      "items": {"type": "number"}
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

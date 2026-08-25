@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaska.example/contracts/v1/paginated-restaurants.schema.json",
+  "title": "Paginated restaurants v1",
+  "type": "object",
+  "required": ["items", "total", "limit", "offset"],
+  "properties": {
+    "items": {"type": "array", "items": {"$ref": "restaurant.schema.json"}},
+    "total": {"type": "integer", "minimum": 0},
+    "limit": {"type": "integer", "minimum": 1, "maximum": 100},
+    "offset": {"type": "integer", "minimum": 0}
+  },
+  "additionalProperties": false
+}

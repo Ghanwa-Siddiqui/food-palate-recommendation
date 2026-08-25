@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaska.example/contracts/v1/deal.schema.json",
+  "title": "Deal v1",
+  "type": "object",
+  "required": ["id", "restaurant_id", "title", "description", "discount_percentage", "starts_at", "ends_at", "is_active"],
+  "properties": {
+    "id": {"type": "string", "format": "uuid"},
+    "restaurant_id": {"type": "string", "format": "uuid"},
+    "title": {"type": "string"},
+    "description": {"type": ["string", "null"]},
+    "discount_percentage": {"type": "number", "minimum": 0, "maximum": 100},
+    "starts_at": {"type": "string", "format": "date-time"},
+    "ends_at": {"type": "string", "format": "date-time"},
+    "is_active": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

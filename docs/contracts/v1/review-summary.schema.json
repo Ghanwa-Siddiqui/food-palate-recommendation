@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaska.example/contracts/v1/review-summary.schema.json",
+  "title": "Review summary integration handoff v1",
+  "description": "Storage-neutral handoff contract. Review analysis and aggregation are outside the Data Core module.",
+  "type": "object",
+  "required": ["dish_id", "avg_sentiment", "spice_level", "oiliness", "flavor_tags", "review_vector"],
+  "properties": {
+    "dish_id": {"type": "string", "format": "uuid"},
+    "avg_sentiment": {"type": "number", "minimum": -1, "maximum": 1},
+    "spice_level": {"type": "number", "minimum": 0, "maximum": 5},
+    "oiliness": {"type": "number", "minimum": 0, "maximum": 5},
+    "flavor_tags": {"type": "array", "items": {"type": "string"}},
+    "review_vector": {"type": "array", "items": {"type": "number"}}
+  },
+  "additionalProperties": false
+}
