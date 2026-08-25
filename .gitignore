@@ -16,3 +16,7 @@ build/
 .DS_Store
 .idea/
 .vscode/
+
+# Runtime data (recreated on demand). Mock fixtures are checked in explicitly.
+data/users.json
+data/interactions.json

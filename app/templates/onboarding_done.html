@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Welcome · Taste Engine{% endblock %}
+{% block content %}
+<h1>You're in</h1>
+<p class="lede">Your taste profile has been embedded and stored.</p>
+
+<div class="card">
+  <p><strong>User ID:</strong> <code>{{ user_id }}</code></p>
+  {% if user %}
+  <p><strong>Budget:</strong> PKR {{ user.budget }}</p>
+  <p><strong>Spice preference:</strong> {{ user.spice_pref }}/4</p>
+  <p><strong>Dietary:</strong> {{ user.dietary | join(', ') if user.dietary else '—' }}</p>
+  <p><strong>Taste vector:</strong> {{ user.taste_vector | length }}-dim
+    (first 6: {{ user.taste_vector[:6] | map('round', 3) | list }})</p>
+  {% endif %}
+  <p><a href="/api/user/{{ user_id }}/taste-vector">/api/user/{{ user_id }}/taste-vector</a></p>
+</div>
+{% endblock %}
