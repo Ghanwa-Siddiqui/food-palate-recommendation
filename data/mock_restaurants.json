@@ -1,0 +1,74 @@
+[
+  {
+    "id": "r_01",
+    "name": "Kolachi",
+    "lat": 24.796,
+    "lng": 66.967
+  },
+  {
+    "id": "r_02",
+    "name": "BBQ Tonight",
+    "lat": 24.8127,
+    "lng": 67.0349
+  },
+  {
+    "id": "r_03",
+    "name": "Ginsoy",
+    "lat": 24.8261,
+    "lng": 67.0332
+  },
+  {
+    "id": "r_04",
+    "name": "Cafe Aylanto",
+    "lat": 24.8115,
+    "lng": 67.0296
+  },
+  {
+    "id": "r_05",
+    "name": "Xander's",
+    "lat": 24.8156,
+    "lng": 67.0311
+  },
+  {
+    "id": "r_06",
+    "name": "Kababjees",
+    "lat": 24.8607,
+    "lng": 67.0011
+  },
+  {
+    "id": "r_07",
+    "name": "OPTP",
+    "lat": 24.828,
+    "lng": 67.0644
+  },
+  {
+    "id": "r_08",
+    "name": "Hanabi",
+    "lat": 24.8231,
+    "lng": 67.03
+  },
+  {
+    "id": "r_09",
+    "name": "Pompei",
+    "lat": 24.809,
+    "lng": 67.03
+  },
+  {
+    "id": "r_10",
+    "name": "Chatkharay",
+    "lat": 24.885,
+    "lng": 67.077
+  },
+  {
+    "id": "r_11",
+    "name": "Roasters",
+    "lat": 24.841,
+    "lng": 67.062
+  },
+  {
+    "id": "r_12",
+    "name": "Del Frio",
+    "lat": 24.813,
+    "lng": 67.029
+  }
+]
