@@ -9,13 +9,13 @@ import json
 import threading
 from pathlib import Path
 
-from ..config import DATA_DIR
+from .. import config
 from ..models import Interaction, UserTaste
 
 
 class JsonRepository:
     def __init__(self, data_dir: Path | None = None) -> None:
-        self.data_dir = data_dir or DATA_DIR
+        self.data_dir = data_dir or config.DATA_DIR
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.users_path = self.data_dir / "users.json"
         self.interactions_path = self.data_dir / "interactions.json"

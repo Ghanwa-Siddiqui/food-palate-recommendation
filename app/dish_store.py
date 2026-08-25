@@ -9,12 +9,12 @@ from __future__ import annotations
 import json
 from functools import lru_cache
 
-from .config import DATA_DIR
+from . import config
 
 
 @lru_cache(maxsize=1)
 def load_dishes() -> list[dict]:
-    path = DATA_DIR / "mock_dishes.json"
+    path = config.DATA_DIR / "mock_dishes.json"
     if not path.exists():
         return []
     return json.loads(path.read_text(encoding="utf-8"))
