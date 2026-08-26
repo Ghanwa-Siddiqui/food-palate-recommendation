@@ -1,24 +1,36 @@
 """Generate mock dish fixtures with deterministic vectors.
 
-Output shape matches the shared JSON contract from the sprint tracker:
-    { id, restaurant_id, name, cuisine, ingredients[], price, vector[], lat, lng }
+Output shape matches Ganva's docs/contracts/v1/dish-vector.schema.json:
+    { id: uuid, restaurant_id: uuid, vector: float[384] }
+plus convenience fields (name, cuisine, ingredients, price, lat, lng) this
+module's own dev/testing uses but the contract doesn't require.
 
 Run:  python scripts/generate_mock_dishes.py
 Writes data/mock_dishes.json (~40 dishes across ~12 restaurants, mixed cuisines).
 
 These are placeholders for Day 1 so the personalization engine has something
-real-shaped to work against. Ganva's seeded dish data replaces this on Day 2.
+real-shaped to work against. Ganva's seeded dish data (data/real_catalog/ on
+their branch, 90 real dishes) replaces this once integrated.
 """
 from __future__ import annotations
 
 import json
 import sys
+import uuid
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.config import DATA_DIR
 from app.embedding import embed_dish
+
+# Deterministic uuid5s so re-running this script reproduces the same ids —
+# same spirit as Ganva's real_catalog ids, just generated from readable slugs.
+_ID_NAMESPACE = uuid.UUID("f7e6d5c4-b3a2-4190-8f7e-6d5c4b3a2190")
+
+
+def _stable_uuid(slug: str) -> str:
+    return str(uuid.uuid5(_ID_NAMESPACE, slug))
 
 # Karachi-ish coordinates so the distance calc has something meaningful to chew on.
 RESTAURANTS = [
@@ -87,8 +99,8 @@ def build_dishes() -> list[dict]:
     for idx, (rid, name, cuisine, ingredients, price) in enumerate(DISHES, start=1):
         _, lat, lng = lookup[rid]
         out.append({
-            "id": f"d_{idx:03d}",
-            "restaurant_id": rid,
+            "id": _stable_uuid(f"dish:{rid}:{name}"),
+            "restaurant_id": _stable_uuid(f"restaurant:{rid}"),
             "name": name,
             "cuisine": cuisine,
             "ingredients": ingredients,
@@ -102,7 +114,7 @@ def build_dishes() -> list[dict]:
 
 def build_restaurants() -> list[dict]:
     return [
-        {"id": rid, "name": name, "lat": lat, "lng": lng}
+        {"id": _stable_uuid(f"restaurant:{rid}"), "name": name, "lat": lat, "lng": lng}
         for rid, name, lat, lng in RESTAURANTS
     ]
 

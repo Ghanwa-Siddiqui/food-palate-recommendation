@@ -4,6 +4,9 @@ from app.main import app
 
 client = TestClient(app)
 
+DISH_1 = "d0000000-0000-4000-8000-000000000001"
+DISH_2 = "d0000000-0000-4000-8000-000000000002"
+
 
 def test_health():
     assert client.get("/health").json() == {"status": "ok"}
@@ -20,10 +23,11 @@ def test_onboarding_submit_and_taste_vector_roundtrip():
         "/onboarding",
         data={
             "cuisines": ["Pakistani", "Italian"],
-            "favorite_foods": "biryani, pasta",
+            "favourite_dishes": "biryani, pasta",
             "dietary": ["halal"],
-            "spice_pref": 3,
-            "budget": 1500,
+            "spice_preference": 3,
+            "budget_min": 500,
+            "budget_max": 1500,
         },
         follow_redirects=False,
     )
@@ -32,16 +36,20 @@ def test_onboarding_submit_and_taste_vector_roundtrip():
 
     v = client.get(f"/api/user/{user_id}/taste-vector").json()
     assert v["user_id"] == user_id
-    assert len(v["taste_vector"]) == 128
-    assert v["budget"] == 1500
-    assert v["dietary"] == ["halal"]
+    assert len(v["taste_vector"]) == 384
+    assert v["budget_min"] == 500
+    assert v["budget_max"] == 1500
+    assert v["dietary_requirements"] == ["halal"]
+    assert v["preferred_cuisines"] == ["Pakistani", "Italian"]
+    assert v["favourite_dishes"] == ["biryani", "pasta"]
+    assert v["spice_preference"] == 3
 
 
 def test_interaction_flow_updates_vector():
     onboard = client.post(
         "/onboarding",
-        data={"cuisines": ["Pakistani"], "favorite_foods": "karahi",
-              "dietary": [], "spice_pref": 3, "budget": 1000},
+        data={"cuisines": ["Pakistani"], "favourite_dishes": "karahi",
+              "dietary": [], "spice_preference": 3, "budget_min": 0, "budget_max": 1000},
         follow_redirects=False,
     )
     user_id = onboard.headers["location"].split("user_id=")[1]
@@ -49,7 +57,7 @@ def test_interaction_flow_updates_vector():
     before = client.get(f"/api/user/{user_id}/taste-vector").json()["taste_vector"]
     ack = client.post(
         f"/api/user/{user_id}/interaction",
-        json={"dish_id": "d_002", "action": "order"},
+        json={"dish_id": DISH_2, "action": "order"},
     ).json()
     assert ack["ok"] is True
     assert ack["vector_updated"] is True
@@ -59,16 +67,16 @@ def test_interaction_flow_updates_vector():
 
     interactions = client.get(f"/api/user/{user_id}/interaction").json()
     assert len(interactions) == 1
-    assert interactions[0]["dish_id"] == "d_002"
+    assert interactions[0]["dish_id"] == DISH_2
 
 
 def test_similar_users_endpoint():
     # Identical answers -> identical vectors -> similarity 1.0. That's the
     # only signal stable enough to assert on for a bag-of-terms mock embedding.
-    same = {"cuisines": ["Pakistani"], "favorite_foods": "biryani, karahi",
-            "dietary": ["halal"], "spice_pref": 3, "budget": 1000}
-    different = {"cuisines": ["Japanese"], "favorite_foods": "sushi, ramen",
-                 "dietary": [], "spice_pref": 1, "budget": 2000}
+    same = {"cuisines": ["Pakistani"], "favourite_dishes": "biryani, karahi",
+            "dietary": ["halal"], "spice_preference": 3, "budget_min": 0, "budget_max": 1000}
+    different = {"cuisines": ["Japanese"], "favourite_dishes": "sushi, ramen",
+                 "dietary": [], "spice_preference": 1, "budget_min": 0, "budget_max": 2000}
     ids = []
     for payload in (same, same, different):
         r = client.post("/onboarding", data=payload, follow_redirects=False)
@@ -87,8 +95,8 @@ def test_context_endpoint_unknown_user_404():
 def test_context_endpoint_returns_signal():
     r = client.post(
         "/onboarding",
-        data={"cuisines": ["Pakistani"], "favorite_foods": "karahi",
-              "dietary": [], "spice_pref": 2, "budget": 1000},
+        data={"cuisines": ["Pakistani"], "favourite_dishes": "karahi",
+              "dietary": [], "spice_preference": 2, "budget_min": 0, "budget_max": 1000},
         follow_redirects=False,
     )
     user_id = r.headers["location"].split("user_id=")[1]
@@ -103,20 +111,20 @@ def test_context_endpoint_returns_signal():
 def test_popularity_endpoints():
     onboard = client.post(
         "/onboarding",
-        data={"cuisines": ["Pakistani"], "favorite_foods": "karahi",
-              "dietary": [], "spice_pref": 2, "budget": 1000},
+        data={"cuisines": ["Pakistani"], "favourite_dishes": "karahi",
+              "dietary": [], "spice_preference": 2, "budget_min": 0, "budget_max": 1000},
         follow_redirects=False,
     )
     user_id = onboard.headers["location"].split("user_id=")[1]
 
-    client.post(f"/api/user/{user_id}/interaction", json={"dish_id": "d_001", "action": "order"})
-    client.post(f"/api/user/{user_id}/interaction", json={"dish_id": "d_002", "action": "click"})
+    client.post(f"/api/user/{user_id}/interaction", json={"dish_id": DISH_1, "action": "order"})
+    client.post(f"/api/user/{user_id}/interaction", json={"dish_id": DISH_2, "action": "click"})
 
     all_scores = client.get("/api/popularity").json()
-    assert all_scores[0]["dish_id"] == "d_001"
+    assert all_scores[0]["dish_id"] == DISH_1
     assert all_scores[0]["score"] == 1.0
 
-    single = client.get("/api/popularity/d_002").json()
+    single = client.get(f"/api/popularity/{DISH_2}").json()
     assert single["score"] < 1.0
 
     unseen = client.get("/api/popularity/d_999").json()

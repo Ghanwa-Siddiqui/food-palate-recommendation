@@ -73,7 +73,7 @@ Environment variables (see `.env.example`):
 | `STORAGE_BACKEND`  | `json`  | `json` (day 1) or `supabase` (day 2)             |
 | `SUPABASE_URL`     | —       | required when backend is `supabase`              |
 | `SUPABASE_KEY`     | —       | required when backend is `supabase`              |
-| `VECTOR_DIM`       | `128`   | embedding dimensionality                         |
+| `VECTOR_DIM`       | `384`   | embedding dimensionality — matches Ganva's contract |
 | `EMA_ALPHA`        | `0.15`  | how hard interactions nudge the taste vector     |
 
 ## API contract
@@ -90,10 +90,13 @@ and feed UI call:
 
 **Deterministic mock embedding.** `embed_text` seeds numpy's PRNG from a
 SHA-256 hash of the (lowercased, stripped) input, then draws a unit-length
-128-d vector. Same string in → same vector out, always. Averaging a bag of
-term vectors gives us cheap "topics" — two Pakistani dishes score ~0.30
-cosine, Pakistani vs Japanese scores ~0.03. Real semantic embeddings can
-drop into `embed_text` unchanged; nothing else needs to know.
+384-d vector — matching Ganva's real `sentence-transformers/all-MiniLM-L6-v2`
+pipeline's output dimension, so mock and real vectors are interchangeable
+shape-wise even though the mock ones aren't semantically meaningful. Same
+string in → same vector out, always. Averaging a bag of term vectors gives
+us cheap "topics" — two Pakistani dishes score ~0.30 cosine, Pakistani vs
+Japanese scores ~0.03. Real semantic embeddings can drop into `embed_text`
+unchanged; nothing else needs to know.
 
 **EMA feedback loop.** When a user clicks/saves/orders a dish, we blend the
 dish vector into the user vector with `α = EMA_ALPHA` (default 0.15) and
@@ -102,3 +105,11 @@ renormalize. Small α = slow drift, large α = jumpy taste profile.
 **Storage abstraction.** `Repository` (Protocol) has two backends:
 `JsonRepository` for local dev, `SupabaseRepository` for prod. Everything
 above the storage layer sees only the interface. Swap with one env var.
+
+**Contract alignment.** `UserTaste` and `Interaction` field names, ranges,
+and types match Ganva's published `docs/contracts/v1/user-taste.schema.json`
+and `interaction.schema.json` (on `feature/data-core-ghanwa`) exactly —
+including the `additionalProperties: false` constraint, so this module
+neither omits nor adds fields relative to that schema. `user_id`/`dish_id`
+are real UUID strings (`uuid.uuid4()` on issue, `uuid.uuid5()` for
+deterministic mock dish ids) to match their `format: "uuid"` requirement.

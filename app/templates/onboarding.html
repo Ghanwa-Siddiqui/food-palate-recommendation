@@ -18,13 +18,25 @@
   </fieldset>
 
   <fieldset>
-    <legend>Favorite foods</legend>
-    <input type="text" name="favorite_foods" placeholder="e.g. biryani, sushi, ramen, chicken karahi">
+    <legend>Favorite dishes</legend>
+    <input type="text" name="favourite_dishes" placeholder="e.g. biryani, sushi, ramen, chicken karahi">
     <p class="hint">Comma-separated. Anything from a dish name to an ingredient works.</p>
   </fieldset>
 
   <fieldset>
-    <legend>Dietary</legend>
+    <legend>Preferred textures</legend>
+    <div class="chip-grid">
+      {% for t in textures %}
+      <label class="chip">
+        <input type="checkbox" name="textures" value="{{ t }}">
+        <span>{{ t }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Dietary requirements</legend>
     <div class="chip-grid">
       {% for d in dietary %}
       <label class="chip">
@@ -36,16 +48,40 @@
   </fieldset>
 
   <fieldset>
-    <legend>Spice preference</legend>
-    <div class="range-row">
-      <input type="range" name="spice_pref" min="0" max="4" value="2" oninput="document.getElementById('spiceOut').textContent=['none','mild','medium','spicy','very hot'][this.value]">
-      <output id="spiceOut">medium</output>
-    </div>
+    <legend>Allergies</legend>
+    <input type="text" name="allergies" placeholder="e.g. peanuts, shellfish">
+    <p class="hint">Comma-separated. Leave blank if none.</p>
   </fieldset>
 
   <fieldset>
-    <legend>Per-meal budget (PKR)</legend>
-    <input type="number" name="budget" min="0" step="50" value="1000">
+    <legend>Ingredients you dislike</legend>
+    <input type="text" name="disliked_ingredients" placeholder="e.g. cilantro, mushroom">
+    <p class="hint">Comma-separated. Leave blank if none.</p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Taste dimensions</legend>
+    {% set dims = [
+      ("spice_preference", "Spice"), ("sweetness_preference", "Sweetness"),
+      ("sourness_preference", "Sourness"), ("saltiness_preference", "Saltiness"),
+      ("oiliness_preference", "Oiliness")
+    ] %}
+    {% for name, label in dims %}
+    <div class="range-row mt-10">
+      <label style="min-width:90px;">{{ label }}</label>
+      <input type="range" name="{{ name }}" min="0" max="5" value="2"
+             oninput="document.getElementById('{{ name }}Out').textContent=['none','very light','light','moderate','strong','very strong'][this.value]">
+      <output id="{{ name }}Out">light</output>
+    </div>
+    {% endfor %}
+  </fieldset>
+
+  <fieldset>
+    <legend>Per-meal budget range (PKR)</legend>
+    <div style="display:flex;gap:10px;">
+      <input type="number" name="budget_min" min="0" step="50" value="0" placeholder="Min">
+      <input type="number" name="budget_max" min="0" step="50" value="1500" placeholder="Max">
+    </div>
   </fieldset>
 
   <button type="submit" class="primary">Save & continue</button>

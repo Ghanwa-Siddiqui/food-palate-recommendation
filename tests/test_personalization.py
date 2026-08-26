@@ -26,11 +26,12 @@ def test_same_cuisine_more_similar_than_cross_cuisine():
 
 def test_build_taste_vector_returns_unit_vector():
     answers = OnboardingAnswers(
-        cuisines=["Pakistani", "Italian"],
-        favorite_foods=["biryani", "pasta"],
-        dietary=["halal"],
-        spice_pref=3,
-        budget=1500,
+        preferred_cuisines=["Pakistani", "Italian"],
+        favourite_dishes=["biryani", "pasta"],
+        dietary_requirements=["halal"],
+        spice_preference=3,
+        budget_min=500,
+        budget_max=1500,
     )
     vec = build_taste_vector(answers)
     assert len(vec) == VECTOR_DIM
@@ -45,8 +46,8 @@ def test_ema_moves_vector_toward_signal():
 
 
 def test_apply_interaction_bumps_user_vector_toward_dish():
-    answers = OnboardingAnswers(cuisines=["Pakistani"], favorite_foods=["biryani"])
-    user = user_from_onboarding("u_test", answers)
+    answers = OnboardingAnswers(preferred_cuisines=["Pakistani"], favourite_dishes=["biryani"])
+    user = user_from_onboarding("11111111-1111-4111-8111-111111111111", answers)
     dish_v = embed_dish("Salmon Sushi", "Japanese", ["salmon", "rice"])
     updated = apply_interaction_update(user, dish_v)
     assert cosine_similarity(updated.taste_vector, dish_v) > cosine_similarity(user.taste_vector, dish_v)

@@ -3,8 +3,12 @@
 Owner: Manahil · Module: `feature/personalization-manahil`
 
 This is the surface the **Ranking Engine (Esha)** and **Feed UI (Esha)** call.
-Interaction events also flow back in here from the feed. Backwards-compatible
-changes only after Day 2.
+Interaction events also flow back in here from the feed.
+
+`UserTaste` and `Interaction` conform field-for-field to Ganva's published
+`docs/contracts/v1/user-taste.schema.json` and `interaction.schema.json`
+(on `feature/data-core-ghanwa`) — those are the source of truth if this
+doc and that schema ever drift; file an issue rather than picking one.
 
 Base URL: `/api`
 
@@ -17,31 +21,50 @@ The full user profile stored server-side and returned by the taste-vector endpoi
 
 ```json
 {
-  "user_id": "u_a1b2c3d4e5",
-  "taste_vector": [0.031, -0.114, 0.087, "…128 floats total"],
-  "budget": 1500,
-  "dietary": ["halal"],
-  "spice_pref": 3,
-  "last_updated": "2026-08-25T10:14:22.913+00:00"
+  "user_id": "3f9a1e2b-...-uuid",
+  "preferred_cuisines": ["Pakistani", "Italian"],
+  "favourite_dishes": ["biryani", "pasta"],
+  "spice_preference": 3,
+  "sweetness_preference": 2,
+  "sourness_preference": 2,
+  "saltiness_preference": 2,
+  "oiliness_preference": 2,
+  "preferred_textures": ["tender", "crispy"],
+  "budget_min": 500,
+  "budget_max": 1500,
+  "dietary_requirements": ["halal"],
+  "allergies": [],
+  "disliked_ingredients": [],
+  "taste_vector": [0.031, -0.114, 0.087, "…384 floats total"],
+  "last_updated": "2026-08-26T10:14:22.913+00:00"
 }
 ```
 
-| Field           | Type              | Notes                                            |
-|-----------------|-------------------|--------------------------------------------------|
-| `user_id`       | string            | `u_` prefix + 10 hex chars                       |
-| `taste_vector`  | float[128]        | Unit length. Dim configurable via `VECTOR_DIM`.  |
-| `budget`        | int               | Per-meal ceiling, local currency (PKR for now)   |
-| `dietary`       | string[]          | e.g. `halal`, `vegetarian`, `no-beef`            |
-| `spice_pref`    | int (0–4)         | 0 = none, 4 = very hot                           |
-| `last_updated`  | ISO-8601 datetime | Bumps on onboarding and every interaction        |
+| Field                    | Type              | Notes                                          |
+|--------------------------|-------------------|-------------------------------------------------|
+| `user_id`                | string (uuid)     |                                                   |
+| `preferred_cuisines`     | string[]          |                                                   |
+| `favourite_dishes`       | string[]          | Free-text dish names                             |
+| `spice_preference`       | int (0–5)         | matches dish `spice_level` scale                 |
+| `sweetness_preference`   | int (0–5)         |                                                   |
+| `sourness_preference`    | int (0–5)         |                                                   |
+| `saltiness_preference`   | int (0–5)         |                                                   |
+| `oiliness_preference`    | int (0–5)         |                                                   |
+| `preferred_textures`     | string[]          | e.g. `crispy`, `tender`, `creamy`, `gelatinous`  |
+| `budget_min`/`budget_max`| float             | Per-meal range, local currency (PKR for now)     |
+| `dietary_requirements`   | string[]          | e.g. `halal`, `vegetarian`                       |
+| `allergies`              | string[]          |                                                   |
+| `disliked_ingredients`   | string[]          |                                                   |
+| `taste_vector`           | float[384]        | Unit length. Dim configurable via `VECTOR_DIM`, matches Ganva's dish vectors. |
+| `last_updated`           | ISO-8601 datetime | Bumps on onboarding and every interaction        |
 
 ### `Interaction` (event log)
 ```json
 {
-  "user_id": "u_a1b2c3d4e5",
-  "dish_id": "d_003",
+  "user_id": "3f9a1e2b-...-uuid",
+  "dish_id": "90443b39-...-uuid",
   "action": "order",
-  "ts": "2026-08-25T10:16:03.201+00:00"
+  "ts": "2026-08-26T10:16:03.201+00:00"
 }
 ```
 
@@ -51,14 +74,14 @@ strengths.
 
 ### `SimilarUser`
 ```json
-{ "user_id": "u_9f8e7d6c5b", "score": 0.812 }
+{ "user_id": "9f8e7d6c-...-uuid", "score": 0.812 }
 ```
 `score` is cosine similarity in `[-1, 1]` — higher is more similar.
 
 ### `ContextSignal`
 ```json
 {
-  "user_id": "u_a1b2c3d4e5",
+  "user_id": "3f9a1e2b-...-uuid",
   "current_period": "dinner",
   "preferred_period": "dinner",
   "period_weights": { "lunch": 0.2, "dinner": 0.8 },
@@ -71,7 +94,7 @@ are `null` until the user has at least one logged interaction.
 
 ### `PopularityEntry`
 ```json
-{ "dish_id": "d_003", "score": 0.72 }
+{ "dish_id": "90443b39-...-uuid", "score": 0.72 }
 ```
 `score` is in `[0, 1]`, normalized against the current highest-scoring dish.
 Underlying weights: `order=3, save=2, click=1`, summed per dish across all
@@ -94,15 +117,15 @@ with α from `EMA_ALPHA`, default 0.15).
 
 **Request body:**
 ```json
-{ "dish_id": "d_003", "action": "click" }
+{ "dish_id": "90443b39-...-uuid", "action": "click" }
 ```
 
 **Response:**
 ```json
 {
   "ok": true,
-  "user_id": "u_a1b2c3d4e5",
-  "dish_id": "d_003",
+  "user_id": "3f9a1e2b-...-uuid",
+  "dish_id": "90443b39-...-uuid",
   "action": "click",
   "vector_updated": true
 }
@@ -138,22 +161,31 @@ Programmatic clients should hit `POST /api/user/{id}/interaction` after
 onboarding rather than driving the form.
 
 ### Onboarding form fields
-| Field            | Type       |
-|------------------|------------|
-| `cuisines`       | string[]   |
-| `favorite_foods` | string (comma-separated) |
-| `dietary`        | string[]   |
-| `spice_pref`     | int (0–4)  |
-| `budget`         | int        |
+| Field                  | Type                      |
+|-------------------------|---------------------------|
+| `cuisines`               | string[]                  |
+| `favourite_dishes`       | string (comma-separated)  |
+| `dietary`                 | string[]                  |
+| `textures`                | string[]                  |
+| `allergies`               | string (comma-separated)  |
+| `disliked_ingredients`    | string (comma-separated)  |
+| `spice_preference`        | int (0–5)                 |
+| `sweetness_preference`    | int (0–5)                 |
+| `sourness_preference`     | int (0–5)                 |
+| `saltiness_preference`    | int (0–5)                 |
+| `oiliness_preference`     | int (0–5)                 |
+| `budget_min`/`budget_max` | float                     |
 
 ---
 
 ## Notes for Esha
 
-- Filter by `budget`, `dietary`, and distance **before** you score with the
-  taste vector — the vector is a soft signal, not a hard constraint.
+- Filter by `budget_min`/`budget_max`, `dietary_requirements`, `allergies`,
+  and distance **before** you score with the taste vector — the vector is
+  a soft signal, not a hard constraint.
 - Use `cosine_similarity(user.taste_vector, dish.vector)` as the `taste`
-  component of the weighted score (45% weight per the sprint spec).
+  component of the weighted score (45% weight per the sprint spec). Both
+  vectors are 384-dim, matching Ganva's `EMBEDDING_DIMENSION`.
 - After every user action in the feed, POST it back to
   `/api/user/{user_id}/interaction`. Fire-and-forget is fine; the endpoint
   is idempotent per-event (each POST creates one log row).
@@ -166,23 +198,38 @@ onboarding rather than driving the form.
 
 ## Notes for Ganva
 
-- Dish records must include `vector: float[128]` matching `VECTOR_DIM`.
-- Interim: personalization reads `data/mock_dishes.json`. On Day 2, swap
-  `app/dish_store.py` to hit your `/dishes` API or read your seed file.
-- Supabase table shapes assumed by `SupabaseRepository`:
+- `user_id` and `dish_id` are UUID strings on this side too, matching your
+  contracts. Mock dishes (`scripts/generate_mock_dishes.py`) now generate
+  deterministic `uuid5` ids and 384-dim vectors so local dev matches your
+  real catalog's shape.
+- Interim: personalization reads `data/mock_dishes.json`. Once your
+  `/dishes` API or seed file is ready, swap `app/dish_store.py` to read
+  from there instead — only that one module needs to change.
+- Supabase table shapes assumed by `SupabaseRepository` (adjust to match
+  your actual migrations if they differ):
   ```sql
   create table users (
-    user_id text primary key,
+    user_id uuid primary key,
+    preferred_cuisines jsonb not null default '[]',
+    favourite_dishes jsonb not null default '[]',
+    spice_preference int not null,
+    sweetness_preference int not null,
+    sourness_preference int not null,
+    saltiness_preference int not null,
+    oiliness_preference int not null,
+    preferred_textures jsonb not null default '[]',
+    budget_min numeric not null,
+    budget_max numeric not null,
+    dietary_requirements jsonb not null default '[]',
+    allergies jsonb not null default '[]',
+    disliked_ingredients jsonb not null default '[]',
     taste_vector jsonb not null,
-    budget int not null,
-    dietary jsonb not null,
-    spice_pref int not null,
     last_updated timestamptz not null default now()
   );
   create table interactions (
     id bigserial primary key,
-    user_id text not null references users(user_id),
-    dish_id text not null,
+    user_id uuid not null references users(user_id),
+    dish_id uuid not null,
     action text not null check (action in ('click','save','order')),
     ts timestamptz not null default now()
   );

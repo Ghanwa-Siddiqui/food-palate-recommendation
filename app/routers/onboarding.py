@@ -20,6 +20,7 @@ CUISINE_CHOICES = [
     "Japanese", "Mexican", "Street", "Cafe",
 ]
 DIETARY_CHOICES = ["halal", "vegetarian", "vegan", "no-beef", "no-pork", "gluten-free"]
+TEXTURE_CHOICES = ["crispy", "tender", "creamy", "chewy", "gelatinous", "crunchy"]
 
 
 @router.get("/onboarding", response_class=HTMLResponse)
@@ -27,7 +28,7 @@ def onboarding_form(request: Request):
     return templates.TemplateResponse(
         request,
         "onboarding.html",
-        {"cuisines": CUISINE_CHOICES, "dietary": DIETARY_CHOICES},
+        {"cuisines": CUISINE_CHOICES, "dietary": DIETARY_CHOICES, "textures": TEXTURE_CHOICES},
     )
 
 
@@ -35,19 +36,35 @@ def onboarding_form(request: Request):
 def submit_onboarding(
     request: Request,
     cuisines: list[str] = Form(default=[]),
-    favorite_foods: str = Form(default=""),
+    favourite_dishes: str = Form(default=""),
     dietary: list[str] = Form(default=[]),
-    spice_pref: int = Form(default=2),
-    budget: int = Form(default=1000),
+    textures: list[str] = Form(default=[]),
+    allergies: str = Form(default=""),
+    disliked_ingredients: str = Form(default=""),
+    spice_preference: int = Form(default=2),
+    sweetness_preference: int = Form(default=2),
+    sourness_preference: int = Form(default=2),
+    saltiness_preference: int = Form(default=2),
+    oiliness_preference: int = Form(default=2),
+    budget_min: float = Form(default=0),
+    budget_max: float = Form(default=1500),
 ):
     answers = OnboardingAnswers(
-        cuisines=cuisines,
-        favorite_foods=favorite_foods,  # validator splits on commas
-        dietary=dietary,
-        spice_pref=spice_pref,
-        budget=budget,
+        preferred_cuisines=cuisines,
+        favourite_dishes=favourite_dishes,  # validator splits on commas
+        dietary_requirements=dietary,
+        preferred_textures=textures,
+        allergies=allergies,
+        disliked_ingredients=disliked_ingredients,
+        spice_preference=spice_preference,
+        sweetness_preference=sweetness_preference,
+        sourness_preference=sourness_preference,
+        saltiness_preference=saltiness_preference,
+        oiliness_preference=oiliness_preference,
+        budget_min=budget_min,
+        budget_max=budget_max,
     )
-    user_id = f"u_{uuid.uuid4().hex[:10]}"
+    user_id = str(uuid.uuid4())
     user = user_from_onboarding(user_id, answers)
     get_repository().upsert_user(user)
     return RedirectResponse(url=f"/onboarding/done?user_id={user_id}", status_code=303)

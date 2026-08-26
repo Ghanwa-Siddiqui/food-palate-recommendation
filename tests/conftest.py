@@ -16,12 +16,12 @@ def _isolate_data_dir(tmp_path, monkeypatch):
     import json
     from app.embedding import embed_dish
     dishes = [
-        {"id": "d_001", "restaurant_id": "r_01", "name": "Chicken Karahi",
-         "cuisine": "Pakistani", "ingredients": ["chicken", "tomato"],
+        {"id": "d0000000-0000-4000-8000-000000000001", "restaurant_id": "r0000000-0000-4000-8000-000000000001",
+         "name": "Chicken Karahi", "cuisine": "Pakistani", "ingredients": ["chicken", "tomato"],
          "price": 1000, "vector": embed_dish("Chicken Karahi", "Pakistani", ["chicken", "tomato"]),
          "lat": 24.8, "lng": 67.0},
-        {"id": "d_002", "restaurant_id": "r_02", "name": "Salmon Sushi",
-         "cuisine": "Japanese", "ingredients": ["salmon", "rice"],
+        {"id": "d0000000-0000-4000-8000-000000000002", "restaurant_id": "r0000000-0000-4000-8000-000000000002",
+         "name": "Salmon Sushi", "cuisine": "Japanese", "ingredients": ["salmon", "rice"],
          "price": 1800, "vector": embed_dish("Salmon Sushi", "Japanese", ["salmon", "rice"]),
          "lat": 24.8, "lng": 67.0},
     ]

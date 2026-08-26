@@ -1,9 +1,8 @@
 """Supabase-backed repository.
 
-Day-2 implementation. Assumes Ganva's schema exists with tables:
-    users(user_id text pk, taste_vector jsonb/vector, budget int, dietary jsonb,
-          spice_pref int, last_updated timestamptz)
-    interactions(user_id text, dish_id text, action text, ts timestamptz)
+Day-2 implementation. Field names match Ganva's docs/contracts/v1/
+user-taste.schema.json and interaction.schema.json — see docs/contracts.md
+for the full users/interactions table DDL this expects.
 
 Enable by setting STORAGE_BACKEND=supabase and providing SUPABASE_URL + SUPABASE_KEY.
 """
@@ -35,10 +34,20 @@ class SupabaseRepository:
     def upsert_user(self, user: UserTaste) -> None:
         row = {
             "user_id": user.user_id,
+            "preferred_cuisines": user.preferred_cuisines,
+            "favourite_dishes": user.favourite_dishes,
+            "spice_preference": user.spice_preference,
+            "sweetness_preference": user.sweetness_preference,
+            "sourness_preference": user.sourness_preference,
+            "saltiness_preference": user.saltiness_preference,
+            "oiliness_preference": user.oiliness_preference,
+            "preferred_textures": user.preferred_textures,
+            "budget_min": user.budget_min,
+            "budget_max": user.budget_max,
+            "dietary_requirements": user.dietary_requirements,
+            "allergies": user.allergies,
+            "disliked_ingredients": user.disliked_ingredients,
             "taste_vector": user.taste_vector,
-            "budget": user.budget,
-            "dietary": user.dietary,
-            "spice_pref": user.spice_pref,
             "last_updated": user.last_updated.isoformat(),
         }
         self.client.table(self.USERS_TABLE).upsert(row).execute()
