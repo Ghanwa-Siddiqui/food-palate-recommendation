@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaska.example/contracts/v1/restaurant.schema.json",
+  "title": "Restaurant v1",
+  "type": "object",
+  "required": ["id", "name", "description", "cuisine_types", "address", "city", "lat", "lng", "location_verified", "coordinates_source_url", "coordinates_verified_at", "price_range", "halal_status", "created_at", "updated_at"],
+  "properties": {
+    "id": {"type": "string", "format": "uuid"},
+    "name": {"type": "string"},
+    "description": {"type": ["string", "null"]},
+    "cuisine_types": {"type": "array", "items": {"type": "string"}},
+    "address": {"type": "string"},
+    "city": {"type": "string"},
+    "lat": {"type": ["number", "null"], "minimum": -90, "maximum": 90},
+    "lng": {"type": ["number", "null"], "minimum": -180, "maximum": 180},
+    "location_verified": {"type": "boolean"},
+    "coordinates_source_url": {"type": ["string", "null"], "format": "uri"},
+    "coordinates_verified_at": {"type": ["string", "null"], "format": "date-time"},
+    "price_range": {"type": "string"},
+    "halal_status": {"type": "string", "enum": ["verified", "claimed", "not_halal", "unknown"]},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"lat": {"type": "null"}}},
+      "then": {"properties": {"lng": {"type": "null"}, "location_verified": {"const": false}}}
+    },
+    {
+      "if": {"properties": {"lng": {"type": "null"}}},
+      "then": {"properties": {"lat": {"type": "null"}, "location_verified": {"const": false}}}
+    },
+    {
+      "if": {"properties": {"location_verified": {"const": true}}},
+      "then": {"properties": {"lat": {"type": "number"}, "lng": {"type": "number"}}}
+    }
+  ],
+  "additionalProperties": false
+}
