@@ -1,8 +1,19 @@
 # Chaska Food Palate Recommendation System
 
-Chaska's Data Layer & Backend Core is a modular FastAPI service for restaurant, dish, and deal catalog data. This foundation is designed for Supabase-hosted PostgreSQL and its pgvector extension without contacting Supabase during application import.
+Chaska is an AI-based food palate and restaurant recommendation system. Its backend is a modular FastAPI service designed for Supabase-hosted PostgreSQL and pgvector.
 
 All sample restaurants are synthetic development data, not verified real businesses.
+
+## Modules
+
+| Owner | Module | Branch | Docs |
+|---|---|---|---|
+| Ghanwa | Data Layer & Backend Core | `feature/data-core-ghanwa` | — |
+| Ifreen | Review Intelligence | `feature/review-intelligence-ifreen` | — |
+| Manahil | Personalization Engine | `feature/personalization-manahil` | [Personalization](docs/personalization.md) · [Contracts](docs/contracts.md) |
+| Esha | Ranking Engine & Feed UI | `feature/ranking-feed-esha` | — |
+
+## Architecture
 
 ## Architecture
 
@@ -166,3 +177,4 @@ remain valid catalog/search results. `coordinates_source_url` and
 `coordinates_verified_at` provide optional audit metadata.
 
 This module owns the data layer, data-core services, restaurant/dish/deal routes, migrations, seed data, contracts, and related tests. It deliberately excludes Review Intelligence, personalization, ranking, collaborative filtering, sentiment extraction, feed UI, and full frontend work. See `AGENTS.md` before editing shared areas.
+>>>>>>> origin/develop

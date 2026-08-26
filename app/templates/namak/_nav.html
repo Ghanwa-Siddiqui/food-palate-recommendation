@@ -1,0 +1,21 @@
+{# active: "for-you" | "explore" | "collections" | "following" | none. search: bool #}
+<div class="nav">
+  <div class="flex-c gap-20">
+    <a class="brand" href="/app">n<em>a</em>mak</a>
+    {% if search %}
+    <div class="search" style="width:280px;">
+      <span class="icon">⌕</span><span>Search dishes, places, tasters…</span>
+    </div>
+    {% endif %}
+  </div>
+  <div class="navlinks">
+    <a class="{{ 'act' if active=='for-you' }}" href="/app/feed">For you</a>
+    <a class="{{ 'act' if active=='explore' }}" href="/app/feed">Explore</a>
+    <a class="{{ 'act' if active=='collections' }}" href="/app/feed">Collections</a>
+    <a class="{{ 'act' if active=='following' }}" href="/app/feed">Following</a>
+  </div>
+  <div class="nav-r">
+    <span class="icon">◔</span><span class="icon">☆</span>
+    <a class="avatar" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}">{{ (demo_user.initial if demo_user else 'A') }}</a>
+  </div>
+</div>
