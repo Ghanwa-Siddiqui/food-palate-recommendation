@@ -1,0 +1,99 @@
+{% extends "namak/base.html" %}
+{% block title %}For you — namak{% endblock %}
+{% block body %}
+{% include "namak/_nav.html" %}
+
+<div class="feed-grid" style="max-width:1240px;margin:0 auto;">
+  <aside class="side l">
+    <div class="eyebrow mb-10">Discover</div>
+    <div>
+      <div class="side-item act"><span class="icon">✦</span>For you</div>
+      <div class="side-item"><span class="icon">◉</span>Near me</div>
+      <div class="side-item"><span class="icon">↗</span>Trending Lahore</div>
+      <div class="side-item"><span class="icon">◈</span>Tastemakers</div>
+      <div class="side-item"><span class="icon">◷</span>New this week</div>
+    </div>
+    <div class="eyebrow mt-24 mb-10">Your lists</div>
+    <div>
+      <div class="side-item">Been there · 47</div>
+      <div class="side-item">Want to try · 23</div>
+      <div class="side-item">Weekend brunch · 8</div>
+      <div class="side-item">Late-night desi · 12</div>
+      <div class="side-item" style="color:var(--stone);font-size:12px;">＋ New collection</div>
+    </div>
+  </aside>
+
+  <main style="padding:26px 28px 30px;">
+    <div class="flex-b" style="align-items:baseline;">
+      <h1 style="font-family:var(--serif);font-size:28px;font-weight:500;margin:0;letter-spacing:-0.02em;">Good evening, {{ demo_user.name }}.</h1>
+      <span style="font-size:12px;color:var(--stone);">Ranked from 342 places nearby</span>
+    </div>
+    <p style="font-size:13px;color:var(--stone-2);margin:4px 0 20px;">3 new picks match you above 90% this week.</p>
+
+    <a class="dish" style="aspect-ratio:2.2/1;margin-bottom:18px;border-radius:12px;display:block;" href="/app/restaurant/{{ hero_pick.slug }}">
+      <img src="{{ hero_pick.img }}" alt="{{ hero_pick.dish }}" onerror="this.style.display='none'"/>
+      <div class="grad" style="height:80%;"></div>
+      <div class="tag">Tonight's top match</div>
+      <div class="match" style="font-size:13px;padding:5px 12px;">{{ hero_pick.match }}% match</div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:22px 24px;color:var(--cream);z-index:2;">
+        <div style="font-family:var(--serif);font-size:26px;font-weight:500;letter-spacing:-0.01em;">{{ hero_pick.dish }} at {{ hero_pick.restaurant }}</div>
+        <div style="font-size:12.5px;color:#D8D0C0;margin-top:4px;">{{ hero_pick.area }} · {{ hero_pick.distance }} · <span class="k-sf">{{ hero_pick.tag1 }}</span> · {{ hero_pick.tag2 }} · {{ hero_pick.tag3 }}</div>
+        <div style="display:flex;gap:10px;margin-top:14px;">
+          <span class="btn btn-p" style="padding:8px 14px;font-size:12px;">Save to a list</span>
+          <span class="btn btn-t" style="padding:8px 14px;font-size:12px;">See restaurant</span>
+        </div>
+      </div>
+    </a>
+
+    <div class="grid-2">
+      {% for p in picks %}
+      <a class="dish {{ p.klass }}" style="aspect-ratio:1.4/1;" href="/app/restaurant/{{ p.slug }}">
+        <img src="{{ p.img }}" onerror="this.style.display='none'"/><div class="grad"></div><div class="match">{{ p.match }}%</div><div class="lab">{{ p.dish }}<small>{{ p.restaurant }}</small></div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <div class="mt-24">
+      <div class="flex-b mb-10">
+        <h3 class="section-h" style="margin:0;">Because you loved {{ hero_pick.loved_label }}</h3>
+        <span style="font-size:12px;color:var(--stone);">See all →</span>
+      </div>
+      <div class="grid-3">
+        {% for p in similar_picks %}
+        <a class="dish {{ p.klass }}" style="aspect-ratio:1.2/1;" href="/app/restaurant/{{ p.slug }}">
+          <img src="{{ p.img }}" onerror="this.style.display='none'"/><div class="grad"></div><div class="match">{{ p.match }}%</div><div class="lab">{{ p.dish }}<small>{{ p.restaurant }}</small></div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+
+  <aside class="side r">
+    <div class="eyebrow">Your taste twins</div>
+    <p style="font-size:11px;color:var(--stone);margin:0 0 12px;line-height:1.4;">People who rate like you.</p>
+    <div class="mb-18">
+      {% for t in taste_twins %}
+      <div class="follow-item"><span class="avatar sm {{ t.klass }}">{{ t.initial }}</span><div class="n"><div class="name">{{ t.name }}</div><div class="meta">{{ t.overlap }}% overlap</div></div><span class="btn btn-d" style="font-size:11px;padding:5px 10px;">Follow</span></div>
+      {% endfor %}
+    </div>
+
+    <div class="eyebrow">Following · activity</div>
+    <div class="mb-18">
+      {% for a in following_activity %}
+      <div style="font-size:12px;line-height:1.55;color:var(--stone-2);margin-bottom:14px;">
+        <span class="avatar sm {{ a.klass }}" style="width:16px;height:16px;font-size:8px;vertical-align:-3px;">{{ a.initial }}</span>
+        <b style="color:var(--ink);font-weight:500;">{{ a.name }}</b> {{ a.verb | safe }}<br/>
+        <span style="color:var(--stone);font-size:11px;">{{ a.meta }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="eyebrow">Trending in Lahore</div>
+    <div style="font-size:12.5px;">
+      {% for r in trending %}
+      <div style="padding:6px 0;">{{ loop.index }}. {{ r }}</div>
+      {% endfor %}
+    </div>
+  </aside>
+</div>
+{% endblock %}

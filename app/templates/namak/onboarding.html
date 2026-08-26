@@ -1,0 +1,66 @@
+{% extends "namak/base.html" %}
+{% block title %}Onboarding — namak{% endblock %}
+{% block body %}
+<div style="padding:26px 40px 32px;max-width:1240px;margin:0 auto;">
+  <div class="flex-b mb-18">
+    <a class="brand" href="/app">n<em>a</em>mak</a>
+    <div style="font-size:12px;color:var(--stone);">Step 2 of 4 · <a href="/app/feed">Skip for now</a></div>
+  </div>
+  <div class="prog"><span class="on"></span><span class="on"></span><span></span><span></span></div>
+
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:36px;">
+    <div>
+      <h2 style="font-family:var(--serif);font-size:32px;font-weight:500;margin:0 0 6px;line-height:1.1;letter-spacing:-0.02em;">Tap the dishes that make you hungry.</h2>
+      <p style="font-size:14px;color:var(--stone-2);margin:0 0 22px;">Pick at least five. The more you tap, the sharper your profile.</p>
+
+      <div class="grid-4" id="tileGrid" style="gap:10px;">
+        {% for d in dish_tiles %}
+        <div class="dish {{ d.klass }}{{ ' check' if d.picked else '' }}" data-name="{{ d.name }}" onclick="toggleTile(this)" style="aspect-ratio:1;">
+          <img src="{{ d.img }}" onerror="this.style.display='none'"/>
+          <div class="grad"></div>
+          <div class="lab" style="padding:8px 10px;font-size:11px;">{{ d.name }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div>
+      <div class="card dark">
+        <div class="eyebrow">Your taste profile · live</div>
+        <div class="vec dk" style="margin:10px 0 14px;">
+          <i style="height:70%"></i><i style="height:90%"></i><i style="height:55%"></i><i style="height:95%"></i><i style="height:40%"></i><i style="height:80%"></i><i style="height:65%"></i><i style="height:85%"></i><i style="height:50%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:88%"></i>
+        </div>
+        <div style="font-family:var(--serif);font-style:italic;font-size:14px;line-height:1.5;color:var(--cream);">"You lean into <span class="k-sf">slow-cooked, spicy, meat-forward</span> Pakistani classics, with a soft spot for Chinese street food."</div>
+      </div>
+
+      <div class="mt-18">
+        <div class="eyebrow">Emerging flavors</div>
+        <div>
+          <span class="chip hot">very spicy</span>
+          <span class="chip">slow-cooked</span>
+          <span class="chip">rich gravy</span>
+          <span class="chip">tender beef</span>
+        </div>
+      </div>
+
+      <div class="mt-18">
+        <div class="eyebrow">Progress</div>
+        <div style="display:flex;align-items:baseline;gap:6px;"><span id="pickCount" style="font-family:var(--serif);font-size:34px;font-weight:500;">{{ picked_count }}</span><span style="font-size:12px;color:var(--stone);">/ 5 minimum</span></div>
+      </div>
+
+      <a class="btn btn-p" style="display:block;margin-top:22px;padding:14px;text-align:center;" href="/app/feed">Continue →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // UI-only for now — selection state lives client-side.
+  // TODO(backend): POST picked dish names to /onboarding once this step
+  // is wired into the Personalization Engine's onboarding flow.
+  function toggleTile(el){
+    el.classList.toggle('check');
+    var count = document.querySelectorAll('#tileGrid .dish.check').length;
+    document.getElementById('pickCount').textContent = count;
+  }
+</script>
+{% endblock %}
