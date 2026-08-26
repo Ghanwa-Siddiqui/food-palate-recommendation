@@ -1,17 +1,25 @@
-"""Namak UI — visual-only pages, not yet wired to the backend.
+"""Namak UI routes.
 
-Content here mirrors the design mockup (namak-web-app-ui.html) with mock
-data. TODO(backend): swap the hardcoded context dicts for real calls into
-app/personalization.py, app/repositories, app/popularity.py, and Esha's
-ranking/feed once those contracts are ready to consume from here.
+The feed consumes the integrated Ranking API. Other design-preview screens still use
+their original mock presentation data until their respective services are integrated.
 """
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Annotated
+from uuid import UUID
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+
+from ..ranking_client import (
+    RankingBackendError,
+    RankingFeedClient,
+    RankingUnavailableDataError,
+    RankingUserNotFoundError,
+    RankingValidationError,
+)
 
 router = APIRouter(prefix="/app", tags=["ui"])
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
@@ -168,14 +176,81 @@ def onboarding(request: Request):
     )
 
 
+def get_ranking_feed_client() -> RankingFeedClient:
+    return RankingFeedClient()
+
+
+def _feed_params(request: Request) -> tuple[UUID | None, list[tuple[str, str]], str | None]:
+    raw_user_id = request.query_params.get("user_id", "").strip()
+    if not raw_user_id:
+        return None, [], None
+    try:
+        user_id = UUID(raw_user_id)
+    except ValueError:
+        return None, [], "Enter a valid user ID."
+
+    params: list[tuple[str, str]] = []
+    for field in ("budget_min", "budget_max"):
+        raw_value = request.query_params.get(field, "").strip()
+        if raw_value:
+            try:
+                value = float(raw_value)
+            except ValueError:
+                return user_id, [], f"{field.replace('_', ' ').title()} must be a number."
+            if value < 0 or (field == "budget_max" and value == 0):
+                return user_id, [], f"{field.replace('_', ' ').title()} must be positive."
+            params.append((field, raw_value))
+    values = dict(params)
+    if (
+        "budget_min" in values
+        and "budget_max" in values
+        and float(values["budget_min"]) > float(values["budget_max"])
+    ):
+        return user_id, [], "Minimum budget cannot exceed maximum budget."
+
+    if request.query_params.get("require_halal") == "true":
+        params.append(("require_halal", "true"))
+    for restriction in request.query_params.getlist("dietary_restrictions"):
+        if restriction in {"vegetarian", "vegan"}:
+            params.append(("dietary_restrictions", restriction))
+    params.append(("limit", "20"))
+    return user_id, params, None
+
+
 @router.get("/feed", response_class=HTMLResponse)
-def feed(request: Request):
+def feed(
+    request: Request,
+    ranking_client: Annotated[RankingFeedClient, Depends(get_ranking_feed_client)],
+):
+    user_id, params, local_error = _feed_params(request)
+    state = "prompt"
+    message = "Enter your onboarding user ID to load recommendations."
+    result = None
+    if local_error:
+        state, message = "validation_error", local_error
+    elif user_id is not None:
+        try:
+            result = ranking_client.get_feed(user_id, params)
+            state = "success" if result.items else "empty"
+            message = "" if result.items else "No dishes match these filters yet. Try widening them."
+        except RankingUserNotFoundError:
+            state, message = "missing_user", "That user was not found. Complete onboarding or check the ID."
+        except RankingValidationError:
+            state, message = "validation_error", "The Ranking API rejected these filters. Check the values and try again."
+        except RankingUnavailableDataError:
+            state, message = "unavailable", "Ranking data is temporarily unavailable or incomplete."
+        except RankingBackendError:
+            state, message = "backend_error", "The recommendation service could not be reached. Please try again."
     return templates.TemplateResponse(
         request, "namak/feed.html",
         {
             "active": "for-you", "search": True, "demo_user": DEMO_USER,
-            "hero_pick": HERO_PICK, "picks": PICKS, "similar_picks": SIMILAR_PICKS,
-            "taste_twins": TASTE_TWINS, "following_activity": FOLLOWING_ACTIVITY, "trending": TRENDING,
+            "state": state, "message": message, "feed": result,
+            "user_id": str(user_id) if user_id else request.query_params.get("user_id", ""),
+            "budget_min": request.query_params.get("budget_min", ""),
+            "budget_max": request.query_params.get("budget_max", ""),
+            "require_halal": request.query_params.get("require_halal") == "true",
+            "dietary_restrictions": request.query_params.getlist("dietary_restrictions"),
         },
     )
 
