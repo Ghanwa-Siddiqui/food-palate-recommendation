@@ -1,0 +1,595 @@
+[
+  {
+    "id": "9978c609-5090-5051-b948-1fafbf067a17",
+    "name": "Howdy - MM Alam Road",
+    "description": null,
+    "cuisine_types": [
+      "Fast Food",
+      "Continental"
+    ],
+    "address": "Rooftop, 9C Building, MM Alam Road, Gulberg III, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "1f5a614b-631b-55b3-8115-f063fe44af1c",
+    "name": "Yum Chinese - MM Alam",
+    "description": null,
+    "cuisine_types": [
+      "Chinese",
+      "Thai"
+    ],
+    "address": "MM Alam Road, Gulberg III, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "e94978c5-1c43-5aed-a746-72ff38f63954",
+    "name": "Layers - M.M Alam",
+    "description": null,
+    "cuisine_types": [
+      "Continental"
+    ],
+    "address": "Shop 1, KD Plaza, 100 MM Alam Road, Block B2, Gulberg III, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "22c0e748-b5ad-5eb0-8bcd-934fd93e2833",
+    "name": "P.F. Chang's - Gulberg",
+    "description": null,
+    "cuisine_types": [
+      "Chinese"
+    ],
+    "address": "17-C1 MM Alam Road, Block C1, Gulberg III, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "0fa04e48-13cc-50ee-813b-c2849aa4d854",
+    "name": "California Pizza - MM Alam Road",
+    "description": null,
+    "cuisine_types": [
+      "Italian",
+      "Fast Food"
+    ],
+    "address": "MM Alam Road, Gulberg III, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "0692df2a-b8f9-530a-b6c9-8c75938c77f0",
+    "name": "Kitchen Cuisine - M.M Alam",
+    "description": null,
+    "cuisine_types": [
+      "Continental"
+    ],
+    "address": "118-119 P Block, MM Alam Road, Gulberg II, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "cfbd6776-f98f-5a73-8132-f4dbb1f86576",
+    "name": "Spice Bazaar - T-Block",
+    "description": null,
+    "cuisine_types": [
+      "Pakistani"
+    ],
+    "address": "T-Block, Gulberg II, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "23df67df-d5a2-51d7-a9b4-92318dbc91eb",
+    "name": "Arcadian Cafe - MM Tower",
+    "description": null,
+    "cuisine_types": [
+      "Continental",
+      "Chinese",
+      "Italian"
+    ],
+    "address": "MM Tower, Gulberg, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "06a9c88e-412d-55b6-9d45-794861e970fa",
+    "name": "Johnny & Jugnu - Emporium",
+    "description": null,
+    "cuisine_types": [
+      "Fast Food"
+    ],
+    "address": "Emporium Mall, Johar Town, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "02b91d9c-6bc2-5e1d-aa4b-7b06376f299d",
+    "name": "OD - MM Alam",
+    "description": null,
+    "cuisine_types": [
+      "Continental",
+      "Fast Food"
+    ],
+    "address": "MM Alam Road, Gulberg III, Lahore",
+    "city": "Lahore",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "80f969dd-5df7-5b8e-848f-a586c3144a31",
+    "name": "Xander's - Clifton",
+    "description": null,
+    "cuisine_types": [
+      "Continental",
+      "Italian"
+    ],
+    "address": "C-32, E-Street, off 26th Street, Block 4, Clifton, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "af25d00c-4638-5907-9a11-9de7d805f61e",
+    "name": "Burger Lab - Badar",
+    "description": null,
+    "cuisine_types": [
+      "Fast Food"
+    ],
+    "address": "Plot 13/C, Shop 1, Street 10, Badar Commercial, DHA Phase 5, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "0b0a9dcb-3700-5028-9e3c-688e0389b8ba",
+    "name": "Ginsoy - SMCHS",
+    "description": null,
+    "cuisine_types": [
+      "Chinese",
+      "Thai"
+    ],
+    "address": "Plot 122-A, Malik Heights, SMCHS, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "61467813-d0b5-5e45-bab0-48ba1df69a2a",
+    "name": "Broadway Pizza - Rashid Minhas Road",
+    "description": null,
+    "cuisine_types": [
+      "Italian",
+      "Fast Food"
+    ],
+    "address": "Rashid Minhas Road, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "d296c5ed-e23a-5191-aeb4-aea044e8fdba",
+    "name": "Kababjees - Shaheed-e-Millat",
+    "description": null,
+    "cuisine_types": [
+      "Pakistani",
+      "Continental"
+    ],
+    "address": "No. 3, Karachi Memon Society, Shaheed-e-Millat Road, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "85f74370-fc88-5307-98dc-9069da6faf18",
+    "name": "Del Frio - SMCHS",
+    "description": null,
+    "cuisine_types": [
+      "Continental",
+      "Italian"
+    ],
+    "address": "103-A Zaibi Arcade, SMCHS, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "50ec2855-f66f-5cb5-8d96-a71a89fe7970",
+    "name": "Cocochan - Clifton",
+    "description": null,
+    "cuisine_types": [
+      "Chinese",
+      "Japanese",
+      "Thai",
+      "Korean"
+    ],
+    "address": "Clifton, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "61e5c014-7548-5763-b920-ed436948c84e",
+    "name": "KFC - I.I. Chundrigar Road",
+    "description": null,
+    "cuisine_types": [
+      "Fast Food"
+    ],
+    "address": "I.I. Chundrigar Road, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "0d8f4a5a-8947-5c1e-ac7e-b1b779b9707c",
+    "name": "McDonald's - Stadium Road",
+    "description": null,
+    "cuisine_types": [
+      "Fast Food"
+    ],
+    "address": "Opposite National Stadium, Plot SB-9, KDA Scheme 1 Extension, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "238f7ce1-90e0-554c-ac7d-02a9776a69ae",
+    "name": "Papa Johns - Bukhari",
+    "description": null,
+    "cuisine_types": [
+      "Italian",
+      "Fast Food"
+    ],
+    "address": "42C/2, Bukhari Commercial Lane 8, DHA Phase 6, Karachi",
+    "city": "Karachi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "ec98649e-305d-5cd7-8062-83dfa2863d7b",
+    "name": "Asian Wok - F-11",
+    "description": null,
+    "cuisine_types": [
+      "Chinese",
+      "Thai"
+    ],
+    "address": "F-11 Markaz, Islamabad",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "4c6891d3-ff37-502f-9386-da2dd1d0f697",
+    "name": "Burning Brownie - F-11",
+    "description": null,
+    "cuisine_types": [
+      "Continental"
+    ],
+    "address": "Ground Floor, Olympus Mall, F-11 Markaz, Islamabad",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "241a72a6-4c49-5882-8e20-05a382fea805",
+    "name": "Savour Foods - Rawalpindi Stadium",
+    "description": null,
+    "cuisine_types": [
+      "Pakistani",
+      "Fast Food"
+    ],
+    "address": "Food Street, Double Road, Shamsabad, Rawalpindi",
+    "city": "Rawalpindi",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "f731ce35-26ea-5056-b56d-048febb0b1ee",
+    "name": "Ranchers - I-8",
+    "description": null,
+    "cuisine_types": [
+      "Fast Food"
+    ],
+    "address": "Time Square Plaza, I-8, Islamabad",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "1968060b-82cd-5f21-a9c7-29821a192408",
+    "name": "Loafology - Blue Area",
+    "description": null,
+    "cuisine_types": [
+      "Continental"
+    ],
+    "address": "108-W Jinnah Avenue, G-7/2, Blue Area, Islamabad 44000",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "6788498c-2e6c-52a5-82f2-8c6a3283da89",
+    "name": "Tuscany Courtyard - Kohsar Market",
+    "description": null,
+    "cuisine_types": [
+      "Italian",
+      "Continental",
+      "Thai"
+    ],
+    "address": "Kohsar Market, F-6/3, Islamabad",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "03524962-775b-5893-84d9-05d9f2bd5b23",
+    "name": "Wild Wings - I-8 Markaz",
+    "description": null,
+    "cuisine_types": [
+      "Fast Food",
+      "Continental"
+    ],
+    "address": "Hall 04, 1st Floor, Pakland Vista, I-8 Markaz, Islamabad",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "7eb5a796-d711-5e24-aac9-96cdc82c73af",
+    "name": "Tandoori Restaurant - F-10",
+    "description": null,
+    "cuisine_types": [
+      "Pakistani",
+      "Chinese"
+    ],
+    "address": "Khursheed Market, Street 30, F-10/1, Islamabad",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "bd5619b1-2d69-5b1a-9f64-7c8b4255123c",
+    "name": "NOM NOM WOK - DHA Phase II",
+    "description": null,
+    "cuisine_types": [
+      "Chinese",
+      "Thai"
+    ],
+    "address": "7-B, Central Park, DHA Phase II, Islamabad",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  },
+  {
+    "id": "6cfb9875-b997-5a68-8eba-ba584213f400",
+    "name": "Chaaye Khana - F-11",
+    "description": null,
+    "cuisine_types": [
+      "Pakistani",
+      "Continental"
+    ],
+    "address": "Plot 37, Crown Plaza, F-11 Markaz, Islamabad",
+    "city": "Islamabad",
+    "lat": null,
+    "lng": null,
+    "location_verified": false,
+    "coordinates_source_url": null,
+    "coordinates_verified_at": null,
+    "price_range": "$$",
+    "halal_status": "unknown",
+    "created_at": "2026-08-26T00:00:00+05:00",
+    "updated_at": "2026-08-26T00:00:00+05:00"
+  }
+]

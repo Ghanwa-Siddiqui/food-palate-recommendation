@@ -1,0 +1,51 @@
+review_id,dish_id,text,rating,timestamp
+R001,D001,"Very spicy and delicious chicken karahi. The chicken was tender.",5,2026-08-25
+R002,D001,"Amazing rich gravy but quite oily for my taste.",4,2026-08-24
+R003,D001,"Smoky karahi with juicy chicken and balanced heat.",5,2026-08-23
+R004,D001,"The gravy was bland and the chicken was dry.",2,2026-08-22
+R005,D001,"Good karahi, mildly spicy and not greasy.",4,2026-08-21
+R006,D002,"The beef nihari was deeply rich, tender, and warming.",5,2026-08-25
+R007,D002,"Wonderful spicy nihari with silky gravy, though slightly oily.",4,2026-08-24
+R008,D002,"Too salty and heavy; the beef was tough.",2,2026-08-23
+R009,D002,"Mild nihari with tender beef and a pleasant aroma.",4,2026-08-22
+R010,D002,"Cold and bland nihari arrived with greasy oil on top.",1,2026-08-21
+R011,D003,"Fragrant chicken biryani with medium spice and juicy pieces.",5,2026-08-25
+R012,D003,"The biryani was very spicy but flavorful and aromatic.",4,2026-08-24
+R013,D003,"Dry rice and bland chicken made this disappointing.",2,2026-08-23
+R014,D003,"A little oily, yet the saffron rice was delicious.",4,2026-08-22
+R015,D003,"Mild, fluffy biryani with tender chicken; not oily at all.",5,2026-08-21
+R016,D004,"Seekh kebabs were smoky, juicy, and perfectly seasoned.",5,2026-08-25
+R017,D004,"Spicy seekh kebab with a crisp outside and tender center.",5,2026-08-24
+R018,D004,"The kebab was dry and too salty.",2,2026-08-23
+R019,D004,"Mild flavor, but the kebabs were fresh and not greasy.",4,2026-08-22
+R020,D004,"Cold, tough kebabs with no smoky taste.",1,2026-08-21
+R021,D005,"Chicken chow mein was savory, crispy, and pleasantly mild.",4,2026-08-25
+R022,D005,"Very oily noodles but the chicken was tender.",3,2026-08-24
+R023,D005,"A spicy, smoky stir-fry with fresh vegetables.",5,2026-08-23
+R024,D005,"Too sweet and soggy; I did not enjoy it.",2,2026-08-22
+R025,D005,"Neutral flavor, though the noodles were not oily.",3,2026-08-21
+R026,D006,"The pizza had a crispy crust, creamy cheese, and rich sauce.",5,2026-08-25
+R027,D006,"Spicy chicken pizza was delicious but a little greasy.",4,2026-08-24
+R028,D006,"The crust was dry and the sauce tasted sour.",2,2026-08-23
+R029,D006,"Mild pizza with juicy toppings and no excess oil.",4,2026-08-22
+R030,D006,"Cold, salty pizza with rubbery cheese.",1,2026-08-21
+R031,D007,"Creamy pasta with rich sauce and tender chicken was excellent.",5,2026-08-25
+R032,D007,"The pasta was mild, smooth, and not oily.",4,2026-08-24
+R033,D007,"Too greasy and salty, with overcooked pasta.",2,2026-08-23
+R034,D007,"A spicy pasta with smoky grilled chicken; very satisfying.",5,2026-08-22
+R035,D007,"The sauce was sour and the pasta was dry.",1,2026-08-21
+R036,D008,"Haleem was rich, creamy, and warmly spiced.",5,2026-08-25
+R037,D008,"Delicious haleem with tender meat but a slightly oily finish.",4,2026-08-24
+R038,D008,"Bland and watery haleem with no flavor.",2,2026-08-23
+R039,D008,"Mild, smooth haleem that was filling and not greasy.",4,2026-08-22
+R040,D008,"Far too salty and heavy for me.",2,2026-08-21
+R041,D009,"Paya had a rich, spicy broth and tender meat.",5,2026-08-25
+R042,D009,"The paya was oily but wonderfully aromatic.",4,2026-08-24
+R043,D009,"Tough meat and a sour broth ruined the dish.",1,2026-08-23
+R044,D009,"Mild paya with clean flavor and no grease.",4,2026-08-22
+R045,D009,"The broth was bland and served cold.",2,2026-08-21
+R046,D010,"Butter chicken was creamy, sweet, and wonderfully rich.",5,2026-08-25
+R047,D010,"Mild butter chicken with tender pieces and smooth sauce.",5,2026-08-24
+R048,D010,"The sauce was too oily and overly sweet.",2,2026-08-23
+R049,D010,"A pleasantly spicy, smoky butter chicken.",4,2026-08-22
+R050,D010,"Salty, cold chicken with a dry texture.",1,2026-08-21
