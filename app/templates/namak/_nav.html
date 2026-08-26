@@ -3,16 +3,14 @@
   <div class="flex-c gap-20">
     <a class="brand" href="/app">n<em>a</em>mak</a>
     {% if search %}
-    <div class="search" style="width:280px;">
-      <span class="icon">⌕</span><span>Search dishes, places, tasters…</span>
-    </div>
+    <a class="search" style="width:280px;text-decoration:none;" href="/app/feed"><span class="icon">⌕</span><span>Find ranked dishes</span></a>
     {% endif %}
   </div>
   <div class="navlinks">
     <a class="{{ 'act' if active=='for-you' }}" href="/app/feed">For you</a>
-    <a class="{{ 'act' if active=='explore' }}" href="/app/feed">Explore</a>
-    <a class="{{ 'act' if active=='collections' }}" href="/app/feed">Collections</a>
-    <a class="{{ 'act' if active=='following' }}" href="/app/feed">Following</a>
+    <a class="{{ 'act' if active=='explore' }}" href="/app">Explore</a>
+    <a class="{{ 'act' if active=='collections' }}" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}">Collections</a>
+    <a class="{{ 'act' if active=='following' }}" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}">Following</a>
   </div>
   <div class="nav-r">
     <span class="icon">◔</span><span class="icon">☆</span>

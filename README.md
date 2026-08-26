@@ -177,4 +177,3 @@ remain valid catalog/search results. `coordinates_source_url` and
 `coordinates_verified_at` provide optional audit metadata.
 
 This module owns the data layer, data-core services, restaurant/dish/deal routes, migrations, seed data, contracts, and related tests. It deliberately excludes Review Intelligence, personalization, ranking, collaborative filtering, sentiment extraction, feed UI, and full frontend work. See `AGENTS.md` before editing shared areas.
->>>>>>> origin/develop
