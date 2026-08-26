@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaska.example/contracts/v1/interaction.schema.json",
+  "title": "Interaction v1",
+  "type": "object",
+  "required": ["user_id", "dish_id", "action", "ts"],
+  "properties": {
+    "user_id": {"type": "string", "format": "uuid"},
+    "dish_id": {"type": "string", "format": "uuid"},
+    "action": {"type": "string", "enum": ["click", "save", "order"]},
+    "ts": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": false
+}

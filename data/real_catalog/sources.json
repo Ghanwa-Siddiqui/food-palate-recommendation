@@ -1,0 +1,1086 @@
+{
+  "metadata": {
+    "catalog_version": "2026-08-26",
+    "price_currency": "PKR",
+    "price_verified_at": "2026-08-26",
+    "deals_count": 0,
+    "taste_profile_provenance": "editorial_estimate",
+    "taste_profile_note": "Numeric taste fields and texture tags are conservative editorial estimates for recommendation bootstrapping. They are not restaurant-published facts. Names, regular prices, descriptions, and ingredient statements require the cited menu source."
+  },
+  "restaurants": [
+    {
+      "restaurant_id": "9978c609-5090-5051-b948-1fafbf067a17",
+      "brand_name": "Howdy",
+      "branch_name": "MM Alam Road",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/kcnc/howdy-mm-alam-road",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/kcnc/howdy-mm-alam-road",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/kcnc/howdy-mm-alam-road",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "1f5a614b-631b-55b3-8115-f063fe44af1c",
+      "brand_name": "Yum Chinese",
+      "branch_name": "MM Alam",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/w6ce/yum-chinese-mm-alam-odr",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/w6ce/yum-chinese-mm-alam-odr",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w6ce/yum-chinese-mm-alam-odr",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "e94978c5-1c43-5aed-a746-72ff38f63954",
+      "brand_name": "Layers",
+      "branch_name": "M.M Alam",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/p5xl/layers-m-m-alam",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/p5xl/layers-m-m-alam",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/p5xl/layers-m-m-alam",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "22c0e748-b5ad-5eb0-8bcd-934fd93e2833",
+      "brand_name": "P.F. Chang's",
+      "branch_name": "Gulberg",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/o5ip/p-f-changs-gulberg",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/o5ip/p-f-changs-gulberg",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/o5ip/p-f-changs-gulberg",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "0fa04e48-13cc-50ee-813b-c2849aa4d854",
+      "brand_name": "California Pizza",
+      "branch_name": "MM Alam Road",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/s4vv/california-pizza-mm-alam-road",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/s4vv/california-pizza-mm-alam-road",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s4vv/california-pizza-mm-alam-road",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "0692df2a-b8f9-530a-b6c9-8c75938c77f0",
+      "brand_name": "Kitchen Cuisine",
+      "branch_name": "M.M Alam",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/qpig/kitchen-cuisine-m-m-alam",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/qpig/kitchen-cuisine-m-m-alam",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/qpig/kitchen-cuisine-m-m-alam",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "cfbd6776-f98f-5a73-8132-f4dbb1f86576",
+      "brand_name": "Spice Bazaar",
+      "branch_name": "T-Block",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/t2yo/spice-bazaar",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/t2yo/spice-bazaar",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/t2yo/spice-bazaar",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "23df67df-d5a2-51d7-a9b4-92318dbc91eb",
+      "brand_name": "Arcadian Cafe",
+      "branch_name": "MM Tower",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/w5hk/arcadian-cafe-odr",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/w5hk/arcadian-cafe-odr",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w5hk/arcadian-cafe-odr",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "06a9c88e-412d-55b6-9d45-794861e970fa",
+      "brand_name": "Johnny & Jugnu",
+      "branch_name": "Emporium",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/pb0c/johnny-and-jugnu-emporium",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/pb0c/johnny-and-jugnu-emporium",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/pb0c/johnny-and-jugnu-emporium",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "02b91d9c-6bc2-5e1d-aa4b-7b06376f299d",
+      "brand_name": "OD",
+      "branch_name": "MM Alam",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/d1v9/od-mm-alam-d1v9",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/d1v9/od-mm-alam-d1v9",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/d1v9/od-mm-alam-d1v9",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "80f969dd-5df7-5b8e-848f-a586c3144a31",
+      "brand_name": "Xander's",
+      "branch_name": "Clifton",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/s2gf/xanders",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/s2gf/xanders",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s2gf/xanders",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "af25d00c-4638-5907-9a11-9de7d805f61e",
+      "brand_name": "Burger Lab",
+      "branch_name": "Badar Commercial",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/v3bp/burger-lab-badar-odr",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/v3bp/burger-lab-badar-odr",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/v3bp/burger-lab-badar-odr",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "0b0a9dcb-3700-5028-9e3c-688e0389b8ba",
+      "brand_name": "Ginsoy",
+      "branch_name": "SMCHS",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/s7gg/ginsoy-smchs",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/s7gg/ginsoy-smchs",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s7gg/ginsoy-smchs",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "61467813-d0b5-5e45-bab0-48ba1df69a2a",
+      "brand_name": "Broadway Pizza",
+      "branch_name": "Rashid Minhas Road",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/s0nz/broadway-pizza-rashid-minhas-road",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/s0nz/broadway-pizza-rashid-minhas-road",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s0nz/broadway-pizza-rashid-minhas-road",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "d296c5ed-e23a-5191-aeb4-aea044e8fdba",
+      "brand_name": "Kababjees",
+      "branch_name": "Shaheed-e-Millat",
+      "restaurant_source_url": "https://www.foodpanda.pk/chain/cv5bv/kababjees-restaurant-cv5bv",
+      "address_source_url": "https://www.foodpanda.pk/chain/cv5bv/kababjees-restaurant-cv5bv",
+      "menu_source_url": "https://www.foodpanda.pk/chain/cv5bv/kababjees-restaurant-cv5bv",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "85f74370-fc88-5307-98dc-9069da6faf18",
+      "brand_name": "Del Frio",
+      "branch_name": "SMCHS",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/w0hh/del-frio-smchs-odr",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/w0hh/del-frio-smchs-odr",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w0hh/del-frio-smchs-odr",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "50ec2855-f66f-5cb5-8d96-a71a89fe7970",
+      "brand_name": "Cocochan",
+      "branch_name": "Clifton",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/t0iv/cocochan",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/t0iv/cocochan",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/t0iv/cocochan",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "61e5c014-7548-5763-b920-ed436948c84e",
+      "brand_name": "KFC",
+      "branch_name": "I.I. Chundrigar Road",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/s3tj/kfc-i-i-chundrigar-road",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/s3tj/kfc-i-i-chundrigar-road",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s3tj/kfc-i-i-chundrigar-road",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "0d8f4a5a-8947-5c1e-ac7e-b1b779b9707c",
+      "brand_name": "McDonald's",
+      "branch_name": "Stadium Road",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/s4wz/mcdonalds-stadium-road",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/s4wz/mcdonalds-stadium-road",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s4wz/mcdonalds-stadium-road",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "238f7ce1-90e0-554c-ac7d-02a9776a69ae",
+      "brand_name": "Papa Johns",
+      "branch_name": "Bukhari Commercial",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/yoz5/papa-johns-bukhari",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/yoz5/papa-johns-bukhari",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/yoz5/papa-johns-bukhari",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "ec98649e-305d-5cd7-8062-83dfa2863d7b",
+      "brand_name": "Asian Wok",
+      "branch_name": "F-11",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/wy4q/asian-wok-f-11",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/wy4q/asian-wok-f-11",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/wy4q/asian-wok-f-11",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "4c6891d3-ff37-502f-9386-da2dd1d0f697",
+      "brand_name": "Burning Brownie",
+      "branch_name": "F-11",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/d0q9/burning-brownie-f-11",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/d0q9/burning-brownie-f-11",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/d0q9/burning-brownie-f-11",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "241a72a6-4c49-5882-8e20-05a382fea805",
+      "brand_name": "Savour Foods",
+      "branch_name": "Rawalpindi Stadium",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/v2iw/savour-foods-rawalpindi-stadium",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/v2iw/savour-foods-rawalpindi-stadium",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/v2iw/savour-foods-rawalpindi-stadium",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "f731ce35-26ea-5056-b56d-048febb0b1ee",
+      "brand_name": "Ranchers",
+      "branch_name": "I-8",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/s0ty/ranchers",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/s0ty/ranchers",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s0ty/ranchers",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "1968060b-82cd-5f21-a9c7-29821a192408",
+      "brand_name": "Loafology",
+      "branch_name": "Blue Area",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/eqms/loafology-blue-area",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/eqms/loafology-blue-area",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/eqms/loafology-blue-area",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "6788498c-2e6c-52a5-82f2-8c6a3283da89",
+      "brand_name": "Tuscany Courtyard",
+      "branch_name": "Kohsar Market",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/bjtm/tuscany-courtyard-bjtm",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/bjtm/tuscany-courtyard-bjtm",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/bjtm/tuscany-courtyard-bjtm",
+      "address_verification_status": "area_verified",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "03524962-775b-5893-84d9-05d9f2bd5b23",
+      "brand_name": "Wild Wings",
+      "branch_name": "I-8 Markaz",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/wzqt/wild-wings-i-8-markaz",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/wzqt/wild-wings-i-8-markaz",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/wzqt/wild-wings-i-8-markaz",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "7eb5a796-d711-5e24-aac9-96cdc82c73af",
+      "brand_name": "Tandoori Restaurant",
+      "branch_name": "F-10",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/w9ms/tandoori-restaurant-f10-odr-w9ms",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/w9ms/tandoori-restaurant-f10-odr-w9ms",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w9ms/tandoori-restaurant-f10-odr-w9ms",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "bd5619b1-2d69-5b1a-9f64-7c8b4255123c",
+      "brand_name": "NOM NOM WOK",
+      "branch_name": "DHA Phase II",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/jnpp/nom-nom-wok-by-tuscany-courtyard-jnpp",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/jnpp/nom-nom-wok-by-tuscany-courtyard-jnpp",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/jnpp/nom-nom-wok-by-tuscany-courtyard-jnpp",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    },
+    {
+      "restaurant_id": "6cfb9875-b997-5a68-8eba-ba584213f400",
+      "brand_name": "Chaaye Khana",
+      "branch_name": "F-11",
+      "restaurant_source_url": "https://www.foodpanda.pk/restaurant/w0xx/chaaye-khana-f-11-odr",
+      "address_source_url": "https://www.foodpanda.pk/restaurant/w0xx/chaaye-khana-f-11-odr",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w0xx/chaaye-khana-f-11-odr",
+      "address_verification_status": "exact",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "notes": "Current Foodpanda branch listing. Halal status not asserted; coordinates intentionally unverified."
+    }
+  ],
+  "dishes": [
+    {
+      "dish_id": "90443b39-f84d-5e73-967a-a2bc058760da",
+      "restaurant_id": "9978c609-5090-5051-b948-1fafbf067a17",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/kcnc/howdy-mm-alam-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "a761e296-5c05-57a6-89c5-98948b93e55a",
+      "restaurant_id": "9978c609-5090-5051-b948-1fafbf067a17",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/kcnc/howdy-mm-alam-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "5c608814-fc1b-5337-a696-10ae8ca937b1",
+      "restaurant_id": "9978c609-5090-5051-b948-1fafbf067a17",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/kcnc/howdy-mm-alam-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "bed9144d-e26e-5c65-bf40-1d88b7a9f7b9",
+      "restaurant_id": "1f5a614b-631b-55b3-8115-f063fe44af1c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w6ce/yum-chinese-mm-alam-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "90c86cd5-2817-5263-ac06-2ad2ea31e96e",
+      "restaurant_id": "1f5a614b-631b-55b3-8115-f063fe44af1c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w6ce/yum-chinese-mm-alam-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "00f6a65e-0dfd-5a8a-8901-09dc516e1a75",
+      "restaurant_id": "1f5a614b-631b-55b3-8115-f063fe44af1c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w6ce/yum-chinese-mm-alam-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "13325125-bb72-5e9c-b9c9-13bb510abe9d",
+      "restaurant_id": "e94978c5-1c43-5aed-a746-72ff38f63954",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/p5xl/layers-m-m-alam",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "e173bac4-c4d2-5072-9b4c-57ac642e5c3b",
+      "restaurant_id": "e94978c5-1c43-5aed-a746-72ff38f63954",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/p5xl/layers-m-m-alam",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "3b593fe4-0867-5003-a196-d77d68dd0664",
+      "restaurant_id": "e94978c5-1c43-5aed-a746-72ff38f63954",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/p5xl/layers-m-m-alam",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "a2a60b75-fa7c-51f7-9b00-5fd99273be3a",
+      "restaurant_id": "22c0e748-b5ad-5eb0-8bcd-934fd93e2833",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/o5ip/p-f-changs-gulberg",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "0083f959-8cf4-5624-8972-9d8a08c5b960",
+      "restaurant_id": "22c0e748-b5ad-5eb0-8bcd-934fd93e2833",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/o5ip/p-f-changs-gulberg",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "14666b69-3d63-5e1b-b04d-8268977adab9",
+      "restaurant_id": "22c0e748-b5ad-5eb0-8bcd-934fd93e2833",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/o5ip/p-f-changs-gulberg",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "b349beb5-edbb-5a05-a50d-db5053572544",
+      "restaurant_id": "0fa04e48-13cc-50ee-813b-c2849aa4d854",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s4vv/california-pizza-mm-alam-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "5df01fd3-ad0d-5492-a483-5cdeb7dcfaa2",
+      "restaurant_id": "0fa04e48-13cc-50ee-813b-c2849aa4d854",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s4vv/california-pizza-mm-alam-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "b5b3b49f-9ab1-5825-8b65-7c0f19b0f88b",
+      "restaurant_id": "0fa04e48-13cc-50ee-813b-c2849aa4d854",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s4vv/california-pizza-mm-alam-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "c64d0767-3164-5ec9-bde1-0ba2ddc94bc2",
+      "restaurant_id": "0692df2a-b8f9-530a-b6c9-8c75938c77f0",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/qpig/kitchen-cuisine-m-m-alam",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "d103dda8-61b6-59e5-bd37-48dcfe4bfeca",
+      "restaurant_id": "0692df2a-b8f9-530a-b6c9-8c75938c77f0",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/qpig/kitchen-cuisine-m-m-alam",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "b0f62c1e-bd4a-57d8-b8fd-1592455b96a1",
+      "restaurant_id": "0692df2a-b8f9-530a-b6c9-8c75938c77f0",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/qpig/kitchen-cuisine-m-m-alam",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "f01183b5-db2a-5d66-a186-5e88a3f40d1b",
+      "restaurant_id": "cfbd6776-f98f-5a73-8132-f4dbb1f86576",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/t2yo/spice-bazaar",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "80f0deb4-c1b5-54a9-98b5-e4b9a43d4a32",
+      "restaurant_id": "cfbd6776-f98f-5a73-8132-f4dbb1f86576",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/t2yo/spice-bazaar",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "9859a307-c043-5049-b4a4-caa6ca5a9d62",
+      "restaurant_id": "cfbd6776-f98f-5a73-8132-f4dbb1f86576",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/t2yo/spice-bazaar",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "bd79b78d-0570-549c-abfa-45a7faecb67c",
+      "restaurant_id": "23df67df-d5a2-51d7-a9b4-92318dbc91eb",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w5hk/arcadian-cafe-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "31bc5dde-e52b-5a7f-a476-7ac81d1e16fe",
+      "restaurant_id": "23df67df-d5a2-51d7-a9b4-92318dbc91eb",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w5hk/arcadian-cafe-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "e32366d0-af6a-5417-8965-400aa546c56d",
+      "restaurant_id": "23df67df-d5a2-51d7-a9b4-92318dbc91eb",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w5hk/arcadian-cafe-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "4b650662-7e78-5f0a-90cf-737bb7958ab8",
+      "restaurant_id": "06a9c88e-412d-55b6-9d45-794861e970fa",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/pb0c/johnny-and-jugnu-emporium",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "787a3e73-de83-509e-bb90-c19aacaf1bd7",
+      "restaurant_id": "06a9c88e-412d-55b6-9d45-794861e970fa",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/pb0c/johnny-and-jugnu-emporium",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "59404240-73b3-5eb1-baa9-8432622a781f",
+      "restaurant_id": "06a9c88e-412d-55b6-9d45-794861e970fa",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/pb0c/johnny-and-jugnu-emporium",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "99335b7e-dcbd-5784-8d57-8f9175e1a5a6",
+      "restaurant_id": "02b91d9c-6bc2-5e1d-aa4b-7b06376f299d",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/d1v9/od-mm-alam-d1v9",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "fb8133d9-1c92-59ae-87d8-3c5c805448b3",
+      "restaurant_id": "02b91d9c-6bc2-5e1d-aa4b-7b06376f299d",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/d1v9/od-mm-alam-d1v9",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "43828804-c283-507c-9cff-52858e680f11",
+      "restaurant_id": "02b91d9c-6bc2-5e1d-aa4b-7b06376f299d",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/d1v9/od-mm-alam-d1v9",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "599c7f29-c436-5e37-a612-609e06cb0e57",
+      "restaurant_id": "80f969dd-5df7-5b8e-848f-a586c3144a31",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s2gf/xanders",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "bb9f98f8-c25b-5a89-83b3-d28406e7e8f0",
+      "restaurant_id": "80f969dd-5df7-5b8e-848f-a586c3144a31",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s2gf/xanders",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "1572a0cf-59c6-5a48-b1ef-019dab5bd947",
+      "restaurant_id": "80f969dd-5df7-5b8e-848f-a586c3144a31",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s2gf/xanders",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "3eda44fb-52c6-5b36-99c9-a530556329fd",
+      "restaurant_id": "af25d00c-4638-5907-9a11-9de7d805f61e",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/v3bp/burger-lab-badar-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "b2c15ba3-64fa-5ad7-8d53-15a650ad1fdd",
+      "restaurant_id": "af25d00c-4638-5907-9a11-9de7d805f61e",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/v3bp/burger-lab-badar-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "be71a4fd-de00-5df8-9761-c5725940aaaa",
+      "restaurant_id": "af25d00c-4638-5907-9a11-9de7d805f61e",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/v3bp/burger-lab-badar-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "367ef33b-aab4-59bf-9b50-699aedcef49e",
+      "restaurant_id": "0b0a9dcb-3700-5028-9e3c-688e0389b8ba",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s7gg/ginsoy-smchs",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "96a3bc6d-a36b-583a-a131-6d31e6d3dc1e",
+      "restaurant_id": "0b0a9dcb-3700-5028-9e3c-688e0389b8ba",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s7gg/ginsoy-smchs",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "5c3d13cc-0a7c-5aa4-a5b6-b4503d0e0713",
+      "restaurant_id": "0b0a9dcb-3700-5028-9e3c-688e0389b8ba",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s7gg/ginsoy-smchs",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "0433c682-a562-5c94-9652-a2155a2cdc98",
+      "restaurant_id": "61467813-d0b5-5e45-bab0-48ba1df69a2a",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s0nz/broadway-pizza-rashid-minhas-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "be6b088f-a963-5116-b811-453d3b67d747",
+      "restaurant_id": "61467813-d0b5-5e45-bab0-48ba1df69a2a",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s0nz/broadway-pizza-rashid-minhas-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "b24e3dc5-1ebf-5f27-bf9c-eb4763b29086",
+      "restaurant_id": "61467813-d0b5-5e45-bab0-48ba1df69a2a",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s0nz/broadway-pizza-rashid-minhas-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "963ac243-88fe-50a3-a128-71c7c20ccd15",
+      "restaurant_id": "d296c5ed-e23a-5191-aeb4-aea044e8fdba",
+      "menu_source_url": "https://www.foodpanda.pk/chain/cv5bv/kababjees-restaurant-cv5bv",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "172ce63d-0d8a-5949-b791-8481e526025e",
+      "restaurant_id": "d296c5ed-e23a-5191-aeb4-aea044e8fdba",
+      "menu_source_url": "https://www.foodpanda.pk/chain/cv5bv/kababjees-restaurant-cv5bv",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "3c51272b-1927-595b-99bb-7cf9c3ecaa4d",
+      "restaurant_id": "d296c5ed-e23a-5191-aeb4-aea044e8fdba",
+      "menu_source_url": "https://www.foodpanda.pk/chain/cv5bv/kababjees-restaurant-cv5bv",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "6879e7d8-443c-5aac-8cf9-fad9a37e9c38",
+      "restaurant_id": "85f74370-fc88-5307-98dc-9069da6faf18",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w0hh/del-frio-smchs-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "02f45639-0738-5757-91df-40de2700f67f",
+      "restaurant_id": "85f74370-fc88-5307-98dc-9069da6faf18",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w0hh/del-frio-smchs-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "6a7be416-c6ed-5bb4-81cc-25361913c220",
+      "restaurant_id": "85f74370-fc88-5307-98dc-9069da6faf18",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w0hh/del-frio-smchs-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "a7911458-cf33-51c0-b139-af8cbe8e1ec5",
+      "restaurant_id": "50ec2855-f66f-5cb5-8d96-a71a89fe7970",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/t0iv/cocochan",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "2910d9f4-7478-575e-ab4f-7efa9e736dfa",
+      "restaurant_id": "50ec2855-f66f-5cb5-8d96-a71a89fe7970",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/t0iv/cocochan",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "0ab27895-b887-50e3-b9de-9b441d766c3f",
+      "restaurant_id": "50ec2855-f66f-5cb5-8d96-a71a89fe7970",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/t0iv/cocochan",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "79866e1a-f7ca-5950-82d2-6bd33eaa3828",
+      "restaurant_id": "61e5c014-7548-5763-b920-ed436948c84e",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s3tj/kfc-i-i-chundrigar-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "abbd9703-8000-52de-98a9-1405263df46f",
+      "restaurant_id": "61e5c014-7548-5763-b920-ed436948c84e",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s3tj/kfc-i-i-chundrigar-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "7a95b14c-3d54-5f1d-8b68-e7f3b7ff3fe4",
+      "restaurant_id": "61e5c014-7548-5763-b920-ed436948c84e",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s3tj/kfc-i-i-chundrigar-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "206383b7-5deb-56dc-958b-2b265836a492",
+      "restaurant_id": "0d8f4a5a-8947-5c1e-ac7e-b1b779b9707c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s4wz/mcdonalds-stadium-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "efab48b1-dffb-5204-82aa-809464b83fb2",
+      "restaurant_id": "0d8f4a5a-8947-5c1e-ac7e-b1b779b9707c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s4wz/mcdonalds-stadium-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "519addaf-dfac-5702-974e-36ec794b5f5e",
+      "restaurant_id": "0d8f4a5a-8947-5c1e-ac7e-b1b779b9707c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s4wz/mcdonalds-stadium-road",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "80979e53-8134-5810-9c4b-a0dc6f132731",
+      "restaurant_id": "238f7ce1-90e0-554c-ac7d-02a9776a69ae",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/yoz5/papa-johns-bukhari",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "7e25fc76-7c68-545b-b31f-869dff9ea028",
+      "restaurant_id": "238f7ce1-90e0-554c-ac7d-02a9776a69ae",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/yoz5/papa-johns-bukhari",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "bb0ef73a-22ed-5764-bcfb-86ea7d59f5bf",
+      "restaurant_id": "238f7ce1-90e0-554c-ac7d-02a9776a69ae",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/yoz5/papa-johns-bukhari",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "1eab545e-42e5-5013-acc1-82bb972021ad",
+      "restaurant_id": "ec98649e-305d-5cd7-8062-83dfa2863d7b",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/wy4q/asian-wok-f-11",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "bd7830ff-a6ad-5015-a18c-2c5cfc0c52b1",
+      "restaurant_id": "ec98649e-305d-5cd7-8062-83dfa2863d7b",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/wy4q/asian-wok-f-11",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "4a4fac51-617a-5790-834c-76cd5749c8da",
+      "restaurant_id": "ec98649e-305d-5cd7-8062-83dfa2863d7b",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/wy4q/asian-wok-f-11",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "0306a0b7-c5a3-5e28-895c-da8dbb4e1d4f",
+      "restaurant_id": "4c6891d3-ff37-502f-9386-da2dd1d0f697",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/d0q9/burning-brownie-f-11",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "098fb4cf-8901-5d51-ab66-7055434655d4",
+      "restaurant_id": "4c6891d3-ff37-502f-9386-da2dd1d0f697",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/d0q9/burning-brownie-f-11",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "1f73dd11-b35a-5f58-883c-004fa6bb08ba",
+      "restaurant_id": "4c6891d3-ff37-502f-9386-da2dd1d0f697",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/d0q9/burning-brownie-f-11",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "95593db1-2f55-5abc-8649-3b382b539b04",
+      "restaurant_id": "241a72a6-4c49-5882-8e20-05a382fea805",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/v2iw/savour-foods-rawalpindi-stadium",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "6101f561-a272-5204-b003-3778ac385c43",
+      "restaurant_id": "241a72a6-4c49-5882-8e20-05a382fea805",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/v2iw/savour-foods-rawalpindi-stadium",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "a616ea7d-e153-5647-8396-ad4d41a20f18",
+      "restaurant_id": "241a72a6-4c49-5882-8e20-05a382fea805",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/v2iw/savour-foods-rawalpindi-stadium",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "38c29b9c-3829-5580-a873-e30d296a3aec",
+      "restaurant_id": "f731ce35-26ea-5056-b56d-048febb0b1ee",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s0ty/ranchers",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "b01ca594-7462-5ec9-a196-00bbb98baf0e",
+      "restaurant_id": "f731ce35-26ea-5056-b56d-048febb0b1ee",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s0ty/ranchers",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "672ee76d-a976-5bb0-a7e7-34aaa8257fa7",
+      "restaurant_id": "f731ce35-26ea-5056-b56d-048febb0b1ee",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/s0ty/ranchers",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "9c1d12d9-6490-53c7-a4f0-8e15e9e7df8c",
+      "restaurant_id": "1968060b-82cd-5f21-a9c7-29821a192408",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/eqms/loafology-blue-area",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "d0819cf0-e2b3-5c40-a076-45ed3fb30e88",
+      "restaurant_id": "1968060b-82cd-5f21-a9c7-29821a192408",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/eqms/loafology-blue-area",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "e88854b6-d4a8-5df8-997d-e41a8428da55",
+      "restaurant_id": "1968060b-82cd-5f21-a9c7-29821a192408",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/eqms/loafology-blue-area",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "09bd9516-b402-5c4a-957c-dcd97e55b14c",
+      "restaurant_id": "6788498c-2e6c-52a5-82f2-8c6a3283da89",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/bjtm/tuscany-courtyard-bjtm",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "276a5c7d-93d2-59a3-ae64-b83f368ca464",
+      "restaurant_id": "6788498c-2e6c-52a5-82f2-8c6a3283da89",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/bjtm/tuscany-courtyard-bjtm",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "6fe94807-9644-5d42-bf24-7c2fa22d3af1",
+      "restaurant_id": "6788498c-2e6c-52a5-82f2-8c6a3283da89",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/bjtm/tuscany-courtyard-bjtm",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "273164c1-8b56-5b2d-8050-6129777d0051",
+      "restaurant_id": "03524962-775b-5893-84d9-05d9f2bd5b23",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/wzqt/wild-wings-i-8-markaz",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "27c53739-e28f-51ba-88e5-cd656ac057e0",
+      "restaurant_id": "03524962-775b-5893-84d9-05d9f2bd5b23",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/wzqt/wild-wings-i-8-markaz",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "03b8012a-bd08-516d-8773-4611eaa66ecf",
+      "restaurant_id": "03524962-775b-5893-84d9-05d9f2bd5b23",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/wzqt/wild-wings-i-8-markaz",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "7fc9ecfc-cf1d-50d9-a808-56e156552819",
+      "restaurant_id": "7eb5a796-d711-5e24-aac9-96cdc82c73af",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w9ms/tandoori-restaurant-f10-odr-w9ms",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "d4f0bde4-1b5c-57b9-920e-32ba6aca5530",
+      "restaurant_id": "7eb5a796-d711-5e24-aac9-96cdc82c73af",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w9ms/tandoori-restaurant-f10-odr-w9ms",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "eccd5d6e-6102-56c7-b648-2952bb5bea6f",
+      "restaurant_id": "7eb5a796-d711-5e24-aac9-96cdc82c73af",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w9ms/tandoori-restaurant-f10-odr-w9ms",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "794789c6-7562-51a7-b51a-5c437c16317f",
+      "restaurant_id": "bd5619b1-2d69-5b1a-9f64-7c8b4255123c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/jnpp/nom-nom-wok-by-tuscany-courtyard-jnpp",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "28f32bef-2f45-545d-8bc3-f29c5b0273b4",
+      "restaurant_id": "bd5619b1-2d69-5b1a-9f64-7c8b4255123c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/jnpp/nom-nom-wok-by-tuscany-courtyard-jnpp",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "3f61986c-e631-51ba-8d4d-5a59d2ccbbd5",
+      "restaurant_id": "bd5619b1-2d69-5b1a-9f64-7c8b4255123c",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/jnpp/nom-nom-wok-by-tuscany-courtyard-jnpp",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "13fac716-e154-5ddf-b7f6-f7c82fb6a332",
+      "restaurant_id": "6cfb9875-b997-5a68-8eba-ba584213f400",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w0xx/chaaye-khana-f-11-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "419d25ef-e54f-5e85-ae61-e083f2985d44",
+      "restaurant_id": "6cfb9875-b997-5a68-8eba-ba584213f400",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w0xx/chaaye-khana-f-11-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    },
+    {
+      "dish_id": "7da7189d-55d9-5b4b-a2fd-828cfdf108d7",
+      "restaurant_id": "6cfb9875-b997-5a68-8eba-ba584213f400",
+      "menu_source_url": "https://www.foodpanda.pk/restaurant/w0xx/chaaye-khana-f-11-odr",
+      "price_verified_at": "2026-08-26T00:00:00+05:00",
+      "price_type": "regular",
+      "notes": "Fixed visible price, or original regular price where the listing displayed a platform discount. Taste fields are editorial estimates."
+    }
+  ],
+  "failed_candidates": [
+    {
+      "candidate": "Cheezious",
+      "region": "Islamabad/Rawalpindi",
+      "reason": "Search results mixed the official brand with similarly named independent pizzerias; replaced to avoid misattribution."
+    },
+    {
+      "candidate": "Tehzeeb Bakers",
+      "region": "Islamabad/Rawalpindi",
+      "reason": "No current branch menu with three unambiguous fixed prices was found in the reviewed results."
+    },
+    {
+      "candidate": "Nando's",
+      "region": "Karachi",
+      "reason": "No usable current branch listing with three fixed prices appeared in the reviewed results."
+    },
+    {
+      "candidate": "Hot & Grill",
+      "region": "Rawalpindi",
+      "reason": "Menu was dominated by temporary discounts and did not meet the preferred regular-price evidence rule."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaska.example/contracts/v1/dish-vector.schema.json",
+  "title": "Dish vector v1",
+  "type": "object",
+  "required": ["id", "vector"],
+  "properties": {
+    "id": {"type": "string", "format": "uuid"},
+    "vector": {
+      "type": "array",
+      "items": {"type": "number"},
+      "minItems": 384,
+      "maxItems": 384
+    }
+  },
+  "additionalProperties": false
+}
