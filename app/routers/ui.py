@@ -33,18 +33,18 @@ HERO_DISHES = [
 ]
 
 DISH_TILES = [
-    {"klass": "", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken10.jpg", "name": "Nihari", "picked": True},
-    {"klass": "k1", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken15.jpg", "name": "Karahi", "picked": True},
-    {"klass": "k2", "img": "https://foodish-api.com/images/biryani/biryani7.jpg", "name": "Biryani", "picked": False},
-    {"klass": "k4", "img": "https://foodish-api.com/images/pasta/pasta20.jpg", "name": "Chow mein", "picked": True},
-    {"klass": "k3", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken22.jpg", "name": "Palak paneer", "picked": False},
-    {"klass": "k4", "img": "https://foodish-api.com/images/samosa/samosa3.jpg", "name": "Seekh kebab", "picked": True},
-    {"klass": "", "img": "https://foodish-api.com/images/pizza/pizza4.jpg", "name": "Pizza", "picked": False},
-    {"klass": "k2", "img": "https://foodish-api.com/images/rice/rice8.jpg", "name": "Daal chawal", "picked": False},
-    {"klass": "", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken30.jpg", "name": "Haleem", "picked": True},
-    {"klass": "", "img": "https://foodish-api.com/images/pasta/pasta5.jpg", "name": "Pasta", "picked": False},
-    {"klass": "k4", "img": "https://foodish-api.com/images/samosa/samosa8.jpg", "name": "Samosa", "picked": False},
-    {"klass": "", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken18.jpg", "name": "Paya", "picked": False},
+    {"klass": "", "img": "/static/dishes/curry-rice.jpg", "name": "Nihari", "picked": True},
+    {"klass": "k1", "img": "/static/dishes/karahi.jpg", "name": "Karahi", "picked": True},
+    {"klass": "k2", "img": "/static/dishes/biryani.jpg", "name": "Biryani", "picked": False},
+    {"klass": "k4", "img": "/static/dishes/chowmein.jpg", "name": "Chow mein", "picked": True},
+    {"klass": "k3", "img": "/static/dishes/chicken-curry.jpg", "name": "Palak paneer", "picked": False},
+    {"klass": "k4", "img": "/static/dishes/tikka.jpg", "name": "Seekh kebab", "picked": True},
+    {"klass": "", "img": "/static/dishes/pizza.jpg", "name": "Pizza", "picked": False},
+    {"klass": "k2", "img": "/static/dishes/thali.jpg", "name": "Daal chawal", "picked": False},
+    {"klass": "", "img": "/static/dishes/curry-rice.jpg", "name": "Haleem", "picked": True},
+    {"klass": "", "img": "/static/dishes/pasta.jpg", "name": "Pasta", "picked": False},
+    {"klass": "k4", "img": "/static/dishes/samosa.jpg", "name": "Samosa", "picked": False},
+    {"klass": "", "img": "/static/dishes/karahi.jpg", "name": "Paya", "picked": False},
 ]
 
 HERO_PICK = {
