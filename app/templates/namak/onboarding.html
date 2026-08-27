@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <div class="pref-pair mb-18">
+  <div class="pref-trio mb-18">
     <div class="pref-card">
       <div class="pref-card-head">
         <span class="pref-icon">🌍</span>
@@ -54,9 +54,7 @@
         {% endfor %}
       </div>
     </div>
-  </div>
 
-  <div class="pref-pair mb-18">
     <div class="pref-card">
       <div class="pref-card-head">
         <span class="pref-icon">🥗</span>
@@ -66,18 +64,6 @@
         {% for d in dietary %}
         <span class="chip-choice" data-value="{{ d }}" onclick="toggleChoice(this)">{{ d }}</span>
         {% endfor %}
-      </div>
-    </div>
-
-    <div class="pref-card">
-      <div class="pref-card-head">
-        <span class="pref-icon">💰</span>
-        <div class="pref-title">Per-meal budget (PKR)</div>
-      </div>
-      <div class="budget-row">
-        <input type="number" id="budgetMin" class="feed-input" min="0" step="50" value="300" placeholder="Min">
-        <span style="color:var(--stone);">–</span>
-        <input type="number" id="budgetMax" class="feed-input" min="0" step="50" value="2000" placeholder="Max">
       </div>
     </div>
   </div>
@@ -102,18 +88,32 @@
     {% endfor %}
   </div>
 
-  <div class="pref-card">
-    <div class="pref-card-head">
-      <span class="pref-icon">⚠️</span>
-      <div class="pref-title">Allergies &amp; dislikes</div>
+  <div class="pref-pair">
+    <div class="pref-card">
+      <div class="pref-card-head">
+        <span class="pref-icon">💰</span>
+        <div class="pref-title">Per-meal budget (PKR)</div>
+      </div>
+      <div class="budget-row">
+        <input type="number" id="budgetMin" class="feed-input" min="0" step="50" value="300" placeholder="Min">
+        <span style="color:var(--stone);">–</span>
+        <input type="number" id="budgetMax" class="feed-input" min="0" step="50" value="2000" placeholder="Max">
+      </div>
     </div>
-    <div class="field-section" style="margin-top:4px;">
-      <span class="field-label">Allergies</span>
-      <input type="text" id="allergiesInput" class="feed-input" placeholder="e.g. peanuts, shellfish (optional)">
-    </div>
-    <div class="field-section">
-      <span class="field-label">Ingredients you dislike</span>
-      <input type="text" id="dislikedInput" class="feed-input" placeholder="e.g. cilantro, mushroom (optional)">
+
+    <div class="pref-card">
+      <div class="pref-card-head">
+        <span class="pref-icon">⚠️</span>
+        <div class="pref-title">Allergies &amp; dislikes</div>
+      </div>
+      <div class="field-section" style="margin-top:4px;">
+        <span class="field-label">Allergies</span>
+        <input type="text" id="allergiesInput" class="feed-input" placeholder="e.g. peanuts, shellfish (optional)">
+      </div>
+      <div class="field-section">
+        <span class="field-label">Ingredients you dislike</span>
+        <input type="text" id="dislikedInput" class="feed-input" placeholder="e.g. cilantro, mushroom (optional)">
+      </div>
     </div>
   </div>
 
