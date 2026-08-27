@@ -30,39 +30,55 @@
     </div>
   </div>
 
-  <div class="pref-card">
-    <div class="pref-card-head">
-      <span class="pref-icon">🌍</span>
-      <div class="pref-title">Cuisines you enjoy</div>
+  <div class="pref-pair mb-18">
+    <div class="pref-card">
+      <div class="pref-card-head">
+        <span class="pref-icon">🌍</span>
+        <div class="pref-title">Cuisines you enjoy</div>
+      </div>
+      <div id="cuisineChoices">
+        {% for c in cuisines %}
+        <span class="chip-choice" data-value="{{ c }}" onclick="toggleChoice(this)">{{ c }}</span>
+        {% endfor %}
+      </div>
     </div>
-    <div id="cuisineChoices">
-      {% for c in cuisines %}
-      <span class="chip-choice" data-value="{{ c }}" onclick="toggleChoice(this)">{{ c }}</span>
-      {% endfor %}
+
+    <div class="pref-card">
+      <div class="pref-card-head">
+        <span class="pref-icon">✨</span>
+        <div class="pref-title">Preferred textures</div>
+      </div>
+      <div id="textureChoices">
+        {% for t in textures %}
+        <span class="chip-choice" data-value="{{ t }}" onclick="toggleChoice(this)">{{ t }}</span>
+        {% endfor %}
+      </div>
     </div>
   </div>
 
-  <div class="pref-card">
-    <div class="pref-card-head">
-      <span class="pref-icon">✨</span>
-      <div class="pref-title">Preferred textures</div>
+  <div class="pref-pair mb-18">
+    <div class="pref-card">
+      <div class="pref-card-head">
+        <span class="pref-icon">🥗</span>
+        <div class="pref-title">Dietary requirements</div>
+      </div>
+      <div id="dietaryChoices">
+        {% for d in dietary %}
+        <span class="chip-choice" data-value="{{ d }}" onclick="toggleChoice(this)">{{ d }}</span>
+        {% endfor %}
+      </div>
     </div>
-    <div id="textureChoices">
-      {% for t in textures %}
-      <span class="chip-choice" data-value="{{ t }}" onclick="toggleChoice(this)">{{ t }}</span>
-      {% endfor %}
-    </div>
-  </div>
 
-  <div class="pref-card">
-    <div class="pref-card-head">
-      <span class="pref-icon">🥗</span>
-      <div class="pref-title">Dietary requirements</div>
-    </div>
-    <div id="dietaryChoices">
-      {% for d in dietary %}
-      <span class="chip-choice" data-value="{{ d }}" onclick="toggleChoice(this)">{{ d }}</span>
-      {% endfor %}
+    <div class="pref-card">
+      <div class="pref-card-head">
+        <span class="pref-icon">💰</span>
+        <div class="pref-title">Per-meal budget (PKR)</div>
+      </div>
+      <div class="budget-row">
+        <input type="number" id="budgetMin" class="feed-input" min="0" step="50" value="300" placeholder="Min">
+        <span style="color:var(--stone);">–</span>
+        <input type="number" id="budgetMax" class="feed-input" min="0" step="50" value="2000" placeholder="Max">
+      </div>
     </div>
   </div>
 
@@ -84,18 +100,6 @@
       <output id="{{ id }}Out">moderate</output>
     </div>
     {% endfor %}
-  </div>
-
-  <div class="pref-card">
-    <div class="pref-card-head">
-      <span class="pref-icon">💰</span>
-      <div class="pref-title">Per-meal budget (PKR)</div>
-    </div>
-    <div class="budget-row">
-      <input type="number" id="budgetMin" class="feed-input" min="0" step="50" value="300" placeholder="Min">
-      <span style="color:var(--stone);">–</span>
-      <input type="number" id="budgetMax" class="feed-input" min="0" step="50" value="2000" placeholder="Max">
-    </div>
   </div>
 
   <div class="pref-card">
