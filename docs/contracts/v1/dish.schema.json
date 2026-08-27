@@ -3,7 +3,7 @@
   "$id": "https://chaska.example/contracts/v1/dish.schema.json",
   "title": "Dish v1",
   "type": "object",
-  "required": ["id", "restaurant_id", "name", "description", "cuisine", "ingredients", "price", "spice_level", "oiliness", "sweetness", "sourness", "saltiness", "smokiness", "richness", "texture_tags", "dietary_tags", "allergens", "preparation_style", "availability", "lat", "lng", "created_at", "updated_at"],
+  "required": ["id", "restaurant_id", "name", "description", "cuisine", "ingredients", "price", "spice_level", "oiliness", "sweetness", "sourness", "saltiness", "smokiness", "richness", "texture_tags", "dietary_tags", "allergens", "preparation_style", "availability", "image_path", "archived_at", "embedding_updated_at", "lat", "lng", "created_at", "updated_at"],
   "properties": {
     "id": {"type": "string", "format": "uuid"},
     "restaurant_id": {"type": "string", "format": "uuid"},
@@ -24,6 +24,9 @@
     "allergens": {"type": "array", "items": {"type": "string"}},
     "preparation_style": {"type": "string"},
     "availability": {"type": "boolean"},
+    "image_path": {"type": ["string", "null"], "pattern": "^/static/images/[^.][^/]*$"},
+    "archived_at": {"type": ["string", "null"], "format": "date-time"},
+    "embedding_updated_at": {"type": ["string", "null"], "format": "date-time"},
     "vector": {"type": "array", "items": {"type": "number"}, "minItems": 384, "maxItems": 384},
     "lat": {"type": ["number", "null"], "minimum": -90, "maximum": 90},
     "lng": {"type": ["number", "null"], "minimum": -180, "maximum": 180},

@@ -1,4 +1,5 @@
 import uuid
+from datetime import UTC, datetime
 
 from app.models.user import User
 from app.repositories.ranking import RankingRepository
@@ -12,15 +13,35 @@ class RankingFeedService:
     def __init__(self, repository: RankingRepository) -> None:
         self.repository = repository
 
+    @staticmethod
+    def _effective_preferences(user: User, requested: FeedPreferences) -> FeedPreferences:
+        updates = {}
+        supplied = requested.model_fields_set
+        defaults = {
+            "budget_min": float(user.budget_min),
+            "budget_max": float(user.budget_max),
+            "dietary_restrictions": user.dietary_requirements,
+            "allergies": user.allergies,
+            "disliked_ingredients": user.disliked_ingredients,
+            "require_halal": user.require_halal,
+            "taste_vector": list(user.taste_vector) if user.taste_vector is not None else None,
+        }
+        for field, value in defaults.items():
+            if field not in supplied:
+                updates[field] = value
+        return requested.model_copy(update=updates)
+
     def get_ranked_feed(self, user_id: uuid.UUID, preferences: FeedPreferences) -> FeedResponse:
-        if self.repository.session.get(User, user_id) is None:
+        user = self.repository.session.get(User, user_id)
+        if user is None:
             raise NotFoundError("user", user_id)
-        candidates = filter_candidates(self.repository.list_candidates(), preferences)
+        effective = self._effective_preferences(user, preferences)
+        candidates = filter_candidates(self.repository.list_candidates(user_id), effective)
         maximum_interactions = max(
             (candidate.interaction_count for candidate in candidates), default=0
         )
         scored = [
-            score_candidate(candidate, preferences, maximum_interactions=maximum_interactions)
+            score_candidate(candidate, effective, user, maximum_interactions=maximum_interactions)
             for candidate in candidates
         ]
         scored.sort(
@@ -30,25 +51,82 @@ class RankingFeedService:
                 str(item.candidate.dish.id),
             )
         )
-        selected = scored[: preferences.limit]
+        selected = scored[effective.offset : effective.offset + effective.limit]
         neutral_signals = sorted(
             set().union(*(item.neutral_signals for item in selected)) if selected else set()
         )
+        now = datetime.now(UTC)
+        items = []
+        for item in selected:
+            dish = item.candidate.dish
+            restaurant = dish.restaurant
+            strongest = max(
+                (
+                    (name, value)
+                    for name, value in item.signals.model_dump().items()
+                    if name not in item.neutral_signals
+                ),
+                key=lambda pair: pair[1],
+                default=None,
+            )
+            explanation = (
+                f"Strongest available match: {strongest[0].replace('_', ' ')}."
+                if strongest
+                else "Available ranking signals are neutral for this dish."
+            )
+            if item.candidate.collaborative_explanation:
+                explanation = f"Taste-profile match: {explanation}"
+            review_insight = (
+                f"Average review sentiment {item.candidate.review_sentiment:+.2f}."
+                if item.candidate.review_sentiment is not None
+                else (
+                    f"Average reviewer rating {item.candidate.review_average:.1f}/5."
+                    if item.candidate.review_average is not None
+                    else None
+                )
+            )
+            active_deals = [
+                deal.title
+                for deal in restaurant.deals
+                if deal.is_active and deal.starts_at <= now <= deal.ends_at
+            ]
+            items.append(
+                RankedDishItem(
+                    dish_id=dish.id,
+                    dish_name=dish.name,
+                    restaurant_id=dish.restaurant_id,
+                    restaurant_name=restaurant.name,
+                    cuisine=dish.cuisine,
+                    description=dish.description,
+                    price=float(dish.price),
+                    match_percentage=round(item.total_score),
+                    distance_km=item.distance_km,
+                    halal_status=restaurant.halal_status,
+                    availability=dish.availability,
+                    dietary_tags=dish.dietary_tags,
+                    texture_tags=dish.texture_tags,
+                    taste_explanation=explanation,
+                    review_insight=review_insight,
+                    active_deals=active_deals,
+                    saved=item.candidate.saved,
+                    signals=item.signals,
+                    collaborative_score=item.candidate.collaborative_score,
+                    collaborative_explanation=item.candidate.collaborative_explanation,
+                    collaborative_reviewer_name=item.candidate.collaborative_reviewer_name,
+                    collaborative_review_excerpt=item.candidate.collaborative_review_excerpt,
+                    collaborative_review_rating=item.candidate.collaborative_review_rating,
+                )
+            )
+        collaborative_available = any(item.collaborative_score is not None for item in items)
         return FeedResponse(
             user_id=user_id,
             total_candidates=len(candidates),
             neutral_signals=neutral_signals,
-            items=[
-                RankedDishItem(
-                    dish_id=item.candidate.dish.id,
-                    dish_name=item.candidate.dish.name,
-                    restaurant_id=item.candidate.dish.restaurant_id,
-                    restaurant_name=item.candidate.dish.restaurant.name,
-                    price=float(item.candidate.dish.price),
-                    match_percentage=round(item.total_score),
-                    distance_km=item.distance_km,
-                    signals=item.signals,
-                )
-                for item in selected
-            ],
+            collaborative_available=collaborative_available,
+            similar_user_count=max(
+                (item.candidate.similar_user_count for item in selected), default=0
+            ),
+            items=items,
+            limit=effective.limit,
+            offset=effective.offset,
         )

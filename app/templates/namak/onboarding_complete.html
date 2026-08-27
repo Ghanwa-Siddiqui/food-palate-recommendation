@@ -1,0 +1,14 @@
+{% extends "namak/base.html" %}
+{% block title %}Your taste is ready — namak{% endblock %}
+{% block body %}
+<main class="quiz-shell completion-shell">
+  <section class="completion-card" role="status">
+    {% set image=context_image('completion') %}<img class="completion-image" src="{{ image.src }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}" fetchpriority="high">
+    <div class="completion-mark" aria-hidden="true">✓</div>
+    <p class="overline">Taste profile complete</p>
+    <h1>Your food personality is ready.</h1>
+    <p>We saved your preferences and built your personal taste vector. You can fine-tune everything later from Profile.</p>
+    <a class="btn btn-p" href="/app/feed?welcome=1">Show me my feed →</a>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "namak/base.html" %}
+{% block title %}Your taste · Step {{ step }} — namak{% endblock %}
+{% block head %}<script defer src="/static/preferences.js"></script>{% endblock %}
+{% block body %}
+<main class="quiz-shell" data-quiz-root>
+  <header class="quiz-header">
+    <a class="brand" href="/">namak<span>.</span></a>
+    <div><span class="quiz-kicker">Your food personality</span><strong>Step {{ step }} of 5</strong></div>
+  </header>
+  <ol class="quiz-progress" aria-label="Onboarding progress">
+    {% for label in ['Place','Foods','Flavour','Needs','Review'] %}
+    <li class="{% if loop.index < step %}is-complete{% elif loop.index == step %}is-current{% endif %}" {% if loop.index == step %}aria-current="step"{% endif %}>
+      <span>{{ loop.index }}</span><small>{{ label }}</small>
+    </li>
+    {% endfor %}
+  </ol>
+  <div class="quiz-layout">
+    <form method="post" class="quiz-card preference-form" data-preference-form>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      {% if error %}<div class="quiz-error" role="alert">{{ error }}</div>{% endif %}
+
+      {% if step == 1 %}
+      <section aria-labelledby="step-title">
+        <p class="overline">Start close to home</p><h1 id="step-title">Where should we look?</h1>
+        <p class="quiz-lede">Tell us your city, then choose every cuisine that makes you hungry.</p>
+        <label class="quiz-field" for="city">Your city
+          <input id="city" name="city" value="{{ draft.get('city','') }}" autocomplete="address-level2" required aria-describedby="city-help">
+          <small id="city-help">We use this to keep recommendations locally relevant.</small>
+        </label>
+        <fieldset class="quiz-group"><legend>Cuisines you crave</legend><p>Choose all that make you hungry.</p>
+          <div class="cuisine-grid">
+          {% for item in cuisines %}{% set image=cuisine_image(item) %}<label class="select-card"><input type="checkbox" name="preferred_cuisines" value="{{ item }}" {% if item in draft.get('preferred_cuisines',[]) %}checked{% endif %}><span class="select-card-body image-choice"><img src="{{ image.src }}" alt="" width="{{ image.width }}" height="{{ image.height }}" loading="lazy"><span>{{ item }}</span><b aria-hidden="true">✓</b></span></label>{% endfor %}
+          </div>
+        </fieldset>
+      </section>
+      {% elif step == 2 %}
+      <section aria-labelledby="step-title">
+        <p class="overline">The dishes you dream about</p><h1 id="step-title">Name your favourites</h1>
+        <p class="quiz-lede">Add at least three. Type a dish and press Enter or comma.</p>
+        <div class="tag-editor" data-tag-editor data-name="favourite_dishes">
+          <label for="favourite-input">Favourite dishes</label><div class="tag-list" data-tag-list></div>
+          <input id="favourite-input" name="favourite_dishes_text" value="{{ draft.get('favourite_dishes',[])|join(', ') }}" placeholder="Try chicken karahi…" autocomplete="off" aria-describedby="favourite-help">
+          <small id="favourite-help">Your choices help shape your personal taste vector.</small>
+        </div>
+        <fieldset class="quiz-group"><legend>Quick picks</legend><div class="choice-row">
+          {% for item in favourites %}{% set image=dish_image(item,'') %}<label class="choice visual-choice"><input type="checkbox" name="favourite_dishes_suggestions" value="{{ item }}" {% if item in draft.get('favourite_dishes',[]) %}checked{% endif %}><span><img src="{{ image.src }}" alt="" width="{{ image.width }}" height="{{ image.height }}" loading="lazy">{{ item }} <b aria-hidden="true">✓</b></span></label>{% endfor %}
+        </div></fieldset>
+      </section>
+      {% elif step == 3 %}
+      <section aria-labelledby="step-title">
+        <p class="overline">Turn up the flavour</p><h1 id="step-title">Meet your taste personality</h1>
+        <p class="quiz-lede">There are no wrong answers—set each flavour from 0 to 5.</p>
+        <div class="taste-grid">
+        {% for name,label,icon in [('spice_preference','Spice','♨'),('sweetness_preference','Sweetness','◇'),('sourness_preference','Sourness','◒'),('saltiness_preference','Saltiness','◈'),('oiliness_preference','Oiliness','●'),('richness_preference','Richness','✦')] %}
+          {% set value = draft.get(name,2) %}{% set image=context_image(name|replace('_preference','')) %}<label class="taste-card" for="{{ name }}"><img class="taste-thumb" src="{{ image.src }}" alt="" width="{{ image.width }}" height="{{ image.height }}" loading="lazy"><span class="taste-title"><i aria-hidden="true">{{ icon }}</i>{{ label }}<output for="{{ name }}" data-range-output>{{ value }}</output></span><input id="{{ name }}" name="{{ name }}" type="range" min="0" max="5" step="1" value="{{ value }}" data-taste-range data-kind="{{ 'spice' if name == 'spice_preference' else 'taste' }}"><small data-range-copy>Balanced</small></label>
+        {% endfor %}
+        </div>
+      </section>
+      {% elif step == 4 %}
+      <section aria-labelledby="step-title">
+        <p class="overline">Comfort, crunch & care</p><h1 id="step-title">How should food feel?</h1>
+        <p class="quiz-lede">Pick textures you love and tell us what your meals need to respect.</p>
+        <fieldset class="quiz-group context-group"><legend><img src="/static/images/texture-context.svg" alt=""> Favourite textures</legend><div class="choice-row">
+          {% for item in textures %}{% set image=context_image(item) %}<label class="choice visual-choice compact-visual"><input type="checkbox" name="preferred_textures" value="{{ item }}" {% if item in draft.get('preferred_textures',[]) %}checked{% endif %}><span><img src="{{ image.src }}" alt="" width="{{ image.width }}" height="{{ image.height }}" loading="lazy">{{ item|title }} <b aria-hidden="true">✓</b></span></label>{% endfor %}
+        </div></fieldset>
+        <fieldset class="quiz-group context-group"><legend><img src="/static/images/dietary-context.svg" alt=""> Dietary needs</legend><div class="choice-row dietary-choices">
+          {% for item in dietary %}<label class="choice"><input type="checkbox" name="dietary_requirements" value="{{ item }}" {% if item in draft.get('dietary_requirements',[]) %}checked{% endif %}><span>{{ item|replace('-',' ')|title }} <b aria-hidden="true">✓</b></span></label>{% endfor %}
+        </div></fieldset>
+        <div class="safety-grid">
+          <div class="tag-editor warning-soft" data-tag-editor data-name="allergies"><label for="allergy-input">Allergies</label><div class="tag-list" data-tag-list></div><input id="allergy-input" name="allergies_text" value="{{ draft.get('allergies',[])|join(', ') }}" placeholder="Type and press Enter or comma"><div class="tag-suggestions" aria-label="Common allergy suggestions">{% for item in ['Peanuts','Tree nuts','Dairy','Eggs','Shellfish','Gluten'] %}<button type="button" data-tag-suggestion="{{ item }}">+ {{ item }}</button>{% endfor %}</div><small>Please still confirm ingredients directly with the restaurant.</small></div>
+          <div class="tag-editor avoid-card" data-tag-editor data-name="disliked_ingredients"><label for="disliked-input">Ingredients you avoid</label><div class="tag-list" data-tag-list></div><input id="disliked-input" name="disliked_ingredients_text" value="{{ draft.get('disliked_ingredients',[])|join(', ') }}" placeholder="Type and press Enter or comma"><div class="tag-suggestions" aria-label="Common ingredient suggestions">{% for item in ['Olives','Coriander','Mushrooms','Onions'] %}<button type="button" data-tag-suggestion="{{ item }}">+ {{ item }}</button>{% endfor %}</div><small>This shapes recommendations; it is not treated as an allergy.</small></div>
+        </div>
+        <label class="halal-card"><input type="checkbox" name="require_halal" value="true" {% if draft.get('require_halal') %}checked{% endif %}><span><b>Prioritise halal restaurants</b><small>We only treat halal status as known when the restaurant data supports it; unknown listings are never presented as verified.</small></span></label>
+      </section>
+      {% else %}
+      <section aria-labelledby="step-title" data-budget-group>
+        <p class="overline">One final seasoning</p><h1 id="step-title">Set your everyday budget</h1>
+        <p class="quiz-lede">This is your preferred regular price per dish, not a total meal bill.</p>
+        {% set budget_image=context_image('budget') %}<img class="section-banner" src="{{ budget_image.src }}" alt="{{ budget_image.alt }}" width="{{ budget_image.width }}" height="{{ budget_image.height }}" loading="lazy"><div class="budget-grid">
+          <label class="quiz-field" for="budget-min">Minimum per dish <span data-money-for="budget-min"></span><input id="budget-min" name="budget_min" type="number" min="0" step="50" value="{{ draft.get('budget_min',0)|int }}" required></label>
+          <label class="quiz-field" for="budget-max">Maximum per dish <span data-money-for="budget-max"></span><input id="budget-max" name="budget_max" type="number" min="1" step="50" value="{{ draft.get('budget_max',1500)|int }}" required></label>
+        </div><p class="budget-error" data-budget-error role="alert"></p>
+        <div class="review-card"><h2>Your taste, in a nutshell</h2><dl>
+          <div><dt>City</dt><dd>{{ draft.get('city','Not chosen') }}</dd></div><div><dt>Cuisines</dt><dd>{{ draft.get('preferred_cuisines',[])|join(', ') or 'None yet' }}</dd></div><div><dt>Favourite foods</dt><dd>{{ draft.get('favourite_dishes',[])|join(', ') or 'None yet' }}</dd></div><div><dt>Textures</dt><dd>{{ draft.get('preferred_textures',[])|join(', ') or 'Open to anything' }}</dd></div><div><dt>Halal preference</dt><dd>{{ 'Prioritised' if draft.get('require_halal') else 'No filter' }}</dd></div>
+        </dl><p>You can tune every answer later from Profile.</p></div>
+      </section>
+      {% endif %}
+      <footer class="quiz-actions">
+        {% if step > 1 %}<button class="btn btn-o" type="submit" name="direction" value="back">← Back</button>{% else %}<span></span>{% endif %}
+        <button class="btn btn-p" type="submit" data-submit-button>{% if step == 5 %}Build my taste profile{% else %}Continue →{% endif %}</button>
+      </footer>
+    </form>
+    {% set side_image=context_image('welcome' if step < 5 else 'completion') %}<aside class="taste-summary" aria-label="Your taste so far"><img class="summary-image" src="{{ side_image.src }}" alt="" width="{{ side_image.width }}" height="{{ side_image.height }}" loading="lazy"><span aria-hidden="true">✦</span><h2>Your taste so far</h2><p>{{ draft.get('city','Pick a city to begin') }}</p><div class="summary-chips">{% for item in draft.get('preferred_cuisines',[])[:3] %}<span>{{ item }}</span>{% endfor %}{% for item in draft.get('favourite_dishes',[])[:3] %}<span>{{ item }}</span>{% endfor %}</div><small>Each answer makes your recommendations feel more like you.</small></aside>
+  </div>
+</main>
+{% endblock %}

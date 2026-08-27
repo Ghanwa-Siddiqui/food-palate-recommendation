@@ -4,6 +4,7 @@ Ganva owns dishes; this module just consumes the JSON they publish. Day 1 it
 reads data/mock_dishes.json (our own fixtures); Day 2 it will point at
 Ganva's real seed file or the /dishes API.
 """
+
 from __future__ import annotations
 
 import json

@@ -6,6 +6,7 @@ only context we can honestly derive from what this module owns is *when*
 a user tends to interact — useful as a tiebreaker/boost in the ranking
 engine, not a hard filter.
 """
+
 from __future__ import annotations
 
 from collections import Counter
@@ -46,7 +47,9 @@ def period_preferences(interactions: list[Interaction]) -> dict[str, float]:
     return {period: round(count / total, 3) for period, count in counts.items()}
 
 
-def context_signal(interactions: list[Interaction], now: datetime | None = None) -> dict:
+def context_signal(
+    interactions: list[Interaction], now: datetime | None = None
+) -> dict:
     prefs = period_preferences(interactions)
     now_period = current_period(now)
     preferred = max(prefs, key=prefs.get) if prefs else None

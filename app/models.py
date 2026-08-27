@@ -6,13 +6,13 @@ Manahil's onboarding and personalization module") field-for-field, so the
 Personalization Engine's public surface validates against that schema.
 Interaction mirrors interaction.schema.json.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
-
 
 InteractionAction = Literal["click", "save", "order"]
 
@@ -23,23 +23,38 @@ TASTE_LEVEL_MAX = 5
 
 
 class OnboardingAnswers(BaseModel):
-    preferred_cuisines: list[str] = Field(default_factory=list, description="e.g. ['Pakistani','Italian']")
-    favourite_dishes: list[str] = Field(default_factory=list, description="Free-text favorite dishes")
+    city: str | None = None
+    preferred_cuisines: list[str] = Field(
+        default_factory=list, description="e.g. ['Pakistani','Italian']"
+    )
+    favourite_dishes: list[str] = Field(
+        default_factory=list, description="Free-text favorite dishes"
+    )
     spice_preference: int = Field(default=2, ge=TASTE_LEVEL_MIN, le=TASTE_LEVEL_MAX)
     sweetness_preference: int = Field(default=2, ge=TASTE_LEVEL_MIN, le=TASTE_LEVEL_MAX)
     sourness_preference: int = Field(default=2, ge=TASTE_LEVEL_MIN, le=TASTE_LEVEL_MAX)
     saltiness_preference: int = Field(default=2, ge=TASTE_LEVEL_MIN, le=TASTE_LEVEL_MAX)
     oiliness_preference: int = Field(default=2, ge=TASTE_LEVEL_MIN, le=TASTE_LEVEL_MAX)
-    preferred_textures: list[str] = Field(default_factory=list, description="e.g. ['crispy','tender']")
+    richness_preference: int = Field(default=2, ge=TASTE_LEVEL_MIN, le=TASTE_LEVEL_MAX)
+    preferred_textures: list[str] = Field(
+        default_factory=list, description="e.g. ['crispy','tender']"
+    )
     budget_min: float = Field(default=0, ge=0)
     budget_max: float = Field(default=1500, ge=0)
-    dietary_requirements: list[str] = Field(default_factory=list, description="e.g. ['halal','vegetarian']")
+    dietary_requirements: list[str] = Field(
+        default_factory=list, description="e.g. ['halal','vegetarian']"
+    )
     allergies: list[str] = Field(default_factory=list)
     disliked_ingredients: list[str] = Field(default_factory=list)
+    require_halal: bool = False
 
     @field_validator(
-        "preferred_cuisines", "favourite_dishes", "preferred_textures",
-        "dietary_requirements", "allergies", "disliked_ingredients",
+        "preferred_cuisines",
+        "favourite_dishes",
+        "preferred_textures",
+        "dietary_requirements",
+        "allergies",
+        "disliked_ingredients",
         mode="before",
     )
     @classmethod
@@ -66,6 +81,7 @@ class UserTaste(BaseModel):
     sourness_preference: int
     saltiness_preference: int
     oiliness_preference: int
+    richness_preference: int = 2
     preferred_textures: list[str]
     budget_min: float
     budget_max: float
@@ -74,6 +90,8 @@ class UserTaste(BaseModel):
     disliked_ingredients: list[str]
     taste_vector: list[float]
     last_updated: datetime
+    city: str | None = None
+    require_halal: bool = False
 
 
 class Interaction(BaseModel):

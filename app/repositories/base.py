@@ -3,6 +3,7 @@
 Any concrete backend (JSON on disk, Supabase Postgres, etc.) implements this
 so the rest of the app never touches storage details directly.
 """
+
 from __future__ import annotations
 
 from typing import Protocol

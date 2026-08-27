@@ -1,7 +1,8 @@
+import uuid
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime, Numeric, String, Text
+from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime, ForeignKey, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -25,6 +26,9 @@ class Restaurant(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
 
     name: Mapped[str] = mapped_column(String(180), nullable=False, index=True)
+    owner_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"), nullable=True, index=True
+    )
     description: Mapped[str | None] = mapped_column(Text)
     cuisine_types: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
     address: Mapped[str] = mapped_column(String(300), nullable=False)
@@ -36,5 +40,13 @@ class Restaurant(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     coordinates_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     price_range: Mapped[str] = mapped_column(String(20), nullable=False)
     halal_status: Mapped[str] = mapped_column(String(30), index=True, nullable=False)
+    halal_verification_status: Mapped[str] = mapped_column(
+        String(30), default="unverified", nullable=False
+    )
+    contact_phone: Mapped[str | None] = mapped_column(String(40))
+    opening_information: Mapped[str | None] = mapped_column(String(500))
+    available: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    image_path: Mapped[str | None] = mapped_column(String(300))
+    owner = relationship("User", back_populates="owned_restaurants")
     dishes = relationship("Dish", back_populates="restaurant", cascade="all, delete-orphan")
     deals = relationship("Deal", back_populates="restaurant", cascade="all, delete-orphan")

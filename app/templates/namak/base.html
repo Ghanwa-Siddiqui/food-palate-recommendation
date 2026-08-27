@@ -4,35 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}namak{% endblock %}</title>
-  <meta name="description" content="{% block description %}Taste-driven restaurant discovery — matched to what you actually love, not a star average.{% endblock %}">
-  <meta name="theme-color" content="#F4EDE0">
-  <meta property="og:site_name" content="namak">
-  <meta property="og:title" content="{% block og_title %}namak — restaurants that fit your taste{% endblock %}">
-  <meta property="og:description" content="{% block og_description %}Tell us five dishes you love. We match you to restaurants no rating average could.{% endblock %}">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23E8A93A'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' font-weight='600' text-anchor='middle' fill='%231C1917'%3En%3C/text%3E%3C/svg%3E">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/namak.css">
   {% block head %}{% endblock %}
 </head>
 <body>
 {% block body %}{% endblock %}
-<script>
-  // Generic toggle affordance for action buttons that don't yet have a
-  // backend behind them (Follow, Been there, Want to try, Save to list,
-  // Share, Compare taste). Real, immediate client-side feedback rather
-  // than a dead click that looks broken — but honest: it's a local toggle,
-  // not a claim that anything was saved to an account.
-  document.addEventListener('click', function (e) {
-    var el = e.target.closest('.btn-toggle');
-    if (!el) return;
-    var onLabel = el.dataset.on;
-    var offLabel = el.dataset.off || el.textContent;
-    var isOn = el.classList.toggle('is-on');
-    el.textContent = isOn ? onLabel : offLabel;
-  });
-</script>
 </body>
 </html>

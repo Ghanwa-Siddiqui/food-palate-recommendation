@@ -5,6 +5,7 @@ but no task defines its source. Interactions are stored here, so we compute
 it here: order/save/click weighted counts, normalized to [0,1] against the
 current max so Esha can drop it straight into the weighted sum.
 """
+
 from __future__ import annotations
 
 from collections import defaultdict

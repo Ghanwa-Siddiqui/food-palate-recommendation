@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Dietary preferences">
+  <rect width="48" height="48" rx="14" fill="#dcebdc"/>
+  <path d="M13 31c2-12 11-19 23-17-1 12-9 20-23 17Z" fill="#527a5a"/>
+  <path d="M15 33c5-6 11-11 19-16" fill="none" stroke="#fff8e8" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

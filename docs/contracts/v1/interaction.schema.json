@@ -7,7 +7,7 @@
   "properties": {
     "user_id": {"type": "string", "format": "uuid"},
     "dish_id": {"type": "string", "format": "uuid"},
-    "action": {"type": "string", "enum": ["click", "save", "order"]},
+    "action": {"type": "string", "enum": ["click", "save", "order", "tried", "like", "dislike"]},
     "ts": {"type": "string", "format": "date-time"}
   },
   "additionalProperties": false

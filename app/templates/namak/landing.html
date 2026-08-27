@@ -1,75 +1,13 @@
 {% extends "namak/base.html" %}
 {% block title %}namak — restaurants that fit your taste{% endblock %}
-{% block description %}Tell us five dishes you love. We match you to restaurants no rating average could — plus the tastemakers who eat like you do.{% endblock %}
-{% block head %}<meta property="og:image" content="/static/dishes/curry-rice.jpg">{% endblock %}
 {% block body %}
-<div class="nav">
-  <a class="brand" href="/app">n<em>a</em>mak</a>
-  <div class="navlinks">
-    <a href="#how-it-works">How it works</a>
-    <span class="navlink-soon" title="Coming soon">Tastemakers</span>
-    <span class="navlink-soon" title="Coming soon">Cities</span>
-    <span class="navlink-soon" title="Coming soon">About</span>
-  </div>
-  <div class="nav-r">
-    <span class="navlink-soon" title="Coming soon">Log in</span>
-    <a class="btn btn-p" style="padding:8px 16px;" href="/app/onboarding">Join free</a>
-  </div>
-</div>
-
-<div class="split narrow-left container pad-hero" style="align-items:center;">
-  <div class="hero-fade-in">
-    <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:var(--paprika);font-weight:500;margin-bottom:20px;">A social network for eaters</div>
-    <h1 style="font-family:var(--serif);font-size:clamp(32px,5vw,54px);font-weight:500;line-height:1.05;letter-spacing:-0.03em;margin:0 0 20px;">
-      Restaurants that<br/>
-      <em style="color:var(--saffron);font-style:normal;">fit your taste,</em><br/>
-      not everyone else's.
-    </h1>
-    <p style="font-size:15px;color:var(--stone-2);line-height:1.6;margin:0 0 28px;max-width:440px;">
-      Tell us five dishes you love. We match you to restaurants no rating average could — plus the tastemakers who eat like you do.
-    </p>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;">
-      <a class="btn btn-p" style="padding:14px 26px;font-size:14px;" href="/app/onboarding">Build my taste profile →</a>
-      <a class="btn btn-o" style="padding:14px 26px;font-size:14px;text-decoration:none;" href="/app/feed">See a live feed →</a>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;font-size:12px;color:var(--stone);flex-wrap:wrap;">
-      <div style="display:flex;">
-        <span class="avatar sm" style="border:2px solid var(--cream);">A</span>
-        <span class="avatar sm b" style="margin-left:-8px;border:2px solid var(--cream);">H</span>
-        <span class="avatar sm c" style="margin-left:-8px;border:2px solid var(--cream);">Z</span>
-        <span class="avatar sm e" style="margin-left:-8px;border:2px solid var(--cream);">M</span>
-      </div>
-      <span>12,400 tastemakers in Lahore, Karachi &amp; Islamabad</span>
-    </div>
-  </div>
-
-  <div class="hero-tiles hero-fade-in d1">
-    {% for d in hero_dishes %}
-    <a class="dish {{ d.klass }}" style="{{ 'grid-row:span 2;' if loop.first }}" href="/app/restaurant/{{ d.slug }}">
-      <img src="{{ d.img }}" alt="{{ d.name }}" onerror="this.style.display='none'"/>
-      <div class="grad"></div>
-      <div class="match">{{ d.match }}</div>
-      <div class="lab">{{ d.name }}<small>{{ d.place }}</small></div>
-    </a>
-    {% endfor %}
-  </div>
-</div>
-
-<div id="how-it-works" class="steps-3col container" style="background:var(--ink);color:var(--cream);padding:clamp(22px,4vw,34px) clamp(16px,5vw,50px);scroll-margin-top:20px;">
-  <div>
-    <div style="font-family:var(--mono);font-size:12px;color:var(--saffron);">01</div>
-    <div style="font-size:15px;font-weight:500;margin:8px 0 6px;">Tell us your taste</div>
-    <div style="font-size:13px;color:var(--stone);line-height:1.55;">Pick cuisines and dishes you actually love. Set your spice &amp; dietary defaults.</div>
-  </div>
-  <div>
-    <div style="font-family:var(--mono);font-size:12px;color:var(--saffron);">02</div>
-    <div style="font-size:15px;font-weight:500;margin:8px 0 6px;">We rank every restaurant</div>
-    <div style="font-size:13px;color:var(--stone);line-height:1.55;">Your feed reorders — 94% match, not 4.2 stars. Powered by review-level signals.</div>
-  </div>
-  <div>
-    <div style="font-family:var(--mono);font-size:12px;color:var(--saffron);">03</div>
-    <div style="font-size:15px;font-weight:500;margin:8px 0 6px;">Follow tastemakers</div>
-    <div style="font-size:13px;color:var(--stone);line-height:1.55;">See what people who eat like you are eating. Save their lists. Compare taste twins.</div>
-  </div>
-</div>
+<header class="nav landing-nav"><a class="brand" href="/">n<em>a</em>mak</a><nav class="navlinks"><a href="#how">How it works</a><a href="#cities">Cities</a></nav><div class="nav-r">{% if user %}<a href="/app/feed">Open your feed</a>{% else %}<a href="/login">Log in</a><a class="btn btn-p" href="/signup">Join free</a>{% endif %}</div></header>
+<main>
+  <section class="landing-hero">
+    <div><p class="overline">Food discovery, tuned to you</p><h1>Restaurants that <em>fit your taste,</em> not everyone else's.</h1><p>Build a private taste profile, then discover real dishes ranked against your budget, dietary needs, and food palate.</p><div class="hero-actions"><a class="btn btn-p" href="{{ '/app/feed' if user else '/signup' }}">{{ 'Open my feed' if user else 'Build my taste profile' }} →</a><a class="btn btn-o" href="#how">See how it works</a></div></div>
+    {% set hero=context_image('welcome') %}<div class="hero-photo"><img src="{{ hero.src }}" alt="{{ hero.alt }}" width="{{ hero.width }}" height="{{ hero.height }}" fetchpriority="high" onerror="this.onerror=null;this.src='{{ fallback_image().src }}'"><span class="match-pill">Personal, not generic</span></div>
+  </section>
+  <section id="how" class="how-grid"><article><b>01</b><h2>Tell us your taste</h2><p>Choose cuisines, favourite foods, flavour levels, textures and practical constraints.</p></article><article><b>02</b><h2>We rank real menus</h2><p>Six named signals reorder persisted dishes for your profile without inventing missing data.</p></article><article><b>03</b><h2>Your feed learns</h2><p>Clicks, saves and order interest update your profile and make later recommendations sharper.</p></article></section>
+  <section id="cities" class="cities"><span>Lahore</span><span>Karachi</span><span>Islamabad &amp; Rawalpindi</span></section>
+</main>
 {% endblock %}

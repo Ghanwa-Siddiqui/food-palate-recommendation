@@ -7,10 +7,11 @@ updates, nearest-neighbor) behaves stably in tests and dev.
 Swap this module out for sentence-transformers or an API call later; nothing
 else in the codebase should need to change.
 """
+
 from __future__ import annotations
 
 import hashlib
-from typing import Iterable, Sequence
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 
@@ -46,7 +47,9 @@ def embed_terms(terms: Iterable[str], dim: int = VECTOR_DIM) -> list[float]:
     return (mean / norm).tolist()
 
 
-def embed_dish(name: str, cuisine: str, ingredients: Sequence[str], dim: int = VECTOR_DIM) -> list[float]:
+def embed_dish(
+    name: str, cuisine: str, ingredients: Sequence[str], dim: int = VECTOR_DIM
+) -> list[float]:
     """Compose a dish vector from name + cuisine + ingredients."""
     terms = [name, cuisine, *ingredients]
     return embed_terms(terms, dim)

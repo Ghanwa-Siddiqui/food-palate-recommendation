@@ -34,6 +34,12 @@ def test_relative_refs_resolve_through_contract_registry():
         "coordinates_verified_at": "2026-08-26T00:00:00Z",
         "price_range": "moderate",
         "halal_status": "claimed",
+        "owner_id": None,
+        "contact_phone": None,
+        "halal_verification_status": "unverified",
+        "opening_information": None,
+        "available": True,
+        "image_path": None,
         "created_at": "2026-01-01T00:00:00Z",
         "updated_at": "2026-01-01T00:00:00Z",
     }
@@ -100,7 +106,14 @@ def test_cross_module_handoff_contracts_preserve_agreed_shapes():
         "flavor_tags",
         "review_vector",
     }
-    assert interaction["properties"]["action"]["enum"] == ["click", "save", "order"]
+    assert interaction["properties"]["action"]["enum"] == [
+        "click",
+        "save",
+        "order",
+        "tried",
+        "like",
+        "dislike",
+    ]
 
 
 def test_user_taste_contract_covers_onboarding_handoff_without_vector_logic():
