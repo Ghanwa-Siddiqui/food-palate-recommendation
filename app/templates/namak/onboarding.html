@@ -81,8 +81,7 @@
     {% for id, label in dims %}
     <div class="slider-row">
       <label for="{{ id }}">{{ label }}</label>
-      <input type="range" class="pref-range" id="{{ id }}" min="0" max="5" value="3"
-             oninput="document.getElementById('{{ id }}Out').textContent=['none','very light','light','moderate','strong','very strong'][this.value]">
+      <input type="range" class="pref-range" id="{{ id }}" min="0" max="5" value="3" oninput="updateSlider(this)">
       <output id="{{ id }}Out">moderate</output>
     </div>
     {% endfor %}
@@ -126,6 +125,18 @@
 </div>
 
 <script>
+  var SLIDER_LABELS = ['none', 'very light', 'light', 'moderate', 'strong', 'very strong'];
+
+  function updateSlider(el) {
+    var pct = (el.value / el.max) * 100;
+    el.style.setProperty('--val', pct + '%');
+    var out = document.getElementById(el.id + 'Out');
+    if (out) out.textContent = SLIDER_LABELS[el.value];
+  }
+
+  // Paint the filled-track gradient at each slider's starting value on load.
+  document.querySelectorAll('input[type="range"].pref-range').forEach(updateSlider);
+
   function pickedTiles() {
     return Array.from(document.querySelectorAll('#tileGrid .dish.check'));
   }
