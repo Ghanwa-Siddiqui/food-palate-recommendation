@@ -1,14 +1,15 @@
 {% extends "namak/base.html" %}
 {% block title %}Onboarding — namak{% endblock %}
 {% block body %}
-<div style="padding:26px 40px 32px;max-width:1240px;margin:0 auto;">
-  <div class="flex-b mb-18">
+<div class="container" style="padding:26px clamp(16px,5vw,40px) 32px;">
+  <div class="flex-b mb-18" style="flex-wrap:wrap;gap:10px;">
     <a class="brand" href="/app">n<em>a</em>mak</a>
     <div style="font-size:12px;color:var(--stone);">Step 2 of 4 · <a href="/app/feed">Skip for now</a></div>
   </div>
   <div class="prog"><span class="on"></span><span class="on"></span><span></span><span></span></div>
+  <div id="onboardError" class="chip hot" style="display:none;margin-bottom:16px;"></div>
 
-  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:36px;">
+  <div class="split even">
     <div>
       <h2 style="font-family:var(--serif);font-size:32px;font-weight:500;margin:0 0 6px;line-height:1.1;letter-spacing:-0.02em;">Tap the dishes that make you hungry.</h2>
       <p style="font-size:14px;color:var(--stone-2);margin:0 0 22px;">Pick at least five. The more you tap, the sharper your profile.</p>
@@ -48,19 +49,50 @@
         <div style="display:flex;align-items:baseline;gap:6px;"><span id="pickCount" style="font-family:var(--serif);font-size:34px;font-weight:500;">{{ picked_count }}</span><span style="font-size:12px;color:var(--stone);">/ 5 minimum</span></div>
       </div>
 
-      <a class="btn btn-p" style="display:block;margin-top:22px;padding:14px;text-align:center;" href="/app/feed">Continue →</a>
+      <button type="button" id="continueBtn" class="btn btn-p" style="display:block;width:100%;margin-top:22px;padding:14px;text-align:center;border:none;font:inherit;cursor:pointer;">Continue →</button>
     </div>
   </div>
 </div>
 
 <script>
-  // UI-only for now — selection state lives client-side.
-  // TODO(backend): POST picked dish names to /onboarding once this step
-  // is wired into the Personalization Engine's onboarding flow.
   function toggleTile(el){
     el.classList.toggle('check');
     var count = document.querySelectorAll('#tileGrid .dish.check').length;
     document.getElementById('pickCount').textContent = count;
   }
+
+  // Submits the tapped dishes to the real Personalization Engine onboarding
+  // endpoint, then sends the browser straight to that user's live ranked feed.
+  document.getElementById('continueBtn').addEventListener('click', async function () {
+    const btn = this;
+    const errEl = document.getElementById('onboardError');
+    errEl.style.display = 'none';
+    const names = Array.from(document.querySelectorAll('#tileGrid .dish.check'))
+      .map(function (el) { return el.dataset.name; });
+    if (names.length < 1) {
+      errEl.textContent = 'Tap at least one dish before continuing.';
+      errEl.style.display = 'inline-block';
+      return;
+    }
+    btn.textContent = 'Building your profile…';
+    btn.disabled = true;
+    try {
+      const body = new URLSearchParams();
+      body.append('favourite_dishes', names.join(', '));
+      body.append('spice_preference', '3');
+      body.append('budget_min', '0');
+      body.append('budget_max', '5000');
+      const resp = await fetch('/onboarding', { method: 'POST', body: body, redirect: 'follow' });
+      if (!resp.ok) throw new Error('onboarding failed (' + resp.status + ')');
+      const userId = new URL(resp.url).searchParams.get('user_id');
+      if (!userId) throw new Error('no user_id returned');
+      window.location.href = '/app/feed?user_id=' + encodeURIComponent(userId) + '&budget_min=0&budget_max=5000&limit=12';
+    } catch (err) {
+      errEl.textContent = 'Could not build your profile — try again.';
+      errEl.style.display = 'inline-block';
+      btn.textContent = 'Continue →';
+      btn.disabled = false;
+    }
+  });
 </script>
 {% endblock %}

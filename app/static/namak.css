@@ -13,14 +13,14 @@
 html,body{background:var(--cream);font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;}
 a{color:inherit;text-decoration:none;}
 
-.nav{display:flex;justify-content:space-between;align-items:center;padding:16px 30px;border-bottom:0.5px solid var(--line);background:var(--cream);}
-.brand{font-family:var(--serif);font-size:22px;font-weight:500;letter-spacing:-0.03em;}
+.nav{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 16px;padding:14px clamp(14px,4vw,30px);border-bottom:0.5px solid var(--line);background:var(--cream);row-gap:8px;}
+.brand{font-family:var(--serif);font-size:22px;font-weight:500;letter-spacing:-0.03em;flex-shrink:0;}
 .brand em{color:var(--saffron);font-style:normal;}
-.navlinks{display:flex;gap:26px;font-size:13px;color:var(--stone-2);}
+.navlinks{display:flex;flex-wrap:wrap;gap:14px 22px;font-size:13px;color:var(--stone-2);order:3;flex-basis:100%;}
 .navlinks a{color:inherit;}
 .navlinks .act{color:var(--ink);font-weight:500;position:relative;}
-.navlinks .act::after{content:'';position:absolute;bottom:-19px;left:0;right:0;height:2px;background:var(--saffron);}
-.nav-r{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--stone-2);}
+.navlinks .act::after{content:'';position:absolute;bottom:-8px;left:0;right:0;height:2px;background:var(--saffron);}
+.nav-r{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--stone-2);flex-shrink:0;}
 .icon{font-size:16px;line-height:1;display:inline-block;}
 .avatar{width:30px;height:30px;border-radius:50%;background:var(--saffron);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--ink);flex-shrink:0;}
 .avatar.b{background:var(--paprika);color:var(--bone);}
@@ -31,14 +31,22 @@ a{color:inherit;text-decoration:none;}
 .avatar.sm{width:22px;height:22px;font-size:10px;}
 .avatar.lg{width:88px;height:88px;font-size:36px;font-family:var(--serif);}
 
-/* DISH — image on top of gradient fallback */
+/* DISH — image on top of gradient fallback, with an emoji glyph that shows
+   through whenever the external food photo fails or never loads (no JS
+   needed: the glyph is a lower-stacked ::before, the <img> paints over it
+   when present, and onerror="this.style.display='none'" reveals it). */
 .dish{position:relative;overflow:hidden;border-radius:10px;cursor:pointer;
   background:radial-gradient(circle at 40% 40%,#c95a1e 0%,#8a2f10 50%,#3d1408 100%);}
 .dish.k1{background:radial-gradient(circle at 40% 40%,#e08a2a 0%,#a34818 50%,#4a1a0a 100%);}
 .dish.k2{background:radial-gradient(circle at 40% 40%,#f0c060 0%,#c08028 50%,#4a2810 100%);}
 .dish.k3{background:radial-gradient(circle at 40% 40%,#6a9450 0%,#3a5828 50%,#1a2810 100%);}
 .dish.k4{background:radial-gradient(circle at 40% 40%,#a04820 0%,#5a2410 50%,#2a1008 100%);}
-.dish img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
+.dish::before{content:'🍽️';position:absolute;inset:0;z-index:0;display:flex;align-items:center;justify-content:center;font-size:2.4rem;opacity:.8;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35));}
+.dish.k1::before{content:'🍢';}
+.dish.k2::before{content:'🍚';}
+.dish.k3::before{content:'🥗';}
+.dish.k4::before{content:'🌯';}
+.dish img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
 .dish:hover img{transform:scale(1.04);}
 .dish .grad{position:absolute;bottom:0;left:0;right:0;height:70%;
   background:linear-gradient(0deg,rgba(28,25,23,.9) 0%,rgba(28,25,23,.4) 45%,transparent 100%);pointer-events:none;}
@@ -137,10 +145,38 @@ a{color:inherit;text-decoration:none;}
 .k-hot{color:var(--paprika);font-weight:500;}
 .k-sf{color:var(--saffron);font-weight:500;}
 
+/* Reusable responsive layout primitives (replace bespoke inline grid styles
+   that only worked at the ~1240px width the original mockup assumed). */
+.container{max-width:1240px;margin:0 auto;}
+.pad-hero{padding:clamp(24px,6vw,56px) clamp(16px,5vw,50px);}
+.pad-section{padding:clamp(18px,4vw,28px) clamp(16px,5vw,40px);}
+.split{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(20px,4vw,36px);align-items:start;}
+.split.wide-left{grid-template-columns:1.6fr 1fr;}
+.split.narrow-left{grid-template-columns:1.05fr 1fr;}
+.split.even{grid-template-columns:1.4fr 1fr;}
+.profile-head{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;}
+.steps-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.hero-tiles{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;aspect-ratio:1;}
+
+@media (max-width:960px){
+  .split,.split.wide-left,.split.narrow-left,.split.even{grid-template-columns:1fr;}
+  .profile-head{grid-template-columns:1fr;text-align:left;justify-items:start;}
+  .steps-3col{grid-template-columns:1fr;}
+  .rest-hero{aspect-ratio:2/1;}
+  .rest-hero .content{padding:20px 22px;}
+}
+
 @media (max-width:820px){
   .feed-grid{grid-template-columns:1fr;}
   .side{border:none;border-top:0.5px solid var(--line);}
   .grid-4{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(2,1fr);}
+}
+
+@media (max-width:560px){
+  .grid-2,.grid-3,.grid-4,.hero-tiles{grid-template-columns:1fr;}
+  .navlinks{gap:12px 18px;}
+  h1{font-size:clamp(28px,8vw,40px)!important;}
 }
 
 /* Server-rendered Ranking API feed integration. */

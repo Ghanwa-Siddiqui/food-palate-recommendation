@@ -10,6 +10,7 @@ from fastapi.templating import Jinja2Templates
 
 from ..models import OnboardingAnswers
 from ..personalization import user_from_onboarding
+from ..ranking_sync import mirror_demo_user
 from ..repositories import get_repository
 
 router = APIRouter(tags=["onboarding"])
@@ -67,6 +68,7 @@ def submit_onboarding(
     user_id = str(uuid.uuid4())
     user = user_from_onboarding(user_id, answers)
     get_repository().upsert_user(user)
+    mirror_demo_user(user_id)
     return RedirectResponse(url=f"/onboarding/done?user_id={user_id}", status_code=303)
 
 

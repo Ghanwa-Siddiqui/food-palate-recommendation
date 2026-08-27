@@ -3,28 +3,28 @@
 {% block body %}
 {% include "namak/_nav.html" %}
 
-<div style="padding:32px 40px 22px;border-bottom:0.5px solid var(--line);">
-  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;gap:26px;align-items:center;">
+<div style="padding:28px clamp(16px,5vw,40px) 22px;border-bottom:0.5px solid var(--line);">
+  <div class="profile-head container">
     <div class="prof-avatar">{{ profile.initial }}</div>
     <div>
-      <div style="font-family:var(--serif);font-size:30px;font-weight:500;letter-spacing:-0.02em;">{{ profile.name }}</div>
+      <div style="font-family:var(--serif);font-size:clamp(22px,4vw,30px);font-weight:500;letter-spacing:-0.02em;">{{ profile.name }}</div>
       <div style="font-size:12.5px;color:var(--stone);margin-top:3px;">@{{ profile.username }} · {{ profile.city }} · Joined {{ profile.joined }}</div>
       <div style="font-size:14px;color:var(--ink);margin-top:10px;line-height:1.5;max-width:520px;">{{ profile.bio }}</div>
-      <div style="display:flex;gap:22px;margin-top:14px;font-size:13px;color:var(--stone-2);">
+      <div style="display:flex;gap:22px;margin-top:14px;font-size:13px;color:var(--stone-2);flex-wrap:wrap;">
         <span><b style="font-family:var(--serif);font-size:18px;color:var(--ink);">{{ profile.stats.rated }}</b> dishes rated</span>
         <span><b style="font-family:var(--serif);font-size:18px;color:var(--ink);">{{ profile.stats.followers }}</b> followers</span>
         <span><b style="font-family:var(--serif);font-size:18px;color:var(--ink);">{{ profile.stats.following }}</b> following</span>
         <span><b style="font-family:var(--serif);font-size:18px;color:var(--ink);">{{ profile.stats.collections }}</b> collections</span>
       </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="display:flex;flex-direction:row;gap:8px;">
       <span class="btn btn-p" style="padding:11px 24px;">Follow</span>
       <span class="btn btn-o" style="padding:8px 18px;font-size:12px;">Compare taste</span>
     </div>
   </div>
 </div>
 
-<div style="padding:28px 40px;display:grid;grid-template-columns:1.4fr 1fr;gap:32px;max-width:1240px;margin:0 auto;">
+<div class="split even container pad-section">
   <div>
     <div class="card dark mb-18">
       <div class="eyebrow">{{ profile.name.split(' ')[0] }}'s taste DNA</div>

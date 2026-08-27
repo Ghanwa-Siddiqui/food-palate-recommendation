@@ -6,14 +6,14 @@
 <div class="rest-hero">
   <img src="{{ restaurant.hero_img }}" alt="{{ restaurant.name }}" onerror="this.style.display='none'"/>
   <div class="over"></div>
-  <div class="content" style="max-width:1240px;margin:0 auto;left:0;right:0;">
+  <div class="content container">
     <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--saffron);font-weight:500;margin-bottom:8px;">{{ restaurant.tagline }}</div>
-    <div style="font-family:var(--serif);font-size:42px;font-weight:500;letter-spacing:-0.025em;line-height:1;">{{ restaurant.name }}</div>
-    <div style="font-size:14px;color:#D8D0C0;margin-top:8px;">{{ restaurant.area }} · {{ restaurant.cuisine }} · {{ restaurant.price_range }} · {{ restaurant.hours_short }}</div>
+    <div style="font-family:var(--serif);font-size:clamp(24px,4.5vw,42px);font-weight:500;letter-spacing:-0.025em;line-height:1.1;">{{ restaurant.name }}</div>
+    <div style="font-size:13px;color:#D8D0C0;margin-top:8px;">{{ restaurant.area }} · {{ restaurant.cuisine }} · {{ restaurant.price_range }} · {{ restaurant.hours_short }}</div>
   </div>
 </div>
 
-<div style="padding:28px 40px;display:grid;grid-template-columns:1.6fr 1fr;gap:32px;max-width:1240px;margin:0 auto;">
+<div class="split wide-left container pad-section">
   <div>
     <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
       <span class="btn btn-p" style="padding:10px 18px;">＋ Been there</span>
