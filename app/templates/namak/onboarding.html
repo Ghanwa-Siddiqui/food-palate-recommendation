@@ -1,125 +1,127 @@
 {% extends "namak/base.html" %}
 {% block title %}Build your taste profile — namak{% endblock %}
 {% block body %}
-<div class="container" style="padding:26px clamp(16px,5vw,40px) 48px;">
+<div class="pref-shell" style="padding:26px clamp(16px,5vw,24px) 8px;">
   <div class="flex-b mb-18" style="flex-wrap:wrap;gap:10px;">
     <a class="brand" href="/app">n<em>a</em>mak</a>
     <div style="font-size:12px;color:var(--stone);"><a href="/app/feed">Skip for now</a></div>
   </div>
   <div id="onboardError" class="chip hot" style="display:none;margin-bottom:16px;"></div>
 
-  <div class="split even onboard-split">
-    <div>
-      <h2 style="font-family:var(--serif);font-size:32px;font-weight:500;margin:0 0 6px;line-height:1.1;letter-spacing:-0.02em;">Tell us what you love.</h2>
-      <p style="font-size:14px;color:var(--stone-2);margin:0 0 22px;">Tap a few dishes to start, then fine-tune below. Everything here shapes your match score.</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(26px,4vw,34px);font-weight:500;margin:0 0 6px;line-height:1.15;letter-spacing:-0.02em;">Tell us what you love.</h2>
+  <p style="font-size:14px;color:var(--stone-2);margin:0 0 26px;">A couple minutes of taste calibration so your feed makes sense from day one.</p>
 
-      <div class="grid-4" id="tileGrid" style="gap:10px;">
-        {% for d in dish_tiles %}
-        <div class="dish {{ d.klass }}{{ ' check' if d.picked else '' }}" data-name="{{ d.name }}" data-tags="{{ d.tags | join(',') }}" onclick="toggleTile(this)" style="aspect-ratio:1;">
-          <img src="{{ d.img }}" onerror="this.style.display='none'"/>
-          <div class="grad"></div>
-          <div class="lab" style="padding:8px 10px;font-size:11px;">{{ d.name }}</div>
-        </div>
-        {% endfor %}
-      </div>
-
-      <div class="field-section">
-        <span class="field-label">Cuisines you enjoy</span>
-        <div id="cuisineChoices">
-          {% for c in cuisines %}
-          <span class="chip-choice" data-value="{{ c }}" onclick="toggleChoice(this)">{{ c }}</span>
-          {% endfor %}
-        </div>
-      </div>
-
-      <div class="field-section">
-        <span class="field-label">Preferred textures</span>
-        <div id="textureChoices">
-          {% for t in textures %}
-          <span class="chip-choice" data-value="{{ t }}" onclick="toggleChoice(this)">{{ t }}</span>
-          {% endfor %}
-        </div>
-      </div>
-
-      <div class="field-section">
-        <span class="field-label">Dietary requirements</span>
-        <div id="dietaryChoices">
-          {% for d in dietary %}
-          <span class="chip-choice" data-value="{{ d }}" onclick="toggleChoice(this)">{{ d }}</span>
-          {% endfor %}
-        </div>
-      </div>
-
-      <div class="field-section">
-        <span class="field-label">Taste dimensions</span>
-        {% set dims = [
-          ("spicePref", "Spice"), ("sweetPref", "Sweetness"),
-          ("sourPref", "Sourness"), ("saltPref", "Saltiness"),
-          ("oilPref", "Oiliness")
-        ] %}
-        {% for id, label in dims %}
-        <div class="slider-row">
-          <label for="{{ id }}">{{ label }}</label>
-          <input type="range" id="{{ id }}" min="0" max="5" value="3"
-                 oninput="document.getElementById('{{ id }}Out').textContent=['none','very light','light','moderate','strong','very strong'][this.value]">
-          <output id="{{ id }}Out">moderate</output>
-        </div>
-        {% endfor %}
-      </div>
-
-      <div class="field-section">
-        <span class="field-label">Per-meal budget (PKR)</span>
-        <div class="budget-row">
-          <input type="number" id="budgetMin" class="feed-input" min="0" step="50" value="300" placeholder="Min">
-          <span style="color:var(--stone);">–</span>
-          <input type="number" id="budgetMax" class="feed-input" min="0" step="50" value="2000" placeholder="Max">
-        </div>
-      </div>
-
-      <div class="field-section">
-        <span class="field-label">Allergies</span>
-        <input type="text" id="allergiesInput" class="feed-input" placeholder="e.g. peanuts, shellfish (comma-separated, optional)">
-      </div>
-
-      <div class="field-section">
-        <span class="field-label">Ingredients you dislike</span>
-        <input type="text" id="dislikedInput" class="feed-input" placeholder="e.g. cilantro, mushroom (comma-separated, optional)">
+  <div class="pref-card">
+    <div class="pref-card-head">
+      <span class="pref-icon">🍽️</span>
+      <div>
+        <div class="pref-title">Dishes that make you hungry</div>
+        <div class="pref-sub">Tap as many as you like.</div>
       </div>
     </div>
-
-    <div>
-      <div class="card dark taste-card">
-        <div class="eyebrow">Your taste profile · live</div>
-        <div class="vec dk" id="vecBars" style="margin:10px 0 14px;"></div>
-        <div id="profileNarrative" style="font-family:var(--serif);font-style:italic;font-size:14px;line-height:1.5;color:var(--cream);"></div>
+    <div class="grid-4" id="tileGrid" style="gap:10px;">
+      {% for d in dish_tiles %}
+      <div class="dish {{ d.klass }}{{ ' check' if d.picked else '' }}" data-name="{{ d.name }}" onclick="toggleTile(this)" style="aspect-ratio:1;">
+        <img src="{{ d.img }}" onerror="this.style.display='none'"/>
+        <div class="grad"></div>
+        <div class="lab" style="padding:8px 10px;font-size:11px;">{{ d.name }}</div>
       </div>
+      {% endfor %}
+    </div>
+  </div>
 
-      <div class="mt-18">
-        <div class="eyebrow">Emerging flavors</div>
-        <div id="flavorChips"></div>
-      </div>
+  <div class="pref-card">
+    <div class="pref-card-head">
+      <span class="pref-icon">🌍</span>
+      <div class="pref-title">Cuisines you enjoy</div>
+    </div>
+    <div id="cuisineChoices">
+      {% for c in cuisines %}
+      <span class="chip-choice" data-value="{{ c }}" onclick="toggleChoice(this)">{{ c }}</span>
+      {% endfor %}
+    </div>
+  </div>
 
-      <div class="mt-18">
-        <div class="eyebrow">Dishes picked</div>
-        <div style="display:flex;align-items:baseline;gap:6px;"><span id="pickCount" style="font-family:var(--serif);font-size:34px;font-weight:500;">{{ picked_count }}</span><span style="font-size:12px;color:var(--stone);">pick a few for a sharper match</span></div>
-      </div>
+  <div class="pref-card">
+    <div class="pref-card-head">
+      <span class="pref-icon">✨</span>
+      <div class="pref-title">Preferred textures</div>
+    </div>
+    <div id="textureChoices">
+      {% for t in textures %}
+      <span class="chip-choice" data-value="{{ t }}" onclick="toggleChoice(this)">{{ t }}</span>
+      {% endfor %}
+    </div>
+  </div>
 
-      <button type="button" id="continueBtn" class="btn btn-p" style="display:block;width:100%;margin-top:22px;padding:14px;text-align:center;border:none;font:inherit;cursor:pointer;">Continue →</button>
+  <div class="pref-card">
+    <div class="pref-card-head">
+      <span class="pref-icon">🥗</span>
+      <div class="pref-title">Dietary requirements</div>
+    </div>
+    <div id="dietaryChoices">
+      {% for d in dietary %}
+      <span class="chip-choice" data-value="{{ d }}" onclick="toggleChoice(this)">{{ d }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="pref-card">
+    <div class="pref-card-head">
+      <span class="pref-icon">🌶️</span>
+      <div class="pref-title">Taste dimensions</div>
+    </div>
+    {% set dims = [
+      ("spicePref", "Spice"), ("sweetPref", "Sweetness"),
+      ("sourPref", "Sourness"), ("saltPref", "Saltiness"),
+      ("oilPref", "Oiliness")
+    ] %}
+    {% for id, label in dims %}
+    <div class="slider-row">
+      <label for="{{ id }}">{{ label }}</label>
+      <input type="range" class="pref-range" id="{{ id }}" min="0" max="5" value="3"
+             oninput="document.getElementById('{{ id }}Out').textContent=['none','very light','light','moderate','strong','very strong'][this.value]">
+      <output id="{{ id }}Out">moderate</output>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="pref-card">
+    <div class="pref-card-head">
+      <span class="pref-icon">💰</span>
+      <div class="pref-title">Per-meal budget (PKR)</div>
+    </div>
+    <div class="budget-row">
+      <input type="number" id="budgetMin" class="feed-input" min="0" step="50" value="300" placeholder="Min">
+      <span style="color:var(--stone);">–</span>
+      <input type="number" id="budgetMax" class="feed-input" min="0" step="50" value="2000" placeholder="Max">
+    </div>
+  </div>
+
+  <div class="pref-card">
+    <div class="pref-card-head">
+      <span class="pref-icon">⚠️</span>
+      <div class="pref-title">Allergies &amp; dislikes</div>
+    </div>
+    <div class="field-section" style="margin-top:4px;">
+      <span class="field-label">Allergies</span>
+      <input type="text" id="allergiesInput" class="feed-input" placeholder="e.g. peanuts, shellfish (optional)">
+    </div>
+    <div class="field-section">
+      <span class="field-label">Ingredients you dislike</span>
+      <input type="text" id="dislikedInput" class="feed-input" placeholder="e.g. cilantro, mushroom (optional)">
+    </div>
+  </div>
+
+  <div class="sticky-continue">
+    <div class="sticky-continue-inner">
+      <div style="font-size:12.5px;color:var(--stone-2);"><span id="pickCount" style="font-family:var(--serif);font-size:18px;font-weight:500;color:var(--ink);">{{ picked_count }}</span> dishes picked</div>
+      <button type="button" id="continueBtn" class="btn btn-p" style="padding:14px 32px;border:none;font:inherit;font-size:14px;cursor:pointer;">Continue →</button>
     </div>
   </div>
 </div>
 
 <script>
-  var BAR_COUNT = 12;
-
-  // Small deterministic hash so the same set of picks always produces the
-  // same bar heights (stable/reproducible, not random jitter on every render).
-  function hash(str) {
-    var h = 0;
-    for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; }
-    return Math.abs(h);
-  }
-
   function pickedTiles() {
     return Array.from(document.querySelectorAll('#tileGrid .dish.check'));
   }
@@ -132,69 +134,14 @@
     return Array.from(document.querySelectorAll('#' + containerId + ' .chip-choice.on')).map(function (el) { return el.dataset.value; });
   }
 
-  function renderVecBars(tiles) {
-    var container = document.getElementById('vecBars');
-    var heights = new Array(BAR_COUNT).fill(0);
-    tiles.forEach(function (tile) {
-      var name = tile.dataset.name;
-      for (var i = 0; i < BAR_COUNT; i++) {
-        heights[i] += hash(name + ':' + i) % 100;
-      }
-    });
-    var max = Math.max.apply(null, heights.concat([1]));
-    container.innerHTML = heights.map(function (h) {
-      var pct = tiles.length ? Math.round(18 + (h / max) * 77) : 8;
-      return '<i style="height:' + pct + '%"></i>';
-    }).join('');
-  }
-
-  function renderFlavorsAndNarrative(tiles) {
-    var counts = {};
-    tiles.forEach(function (tile) {
-      (tile.dataset.tags || '').split(',').filter(Boolean).forEach(function (tag) {
-        counts[tag] = (counts[tag] || 0) + 1;
-      });
-    });
-    var ranked = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
-
-    var chipsEl = document.getElementById('flavorChips');
-    var narrativeEl = document.getElementById('profileNarrative');
-
-    if (ranked.length === 0) {
-      chipsEl.innerHTML = '<span class="chip">Tap a few dishes to see this build</span>';
-      narrativeEl.innerHTML = '"Your taste profile starts here — tap a few dishes and we\'ll tell you what you lean into."';
-      return;
-    }
-
-    var top = ranked.slice(0, 4);
-    chipsEl.innerHTML = top.map(function (tag, i) {
-      return '<span class="chip' + (i === 0 ? ' hot' : '') + '">' + tag + '</span>';
-    }).join('');
-
-    var lead = top.slice(0, 2).join(', ');
-    var soft = ranked.length > 2 ? ranked[2] : null;
-    narrativeEl.innerHTML = '"You lean into <span class="k-sf">' + lead + '</span> dishes'
-      + (soft ? ', with a soft spot for <span class="k-sf">' + soft + '</span>' : '')
-      + '."';
-  }
-
-  function updateProfile() {
-    var tiles = pickedTiles();
-    document.getElementById('pickCount').textContent = tiles.length;
-    renderVecBars(tiles);
-    renderFlavorsAndNarrative(tiles);
-  }
-
   function toggleTile(el){
     el.classList.toggle('check');
-    updateProfile();
+    document.getElementById('pickCount').textContent = pickedTiles().length;
   }
 
-  updateProfile();
-
-  // Submits everything the real Personalization Engine onboarding endpoint
-  // needs — dish taps, cuisines, textures, dietary, taste sliders, budget,
-  // allergies, dislikes — then sends the browser to that user's live feed.
+  // Submits every preference on this page — dish taps, cuisines, textures,
+  // dietary, taste sliders, budget, allergies, dislikes — to the real
+  // /onboarding endpoint, then routes to that user's live feed.
   document.getElementById('continueBtn').addEventListener('click', async function () {
     const btn = this;
     const errEl = document.getElementById('onboardError');
