@@ -16,10 +16,10 @@
 <div class="split wide-left container pad-section">
   <div>
     <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
-      <span class="btn btn-p" style="padding:10px 18px;">＋ Been there</span>
-      <span class="btn btn-o" style="padding:10px 18px;">＋ Want to try</span>
-      <span class="btn btn-g" style="padding:10px 18px;">☆ Save to list</span>
-      <span class="btn btn-g" style="padding:10px 18px;">↗ Share</span>
+      <button type="button" class="btn btn-p btn-toggle" style="padding:10px 18px;border:none;font:inherit;cursor:pointer;" data-on="✓ Been there" data-off="＋ Been there">＋ Been there</button>
+      <button type="button" class="btn btn-o btn-toggle" style="padding:10px 18px;border:0.5px solid var(--ink);background:transparent;font:inherit;cursor:pointer;" data-on="✓ Want to try" data-off="＋ Want to try">＋ Want to try</button>
+      <button type="button" class="btn btn-g btn-toggle" style="padding:10px 18px;border:0.5px solid var(--line);font:inherit;cursor:pointer;" data-on="★ Saved" data-off="☆ Save to list">☆ Save to list</button>
+      <button type="button" class="btn btn-g btn-toggle" style="padding:10px 18px;border:0.5px solid var(--line);font:inherit;cursor:pointer;" data-on="✓ Link copied" data-off="↗ Share" onclick="navigator.clipboard && navigator.clipboard.writeText(window.location.href).catch(function(){})">↗ Share</button>
     </div>
 
     <h3 class="section-h">Signature dishes — ranked for you</h3>

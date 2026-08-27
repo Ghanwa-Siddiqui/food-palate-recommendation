@@ -11,5 +11,20 @@
 </head>
 <body>
 {% block body %}{% endblock %}
+<script>
+  // Generic toggle affordance for action buttons that don't yet have a
+  // backend behind them (Follow, Been there, Want to try, Save to list,
+  // Share, Compare taste). Real, immediate client-side feedback rather
+  // than a dead click that looks broken — but honest: it's a local toggle,
+  // not a claim that anything was saved to an account.
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('.btn-toggle');
+    if (!el) return;
+    var onLabel = el.dataset.on;
+    var offLabel = el.dataset.off || el.textContent;
+    var isOn = el.classList.toggle('is-on');
+    el.textContent = isOn ? onLabel : offLabel;
+  });
+</script>
 </body>
 </html>

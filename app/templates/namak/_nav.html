@@ -8,9 +8,9 @@
   </div>
   <div class="navlinks">
     <a class="{{ 'act' if active=='for-you' }}" href="/app/feed">For you</a>
-    <a class="{{ 'act' if active=='explore' }}" href="/app">Explore</a>
-    <a class="{{ 'act' if active=='collections' }}" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}">Collections</a>
-    <a class="{{ 'act' if active=='following' }}" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}">Following</a>
+    <span class="navlink-soon" title="Coming soon">Explore</span>
+    <a class="{{ 'act' if active=='collections' }}" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}#collections">Collections</a>
+    <a class="{{ 'act' if active=='following' }}" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}#following">Following</a>
   </div>
   <div class="nav-r">
     <span class="icon">◔</span><span class="icon">☆</span>

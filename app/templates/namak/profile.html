@@ -18,8 +18,8 @@
       </div>
     </div>
     <div style="display:flex;flex-direction:row;gap:8px;">
-      <span class="btn btn-p" style="padding:11px 24px;">Follow</span>
-      <span class="btn btn-o" style="padding:8px 18px;font-size:12px;">Compare taste</span>
+      <button type="button" class="btn btn-p btn-toggle" style="padding:11px 24px;border:none;font:inherit;cursor:pointer;" data-on="✓ Following" data-off="Follow">Follow</button>
+      <a class="btn btn-o" style="padding:8px 18px;font-size:12px;text-decoration:none;display:inline-block;text-align:center;" href="#collections">Compare taste</a>
     </div>
   </div>
 </div>
@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <div class="flex-b mb-10">
+    <div class="flex-b mb-10" id="collections" style="scroll-margin-top:80px;">
       <h3 class="section-h" style="margin:0;">Public collections</h3>
       <span style="font-size:12px;color:var(--stone);">See all {{ profile.stats.collections }} →</span>
     </div>
@@ -80,7 +80,7 @@
       <div style="font-size:13px;color:var(--stone-2);line-height:1.5;">{{ twin_overlap.note | safe }}</div>
     </div>
 
-    <div class="card mb-14">
+    <div class="card mb-14" id="following" style="scroll-margin-top:80px;">
       <div class="eyebrow mb-10">Followers you know</div>
       {% for f in mutual_followers %}
       <div class="follow-item"><span class="avatar {{ f.klass }}">{{ f.initial }}</span><div class="n"><div class="name">{{ f.name }}</div><div class="meta">{{ f.meta }}</div></div></div>
