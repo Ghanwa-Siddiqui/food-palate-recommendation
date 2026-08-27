@@ -89,8 +89,11 @@ def test_feed_renders_ranked_results_and_safe_image_placeholder(client):
     assert 'data-feed-state="success"' in response.text
     assert "Chicken Karahi" in response.text
     assert "PKR 1250" in response.text
-    assert "Image unavailable" in response.text
-    assert "<img" not in response.text
+    # Dish photo is matched by keyword from a local, always-available asset
+    # (no per-dish image field exists on the Ranking API response) and falls
+    # back safely via onerror, same pattern used on every other page.
+    assert '/static/dishes/karahi.jpg' in response.text
+    assert "onerror=\"this.style.display='none'\"" in response.text
     assert stub.calls == [
         (
             USER_ID,

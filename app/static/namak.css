@@ -293,13 +293,11 @@ input[type="range"].pref-range::-moz-range-thumb:hover{transform:scale(1.2);}
 .feed-state{border:1px solid var(--line);border-radius:12px;padding:32px;background:var(--cream);text-align:center}
 .feed-state h2{font-family:var(--serif);font-size:22px;font-weight:500;margin:8px auto 18px;max-width:540px}
 .feed-state-validation_error,.feed-state-backend_error,.feed-state-unavailable{border-color:#c99d8f}
-.ranked-card{overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--cream)}
-.dish-placeholder{min-height:170px;background-image:var(--dish-illustration);background-size:cover;background-position:center;display:grid;place-items:center;color:var(--stone-2);position:relative}
-.dish-placeholder strong{display:none}
-.dish-placeholder span{display:none}
+.ranked-card{overflow:hidden;border:0.5px solid var(--line);border-radius:12px;background:var(--cream);transition:transform .2s ease,box-shadow .2s ease;}
+.ranked-card:hover{transform:translateY(-3px);box-shadow:0 14px 32px -14px rgba(28,25,23,.22);}
+.ranked-card .dish{border-radius:0;}
 .ranked-card-body{padding:15px}
-.ranked-card-body .match{position:static;background:var(--ink);color:var(--cream);border-radius:20px;padding:4px 9px;font-size:11px}
-.ranked-card-body .price{font-size:12px;color:var(--stone-2)}
+.ranked-card-body .price{font-size:13px;color:var(--ink);font-weight:600;}
 .ranked-card-body h2{font-family:var(--serif);font-size:20px;font-weight:500;margin:14px 0 3px}
 .ranked-card-body p,.ranked-card-body small{margin:0;color:var(--stone-2);font-size:12px}
 .neutral-list{padding-left:18px;font-size:12px;line-height:1.8;color:var(--stone-2)}

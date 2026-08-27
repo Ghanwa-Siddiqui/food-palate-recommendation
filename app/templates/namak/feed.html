@@ -37,11 +37,14 @@
     <div class="grid-2" data-feed-state="success">
       {% for item in feed.items %}
       <article class="ranked-card">
-        <div class="dish-placeholder" role="img" aria-label="No image available for {{ item.dish_name }}"><span>Image unavailable</span><strong>{{ item.dish_name[0] | upper }}</strong></div>
+        <div class="dish" style="aspect-ratio:16/10;cursor:default;">
+          <img src="{{ dish_image(item.dish_name) }}" alt="{{ item.dish_name }}" onerror="this.style.display='none'"/>
+          <div class="grad"></div>
+          <div class="match">{{ item.match_percentage }}% match</div>
+        </div>
         <div class="ranked-card-body">
-          <div class="flex-b"><span class="match">{{ item.match_percentage }}% match</span><span class="price">PKR {{ "%.0f" | format(item.price) }}</span></div>
+          <div class="flex-b"><span class="price">PKR {{ "%.0f" | format(item.price) }}</span>{% if item.distance_km is not none %}<small>{{ "%.1f" | format(item.distance_km) }} km away</small>{% else %}<small>Distance unavailable</small>{% endif %}</div>
           <h2>{{ item.dish_name }}</h2><p>{{ item.restaurant_name }}</p>
-          {% if item.distance_km is not none %}<small>{{ "%.1f" | format(item.distance_km) }} km away</small>{% else %}<small>Distance unavailable</small>{% endif %}
         </div>
       </article>
       {% endfor %}

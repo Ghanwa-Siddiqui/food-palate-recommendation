@@ -25,6 +25,34 @@ from .onboarding import CUISINE_CHOICES, DIETARY_CHOICES, TEXTURE_CHOICES
 router = APIRouter(prefix="/app", tags=["ui"])
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 
+# The Ranking API returns only a dish name/restaurant/price — no image URL,
+# so every ranked card looked identical (one fixed illustration for all 90
+# dishes). Matches real, locally-hosted photos by keyword instead of adding
+# a fake per-dish field the backend doesn't have.
+_DISH_IMAGE_KEYWORDS: list[tuple[tuple[str, ...], str]] = [
+    (("karahi",), "/static/dishes/karahi.jpg"),
+    (("biryani",), "/static/dishes/biryani.jpg"),
+    (("chow mein", "noodle", "chowmein"), "/static/dishes/chowmein.jpg"),
+    (("pizza",), "/static/dishes/pizza.jpg"),
+    (("pasta", "penne", "spaghetti", "arrabbiata"), "/static/dishes/pasta.jpg"),
+    (("samosa",), "/static/dishes/samosa.jpg"),
+    (("tikka", "kebab", "doner", "bbq", "grill"), "/static/dishes/tikka.jpg"),
+    (("daal", "dal ", "thali", "rice"), "/static/dishes/thali.jpg"),
+    (("nihari", "haleem", "curry", "masala", "soup"), "/static/dishes/chicken-curry.jpg"),
+]
+_DISH_IMAGE_DEFAULT = "/static/dishes/curry-rice.jpg"
+
+
+def dish_image(dish_name: str) -> str:
+    lowered = (dish_name or "").lower()
+    for keywords, path in _DISH_IMAGE_KEYWORDS:
+        if any(kw in lowered for kw in keywords):
+            return path
+    return _DISH_IMAGE_DEFAULT
+
+
+templates.env.globals["dish_image"] = dish_image
+
 DEMO_USER = {"username": "areeba", "name": "Areeba", "initial": "A"}
 
 HERO_DISHES = [
