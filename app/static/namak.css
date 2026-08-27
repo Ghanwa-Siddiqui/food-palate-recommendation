@@ -178,7 +178,9 @@ a{color:inherit;text-decoration:none;}
 }
 
 @media (max-width:560px){
-  .grid-2,.grid-3,.grid-4,.hero-tiles{grid-template-columns:1fr;}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+  .hero-tiles{grid-template-columns:1fr;aspect-ratio:auto;gap:12px;}
+  .hero-tiles .dish{grid-row:auto!important;aspect-ratio:4/3;}
   .navlinks{gap:12px 18px;}
   h1{font-size:clamp(28px,8vw,40px)!important;}
 }

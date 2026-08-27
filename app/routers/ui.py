@@ -27,9 +27,9 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent
 DEMO_USER = {"username": "areeba", "name": "Areeba", "initial": "A"}
 
 HERO_DISHES = [
-    {"klass": "", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken2.jpg", "name": "Beef nihari", "place": "Waris · Anarkali", "match": "98%"},
-    {"klass": "k1", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken5.jpg", "name": "Chicken karahi", "place": "Butt Karahi", "match": "94%"},
-    {"klass": "k2", "img": "https://foodish-api.com/images/biryani/biryani3.jpg", "name": "Sindhi biryani", "place": "Kolachi", "match": "91%"},
+    {"klass": "", "img": "/static/dishes/curry-rice.jpg", "name": "Beef nihari", "place": "Waris · Anarkali", "match": "98%", "slug": "waris-nihari"},
+    {"klass": "k1", "img": "/static/dishes/karahi.jpg", "name": "Chicken karahi", "place": "Butt Karahi", "match": "94%", "slug": "butt-karahi"},
+    {"klass": "k2", "img": "/static/dishes/biryani.jpg", "name": "Sindhi biryani", "place": "Kolachi", "match": "91%", "slug": "kolachi"},
 ]
 
 DISH_TILES = [
@@ -84,15 +84,15 @@ RESTAURANTS = {
     "waris-nihari": {
         "name": "Waris Nihari", "tagline": "Iconic · since 1962", "area": "Anarkali, Lahore",
         "cuisine": "Pakistani", "price_range": "Rs. 500-800", "hours_short": "Open until midnight",
-        "hero_img": "https://foodish-api.com/images/butter-chicken/butter-chicken17.jpg",
+        "hero_img": "/static/dishes/curry-rice.jpg",
         "address": "Anarkali Food Street, Lahore", "hours_full": "11 AM – midnight, daily",
         "phone": "+92 42 3722 4455",
         "dishes": [
-            {"klass": "", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken4.jpg", "name": "Beef nihari", "price": "Rs. 650", "note": "slow-cooked 8 hrs · very spicy", "match": 98,
+            {"klass": "", "img": "/static/dishes/curry-rice.jpg", "name": "Beef nihari", "price": "Rs. 650", "note": "slow-cooked 8 hrs · very spicy", "match": 98,
              "chips": [{"klass": "hot", "label": "very spicy"}, {"klass": "", "label": "tender"}, {"klass": "", "label": "rich gravy"}]},
-            {"klass": "k4", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken21.jpg", "name": "Maghaz masala", "price": "Rs. 720", "note": "a Lahori acquired taste", "match": 82,
+            {"klass": "k4", "img": "/static/dishes/karahi.jpg", "name": "Maghaz masala", "price": "Rs. 720", "note": "a Lahori acquired taste", "match": 82,
              "chips": [{"klass": "hot", "label": "spicy"}, {"klass": "", "label": "rich"}]},
-            {"klass": "k1", "img": "https://foodish-api.com/images/butter-chicken/butter-chicken27.jpg", "name": "Paya", "price": "Rs. 580", "note": "sunday breakfast staple", "match": 91,
+            {"klass": "k1", "img": "/static/dishes/tikka.jpg", "name": "Paya", "price": "Rs. 580", "note": "sunday breakfast staple", "match": 91,
              "chips": [{"klass": "", "label": "gelatinous"}, {"klass": "", "label": "warming"}]},
         ],
         "reviews": [
@@ -112,6 +112,64 @@ RESTAURANTS = {
             {"label": "Tenderness", "value": "Excellent", "klass": "k-mint", "bar_klass": "veg", "pct": 88},
             {"label": "Portion", "value": "Generous", "klass": "", "bar_klass": "", "pct": 78},
             {"label": "Value", "value": "Good", "klass": "", "bar_klass": "", "pct": 68},
+        ],
+    },
+    "butt-karahi": {
+        "name": "Butt Karahi", "tagline": "Neighbourhood favourite · Fortress Stadium", "area": "Fortress, Lahore",
+        "cuisine": "Pakistani", "price_range": "Rs. 450-900", "hours_short": "Open until 1 AM",
+        "hero_img": "/static/dishes/karahi.jpg",
+        "address": "Fortress Stadium, Lahore", "hours_full": "1 PM – 1 AM, daily",
+        "phone": "+92 42 3577 8811",
+        "dishes": [
+            {"klass": "k1", "img": "/static/dishes/karahi.jpg", "name": "Chicken karahi", "price": "Rs. 850", "note": "cooked to order · sharp tomato base", "match": 94,
+             "chips": [{"klass": "hot", "label": "spicy"}, {"klass": "", "label": "oily-in-a-good-way"}, {"klass": "", "label": "fresh ginger"}]},
+            {"klass": "k4", "img": "/static/dishes/tikka.jpg", "name": "Malai boti", "price": "Rs. 650", "note": "charcoal-grilled, creamy marinade", "match": 88,
+             "chips": [{"klass": "", "label": "smoky"}, {"klass": "veg", "label": "tender"}]},
+        ],
+        "reviews": [
+            {"klass": "b", "initial": "H", "name": "Hamza R.", "badge": "Taste twin · 94% overlap", "stars": 5,
+             "text": "Best karahi in Fortress, no contest. The gravy reduces down perfectly — nothing watery about it.",
+             "chips": [{"klass": "hot", "label": "spicy"}, {"klass": "", "label": "rich gravy"}]},
+        ],
+        "match": {
+            "score": 94,
+            "explanation": 'This fits you because you love <b style="color:var(--cream);">spicy, tomato-forward chicken karahi</b> — a close match to your top-rated dishes.',
+            "factors": ["spicy · +30", "chicken · +24", "karahi-style · +20"],
+        },
+        "aspects": [
+            {"label": "Spiciness", "value": "High", "klass": "k-hot", "bar_klass": "hot", "pct": 85},
+            {"label": "Tenderness", "value": "Excellent", "klass": "k-mint", "bar_klass": "veg", "pct": 90},
+            {"label": "Portion", "value": "Generous", "klass": "", "bar_klass": "", "pct": 82},
+            {"label": "Value", "value": "Very good", "klass": "", "bar_klass": "", "pct": 88},
+        ],
+    },
+    "kolachi": {
+        "name": "Kolachi", "tagline": "Waterfront dining · since 1990s", "area": "DHA, Karachi",
+        "cuisine": "Pakistani", "price_range": "Rs. 900-1800", "hours_short": "Open until midnight",
+        "hero_img": "/static/dishes/biryani.jpg",
+        "address": "Do Darya, DHA Phase 8, Karachi", "hours_full": "12 PM – midnight, daily",
+        "phone": "+92 21 3585 3599",
+        "dishes": [
+            {"klass": "k2", "img": "/static/dishes/biryani.jpg", "name": "Sindhi biryani", "price": "Rs. 950", "note": "layered, tangy, fried onions", "match": 91,
+             "chips": [{"klass": "hot", "label": "spicy"}, {"klass": "", "label": "aromatic"}, {"klass": "", "label": "tangy"}]},
+            {"klass": "", "img": "/static/dishes/samosa.jpg", "name": "Chicken samosas", "price": "Rs. 350", "note": "starter, crisp pastry", "match": 79,
+             "chips": [{"klass": "", "label": "crispy"}, {"klass": "", "label": "savoury"}]},
+        ],
+        "reviews": [
+            {"klass": "c", "initial": "Z", "name": "Zara K.", "badge": "Follows you", "stars": 5,
+             "text": "The biryani here has real depth — not just chili heat, actual layered spice. Worth the drive to Do Darya.",
+             "chips": [{"klass": "hot", "label": "spicy"}, {"klass": "", "label": "aromatic"}]},
+        ],
+        "match": {
+            "score": 91,
+            "explanation": 'This fits you because you love <b style="color:var(--cream);">tangy, spiced Sindhi biryani</b> with layered rice — a close match to your taste profile.',
+            "factors": ["biryani · +28", "spicy · +26", "rice-forward · +18"],
+        },
+        "aspects": [
+            {"label": "Spiciness", "value": "High", "klass": "k-hot", "bar_klass": "hot", "pct": 80},
+            {"label": "Aroma", "value": "Excellent", "klass": "k-mint", "bar_klass": "veg", "pct": 92},
+            {"label": "Portion", "value": "Generous", "klass": "", "bar_klass": "", "pct": 85},
+            {"label": "Value", "value": "Good", "klass": "", "bar_klass": "", "pct": 72},
         ],
     },
 }

@@ -4,10 +4,13 @@
 <div class="nav">
   <a class="brand" href="/app">n<em>a</em>mak</a>
   <div class="navlinks">
-    <span>How it works</span><span>Tastemakers</span><span>Cities</span><span>About</span>
+    <a href="#how-it-works">How it works</a>
+    <span class="navlink-soon" title="Coming soon">Tastemakers</span>
+    <span class="navlink-soon" title="Coming soon">Cities</span>
+    <span class="navlink-soon" title="Coming soon">About</span>
   </div>
   <div class="nav-r">
-    <span>Log in</span>
+    <span class="navlink-soon" title="Coming soon">Log in</span>
     <a class="btn btn-p" style="padding:8px 16px;" href="/app/onboarding">Join free</a>
   </div>
 </div>
@@ -40,17 +43,17 @@
 
   <div class="hero-tiles">
     {% for d in hero_dishes %}
-    <div class="dish {{ d.klass }}" style="{{ 'grid-row:span 2;' if loop.first }}">
+    <a class="dish {{ d.klass }}" style="{{ 'grid-row:span 2;' if loop.first }}" href="/app/restaurant/{{ d.slug }}">
       <img src="{{ d.img }}" alt="{{ d.name }}" onerror="this.style.display='none'"/>
       <div class="grad"></div>
       <div class="match">{{ d.match }}</div>
       <div class="lab">{{ d.name }}<small>{{ d.place }}</small></div>
-    </div>
+    </a>
     {% endfor %}
   </div>
 </div>
 
-<div class="steps-3col container" style="background:var(--ink);color:var(--cream);padding:clamp(22px,4vw,34px) clamp(16px,5vw,50px);">
+<div id="how-it-works" class="steps-3col container" style="background:var(--ink);color:var(--cream);padding:clamp(22px,4vw,34px) clamp(16px,5vw,50px);scroll-margin-top:20px;">
   <div>
     <div style="font-family:var(--mono);font-size:12px;color:var(--saffron);">01</div>
     <div style="font-size:15px;font-weight:500;margin:8px 0 6px;">Tell us your taste</div>
