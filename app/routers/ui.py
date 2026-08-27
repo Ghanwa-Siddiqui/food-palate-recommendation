@@ -33,18 +33,18 @@ HERO_DISHES = [
 ]
 
 DISH_TILES = [
-    {"klass": "", "img": "/static/dishes/curry-rice.jpg", "name": "Nihari", "picked": True},
-    {"klass": "k1", "img": "/static/dishes/karahi.jpg", "name": "Karahi", "picked": True},
-    {"klass": "k2", "img": "/static/dishes/biryani.jpg", "name": "Biryani", "picked": False},
-    {"klass": "k4", "img": "/static/dishes/chowmein.jpg", "name": "Chow mein", "picked": True},
-    {"klass": "k3", "img": "/static/dishes/chicken-curry.jpg", "name": "Palak paneer", "picked": False},
-    {"klass": "k4", "img": "/static/dishes/tikka.jpg", "name": "Seekh kebab", "picked": True},
-    {"klass": "", "img": "/static/dishes/pizza.jpg", "name": "Pizza", "picked": False},
-    {"klass": "k2", "img": "/static/dishes/thali.jpg", "name": "Daal chawal", "picked": False},
-    {"klass": "", "img": "/static/dishes/curry-rice.jpg", "name": "Haleem", "picked": True},
-    {"klass": "", "img": "/static/dishes/pasta.jpg", "name": "Pasta", "picked": False},
-    {"klass": "k4", "img": "/static/dishes/samosa.jpg", "name": "Samosa", "picked": False},
-    {"klass": "", "img": "/static/dishes/karahi.jpg", "name": "Paya", "picked": False},
+    {"klass": "", "img": "/static/dishes/curry-rice.jpg", "name": "Nihari", "picked": True, "tags": ["very spicy", "slow-cooked", "rich gravy", "tender beef"]},
+    {"klass": "k1", "img": "/static/dishes/karahi.jpg", "name": "Karahi", "picked": True, "tags": ["very spicy", "tomato-forward", "tender chicken"]},
+    {"klass": "k2", "img": "/static/dishes/biryani.jpg", "name": "Biryani", "picked": False, "tags": ["spicy", "aromatic", "layered rice"]},
+    {"klass": "k4", "img": "/static/dishes/chowmein.jpg", "name": "Chow mein", "picked": True, "tags": ["savory", "wok-fried", "street food"]},
+    {"klass": "k3", "img": "/static/dishes/chicken-curry.jpg", "name": "Palak paneer", "picked": False, "tags": ["mild", "creamy", "vegetarian"]},
+    {"klass": "k4", "img": "/static/dishes/tikka.jpg", "name": "Seekh kebab", "picked": True, "tags": ["smoky", "charcoal-grilled", "spicy"]},
+    {"klass": "", "img": "/static/dishes/pizza.jpg", "name": "Pizza", "picked": False, "tags": ["cheesy", "baked", "comfort food"]},
+    {"klass": "k2", "img": "/static/dishes/thali.jpg", "name": "Daal chawal", "picked": False, "tags": ["mild", "comforting", "lentil-forward"]},
+    {"klass": "", "img": "/static/dishes/curry-rice.jpg", "name": "Haleem", "picked": True, "tags": ["slow-cooked", "rich gravy", "hearty"]},
+    {"klass": "", "img": "/static/dishes/pasta.jpg", "name": "Pasta", "picked": False, "tags": ["savory", "tomato-forward", "comfort food"]},
+    {"klass": "k4", "img": "/static/dishes/samosa.jpg", "name": "Samosa", "picked": False, "tags": ["crispy", "fried", "street food"]},
+    {"klass": "", "img": "/static/dishes/karahi.jpg", "name": "Paya", "picked": False, "tags": ["slow-cooked", "rich gravy", "gelatinous"]},
 ]
 
 HERO_PICK = {

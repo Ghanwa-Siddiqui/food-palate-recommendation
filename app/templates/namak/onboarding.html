@@ -16,7 +16,7 @@
 
       <div class="grid-4" id="tileGrid" style="gap:10px;">
         {% for d in dish_tiles %}
-        <div class="dish {{ d.klass }}{{ ' check' if d.picked else '' }}" data-name="{{ d.name }}" onclick="toggleTile(this)" style="aspect-ratio:1;">
+        <div class="dish {{ d.klass }}{{ ' check' if d.picked else '' }}" data-name="{{ d.name }}" data-tags="{{ d.tags | join(',') }}" onclick="toggleTile(this)" style="aspect-ratio:1;">
           <img src="{{ d.img }}" onerror="this.style.display='none'"/>
           <div class="grad"></div>
           <div class="lab" style="padding:8px 10px;font-size:11px;">{{ d.name }}</div>
@@ -26,22 +26,15 @@
     </div>
 
     <div>
-      <div class="card dark">
+      <div class="card dark taste-card">
         <div class="eyebrow">Your taste profile · live</div>
-        <div class="vec dk" style="margin:10px 0 14px;">
-          <i style="height:70%"></i><i style="height:90%"></i><i style="height:55%"></i><i style="height:95%"></i><i style="height:40%"></i><i style="height:80%"></i><i style="height:65%"></i><i style="height:85%"></i><i style="height:50%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:88%"></i>
-        </div>
-        <div style="font-family:var(--serif);font-style:italic;font-size:14px;line-height:1.5;color:var(--cream);">"You lean into <span class="k-sf">slow-cooked, spicy, meat-forward</span> Pakistani classics, with a soft spot for Chinese street food."</div>
+        <div class="vec dk" id="vecBars" style="margin:10px 0 14px;"></div>
+        <div id="profileNarrative" style="font-family:var(--serif);font-style:italic;font-size:14px;line-height:1.5;color:var(--cream);"></div>
       </div>
 
       <div class="mt-18">
         <div class="eyebrow">Emerging flavors</div>
-        <div>
-          <span class="chip hot">very spicy</span>
-          <span class="chip">slow-cooked</span>
-          <span class="chip">rich gravy</span>
-          <span class="chip">tender beef</span>
-        </div>
+        <div id="flavorChips"></div>
       </div>
 
       <div class="mt-18">
@@ -55,11 +48,79 @@
 </div>
 
 <script>
+  var BAR_COUNT = 12;
+
+  // Small deterministic hash so the same set of picks always produces the
+  // same bar heights (stable/reproducible, not random jitter on every render).
+  function hash(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  }
+
+  function pickedTiles() {
+    return Array.from(document.querySelectorAll('#tileGrid .dish.check'));
+  }
+
+  function renderVecBars(tiles) {
+    var container = document.getElementById('vecBars');
+    var heights = new Array(BAR_COUNT).fill(0);
+    tiles.forEach(function (tile) {
+      var name = tile.dataset.name;
+      for (var i = 0; i < BAR_COUNT; i++) {
+        heights[i] += hash(name + ':' + i) % 100;
+      }
+    });
+    var max = Math.max.apply(null, heights.concat([1]));
+    container.innerHTML = heights.map(function (h) {
+      var pct = tiles.length ? Math.round(18 + (h / max) * 77) : 8;
+      return '<i style="height:' + pct + '%"></i>';
+    }).join('');
+  }
+
+  function renderFlavorsAndNarrative(tiles) {
+    var counts = {};
+    tiles.forEach(function (tile) {
+      (tile.dataset.tags || '').split(',').filter(Boolean).forEach(function (tag) {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
+    });
+    var ranked = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+
+    var chipsEl = document.getElementById('flavorChips');
+    var narrativeEl = document.getElementById('profileNarrative');
+
+    if (ranked.length === 0) {
+      chipsEl.innerHTML = '<span class="chip">Tap a few dishes to see this build</span>';
+      narrativeEl.innerHTML = '"Your taste profile starts here — tap at least five dishes and we\'ll tell you what you lean into."';
+      return;
+    }
+
+    var top = ranked.slice(0, 4);
+    chipsEl.innerHTML = top.map(function (tag, i) {
+      return '<span class="chip' + (i === 0 ? ' hot' : '') + '">' + tag + '</span>';
+    }).join('');
+
+    var lead = top.slice(0, 2).join(', ');
+    var soft = ranked.length > 2 ? ranked[2] : null;
+    narrativeEl.innerHTML = '"You lean into <span class="k-sf">' + lead + '</span> dishes'
+      + (soft ? ', with a soft spot for <span class="k-sf">' + soft + '</span>' : '')
+      + '."';
+  }
+
+  function updateProfile() {
+    var tiles = pickedTiles();
+    document.getElementById('pickCount').textContent = tiles.length;
+    renderVecBars(tiles);
+    renderFlavorsAndNarrative(tiles);
+  }
+
   function toggleTile(el){
     el.classList.toggle('check');
-    var count = document.querySelectorAll('#tileGrid .dish.check').length;
-    document.getElementById('pickCount').textContent = count;
+    updateProfile();
   }
+
+  updateProfile();
 
   // Submits the tapped dishes to the real Personalization Engine onboarding
   // endpoint, then sends the browser straight to that user's live ranked feed.
