@@ -1,5 +1,7 @@
 {% extends "namak/base.html" %}
 {% block title %}namak — restaurants that fit your taste{% endblock %}
+{% block description %}Tell us five dishes you love. We match you to restaurants no rating average could — plus the tastemakers who eat like you do.{% endblock %}
+{% block head %}<meta property="og:image" content="/static/dishes/curry-rice.jpg">{% endblock %}
 {% block body %}
 <div class="nav">
   <a class="brand" href="/app">n<em>a</em>mak</a>
@@ -16,7 +18,7 @@
 </div>
 
 <div class="split narrow-left container pad-hero" style="align-items:center;">
-  <div>
+  <div class="hero-fade-in">
     <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:var(--paprika);font-weight:500;margin-bottom:20px;">A social network for eaters</div>
     <h1 style="font-family:var(--serif);font-size:clamp(32px,5vw,54px);font-weight:500;line-height:1.05;letter-spacing:-0.03em;margin:0 0 20px;">
       Restaurants that<br/>
@@ -41,7 +43,7 @@
     </div>
   </div>
 
-  <div class="hero-tiles">
+  <div class="hero-tiles hero-fade-in d1">
     {% for d in hero_dishes %}
     <a class="dish {{ d.klass }}" style="{{ 'grid-row:span 2;' if loop.first }}" href="/app/restaurant/{{ d.slug }}">
       <img src="{{ d.img }}" alt="{{ d.name }}" onerror="this.style.display='none'"/>
