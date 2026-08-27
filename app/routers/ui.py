@@ -20,6 +20,7 @@ from ..ranking_client import (
     RankingUserNotFoundError,
     RankingValidationError,
 )
+from .onboarding import CUISINE_CHOICES, DIETARY_CHOICES, TEXTURE_CHOICES
 
 router = APIRouter(prefix="/app", tags=["ui"])
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
@@ -230,7 +231,10 @@ def onboarding(request: Request):
     picked_count = sum(1 for d in DISH_TILES if d["picked"])
     return templates.TemplateResponse(
         request, "namak/onboarding.html",
-        {"dish_tiles": DISH_TILES, "picked_count": picked_count},
+        {
+            "dish_tiles": DISH_TILES, "picked_count": picked_count,
+            "cuisines": CUISINE_CHOICES, "dietary": DIETARY_CHOICES, "textures": TEXTURE_CHOICES,
+        },
     )
 
 

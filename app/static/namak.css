@@ -211,6 +211,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,.dish:focus-visible{
 .feed-input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;background:var(--cream);color:var(--ink);padding:9px;font:inherit}
 .feed-input:focus{outline:2px solid var(--saffron);outline-offset:1px}
 .feed-check{font-size:12px;color:var(--stone-2);display:flex;gap:7px;align-items:center}
+
+/* Onboarding form fields (cuisines/textures/dietary chips, taste sliders,
+   budget range, free-text allergies/dislikes) */
+.field-section{margin-top:26px;}
+.field-section legend,.field-section .field-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--stone);font-weight:600;margin-bottom:10px;display:block;}
+.chip-choice{display:inline-flex;align-items:center;font-size:13px;padding:7px 14px;border-radius:20px;background:var(--bone);color:var(--stone-2);font-weight:500;margin:0 6px 6px 0;border:1px solid var(--line);cursor:pointer;user-select:none;transition:background .12s ease,color .12s ease,border-color .12s ease;}
+.chip-choice:hover{border-color:var(--saffron);}
+.chip-choice.on{background:var(--saffron);color:var(--ink);border-color:var(--saffron);}
+.slider-row{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:12px;margin-bottom:14px;}
+.slider-row label{font-size:13px;color:var(--stone-2);}
+.slider-row input[type="range"]{width:100%;accent-color:var(--saffron);}
+.slider-row output{font-size:12px;color:var(--stone);text-align:right;}
+.budget-row{display:flex;gap:12px;align-items:center;}
+.budget-row .feed-input{max-width:140px;}
 .feed-state{border:1px solid var(--line);border-radius:12px;padding:32px;background:var(--cream);text-align:center}
 .feed-state h2{font-family:var(--serif);font-size:22px;font-weight:500;margin:8px auto 18px;max-width:540px}
 .feed-state-validation_error,.feed-state-backend_error,.feed-state-unavailable{border-color:#c99d8f}

@@ -1,18 +1,17 @@
 {% extends "namak/base.html" %}
-{% block title %}Onboarding — namak{% endblock %}
+{% block title %}Build your taste profile — namak{% endblock %}
 {% block body %}
-<div class="container" style="padding:26px clamp(16px,5vw,40px) 32px;">
+<div class="container" style="padding:26px clamp(16px,5vw,40px) 48px;">
   <div class="flex-b mb-18" style="flex-wrap:wrap;gap:10px;">
     <a class="brand" href="/app">n<em>a</em>mak</a>
-    <div style="font-size:12px;color:var(--stone);">Step 2 of 4 · <a href="/app/feed">Skip for now</a></div>
+    <div style="font-size:12px;color:var(--stone);"><a href="/app/feed">Skip for now</a></div>
   </div>
-  <div class="prog"><span class="on"></span><span class="on"></span><span></span><span></span></div>
   <div id="onboardError" class="chip hot" style="display:none;margin-bottom:16px;"></div>
 
   <div class="split even onboard-split">
     <div>
-      <h2 style="font-family:var(--serif);font-size:32px;font-weight:500;margin:0 0 6px;line-height:1.1;letter-spacing:-0.02em;">Tap the dishes that make you hungry.</h2>
-      <p style="font-size:14px;color:var(--stone-2);margin:0 0 22px;">Pick at least five. The more you tap, the sharper your profile.</p>
+      <h2 style="font-family:var(--serif);font-size:32px;font-weight:500;margin:0 0 6px;line-height:1.1;letter-spacing:-0.02em;">Tell us what you love.</h2>
+      <p style="font-size:14px;color:var(--stone-2);margin:0 0 22px;">Tap a few dishes to start, then fine-tune below. Everything here shapes your match score.</p>
 
       <div class="grid-4" id="tileGrid" style="gap:10px;">
         {% for d in dish_tiles %}
@@ -22,6 +21,69 @@
           <div class="lab" style="padding:8px 10px;font-size:11px;">{{ d.name }}</div>
         </div>
         {% endfor %}
+      </div>
+
+      <div class="field-section">
+        <span class="field-label">Cuisines you enjoy</span>
+        <div id="cuisineChoices">
+          {% for c in cuisines %}
+          <span class="chip-choice" data-value="{{ c }}" onclick="toggleChoice(this)">{{ c }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="field-section">
+        <span class="field-label">Preferred textures</span>
+        <div id="textureChoices">
+          {% for t in textures %}
+          <span class="chip-choice" data-value="{{ t }}" onclick="toggleChoice(this)">{{ t }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="field-section">
+        <span class="field-label">Dietary requirements</span>
+        <div id="dietaryChoices">
+          {% for d in dietary %}
+          <span class="chip-choice" data-value="{{ d }}" onclick="toggleChoice(this)">{{ d }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="field-section">
+        <span class="field-label">Taste dimensions</span>
+        {% set dims = [
+          ("spicePref", "Spice"), ("sweetPref", "Sweetness"),
+          ("sourPref", "Sourness"), ("saltPref", "Saltiness"),
+          ("oilPref", "Oiliness")
+        ] %}
+        {% for id, label in dims %}
+        <div class="slider-row">
+          <label for="{{ id }}">{{ label }}</label>
+          <input type="range" id="{{ id }}" min="0" max="5" value="3"
+                 oninput="document.getElementById('{{ id }}Out').textContent=['none','very light','light','moderate','strong','very strong'][this.value]">
+          <output id="{{ id }}Out">moderate</output>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="field-section">
+        <span class="field-label">Per-meal budget (PKR)</span>
+        <div class="budget-row">
+          <input type="number" id="budgetMin" class="feed-input" min="0" step="50" value="300" placeholder="Min">
+          <span style="color:var(--stone);">–</span>
+          <input type="number" id="budgetMax" class="feed-input" min="0" step="50" value="2000" placeholder="Max">
+        </div>
+      </div>
+
+      <div class="field-section">
+        <span class="field-label">Allergies</span>
+        <input type="text" id="allergiesInput" class="feed-input" placeholder="e.g. peanuts, shellfish (comma-separated, optional)">
+      </div>
+
+      <div class="field-section">
+        <span class="field-label">Ingredients you dislike</span>
+        <input type="text" id="dislikedInput" class="feed-input" placeholder="e.g. cilantro, mushroom (comma-separated, optional)">
       </div>
     </div>
 
@@ -38,8 +100,8 @@
       </div>
 
       <div class="mt-18">
-        <div class="eyebrow">Progress</div>
-        <div style="display:flex;align-items:baseline;gap:6px;"><span id="pickCount" style="font-family:var(--serif);font-size:34px;font-weight:500;">{{ picked_count }}</span><span style="font-size:12px;color:var(--stone);">/ 5 minimum</span></div>
+        <div class="eyebrow">Dishes picked</div>
+        <div style="display:flex;align-items:baseline;gap:6px;"><span id="pickCount" style="font-family:var(--serif);font-size:34px;font-weight:500;">{{ picked_count }}</span><span style="font-size:12px;color:var(--stone);">pick a few for a sharper match</span></div>
       </div>
 
       <button type="button" id="continueBtn" class="btn btn-p" style="display:block;width:100%;margin-top:22px;padding:14px;text-align:center;border:none;font:inherit;cursor:pointer;">Continue →</button>
@@ -60,6 +122,14 @@
 
   function pickedTiles() {
     return Array.from(document.querySelectorAll('#tileGrid .dish.check'));
+  }
+
+  function toggleChoice(el) {
+    el.classList.toggle('on');
+  }
+
+  function chosenValues(containerId) {
+    return Array.from(document.querySelectorAll('#' + containerId + ' .chip-choice.on')).map(function (el) { return el.dataset.value; });
   }
 
   function renderVecBars(tiles) {
@@ -92,7 +162,7 @@
 
     if (ranked.length === 0) {
       chipsEl.innerHTML = '<span class="chip">Tap a few dishes to see this build</span>';
-      narrativeEl.innerHTML = '"Your taste profile starts here — tap at least five dishes and we\'ll tell you what you lean into."';
+      narrativeEl.innerHTML = '"Your taste profile starts here — tap a few dishes and we\'ll tell you what you lean into."';
       return;
     }
 
@@ -122,32 +192,48 @@
 
   updateProfile();
 
-  // Submits the tapped dishes to the real Personalization Engine onboarding
-  // endpoint, then sends the browser straight to that user's live ranked feed.
+  // Submits everything the real Personalization Engine onboarding endpoint
+  // needs — dish taps, cuisines, textures, dietary, taste sliders, budget,
+  // allergies, dislikes — then sends the browser to that user's live feed.
   document.getElementById('continueBtn').addEventListener('click', async function () {
     const btn = this;
     const errEl = document.getElementById('onboardError');
     errEl.style.display = 'none';
-    const names = Array.from(document.querySelectorAll('#tileGrid .dish.check'))
-      .map(function (el) { return el.dataset.name; });
-    if (names.length < 1) {
-      errEl.textContent = 'Tap at least one dish before continuing.';
+
+    const dishNames = pickedTiles().map(function (el) { return el.dataset.name; });
+    const budgetMin = document.getElementById('budgetMin').value || '0';
+    const budgetMax = document.getElementById('budgetMax').value || '0';
+
+    if (Number(budgetMax) < Number(budgetMin)) {
+      errEl.textContent = 'Max budget must be at least your min budget.';
       errEl.style.display = 'inline-block';
       return;
     }
+
     btn.textContent = 'Building your profile…';
     btn.disabled = true;
     try {
       const body = new URLSearchParams();
-      body.append('favourite_dishes', names.join(', '));
-      body.append('spice_preference', '3');
-      body.append('budget_min', '0');
-      body.append('budget_max', '5000');
+      body.append('favourite_dishes', dishNames.join(', '));
+      chosenValues('cuisineChoices').forEach(function (v) { body.append('cuisines', v); });
+      chosenValues('textureChoices').forEach(function (v) { body.append('textures', v); });
+      chosenValues('dietaryChoices').forEach(function (v) { body.append('dietary', v); });
+      body.append('spice_preference', document.getElementById('spicePref').value);
+      body.append('sweetness_preference', document.getElementById('sweetPref').value);
+      body.append('sourness_preference', document.getElementById('sourPref').value);
+      body.append('saltiness_preference', document.getElementById('saltPref').value);
+      body.append('oiliness_preference', document.getElementById('oilPref').value);
+      body.append('budget_min', budgetMin);
+      body.append('budget_max', budgetMax);
+      body.append('allergies', document.getElementById('allergiesInput').value);
+      body.append('disliked_ingredients', document.getElementById('dislikedInput').value);
+
       const resp = await fetch('/onboarding', { method: 'POST', body: body, redirect: 'follow' });
       if (!resp.ok) throw new Error('onboarding failed (' + resp.status + ')');
       const userId = new URL(resp.url).searchParams.get('user_id');
       if (!userId) throw new Error('no user_id returned');
-      window.location.href = '/app/feed?user_id=' + encodeURIComponent(userId) + '&budget_min=0&budget_max=5000&limit=12';
+      window.location.href = '/app/feed?user_id=' + encodeURIComponent(userId)
+        + '&budget_min=' + encodeURIComponent(budgetMin) + '&budget_max=' + encodeURIComponent(budgetMax) + '&limit=12';
     } catch (err) {
       errEl.textContent = 'Could not build your profile — try again.';
       errEl.style.display = 'inline-block';
