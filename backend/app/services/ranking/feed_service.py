@@ -115,6 +115,16 @@ class RankingFeedService:
                     collaborative_reviewer_name=item.candidate.collaborative_reviewer_name,
                     collaborative_review_excerpt=item.candidate.collaborative_review_excerpt,
                     collaborative_review_rating=item.candidate.collaborative_review_rating,
+                    taste_twin_review_count=item.candidate.taste_twin_review_count,
+                    taste_twin_reviews=[
+                        {
+                            "reviewer_name": review.reviewer_name,
+                            "rating": review.rating,
+                            "excerpt": review.excerpt,
+                            "similarity_percent": review.similarity_percent,
+                        }
+                        for review in item.candidate.taste_twin_reviews
+                    ],
                 )
             )
         collaborative_available = any(item.collaborative_score is not None for item in items)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import secrets
+from math import isfinite
 from pathlib import Path
 from typing import Annotated
 from urllib.parse import urlencode
@@ -58,18 +59,38 @@ CUISINES = [
     "Continental",
     "Fast Food",
 ]
-FAVOURITES = [
-    "Biryani",
-    "Karahi",
-    "Nihari",
-    "Pizza",
-    "Burger",
-    "Pasta",
-    "BBQ",
-    "Kebab",
-    "Sushi",
-    "Chow Mein",
-    "Dessert",
+FAVOURITES_BY_CUISINE = {
+    "Pakistani": [
+        "Biryani",
+        "Karahi",
+        "Nihari",
+        "Haleem",
+        "Chicken Tikka",
+        "Seekh Kebab",
+    ],
+    "Chinese": [
+        "Chow Mein",
+        "Fried Rice",
+        "Manchurian",
+        "Dumplings",
+        "Hot and Sour Soup",
+    ],
+    "Italian": ["Pizza", "Pasta", "Lasagna", "Risotto", "Garlic Bread"],
+    "Turkish": ["Adana Kebab", "Doner Kebab", "Pide", "Lahmacun", "Turkish Kofta"],
+    "Japanese": ["Sushi", "Ramen", "Tempura", "Teriyaki Chicken"],
+    "Thai": ["Pad Thai", "Thai Curry", "Tom Yum", "Thai Fried Rice"],
+    "Continental": ["Grilled Chicken", "Steak", "Soup", "Salad", "Roast Chicken"],
+    "Fast Food": ["Burger", "Fried Chicken", "Loaded Fries", "Sandwich", "Shawarma"],
+}
+NEUTRAL_FAVOURITES = [
+    ("Biryani", "Pakistani"),
+    ("Chow Mein", "Chinese"),
+    ("Pizza", "Italian"),
+    ("Adana Kebab", "Turkish"),
+    ("Sushi", "Japanese"),
+    ("Pad Thai", "Thai"),
+    ("Grilled Chicken", "Continental"),
+    ("Burger", "Fast Food"),
 ]
 TEXTURES = ["crispy", "tender", "creamy", "chewy", "crunchy", "soft"]
 DIETARY = ["vegetarian", "vegan", "gluten-free", "no-beef", "no-pork"]
@@ -97,12 +118,42 @@ def _form_tags(form, *names: str) -> list[str]:
     return result
 
 
+def _favourite_quick_picks(cuisines: list[str]) -> list[dict[str, str]]:
+    selected = [cuisine for cuisine in cuisines if cuisine in FAVOURITES_BY_CUISINE]
+    if not selected:
+        return [
+            {"name": name, "cuisine": cuisine} for name, cuisine in NEUTRAL_FAVOURITES
+        ]
+    picks: list[dict[str, str]] = []
+    seen: set[str] = set()
+    row = 0
+    while len(picks) < 10:
+        added = False
+        for cuisine in selected:
+            dishes = FAVOURITES_BY_CUISINE[cuisine]
+            if row >= len(dishes):
+                continue
+            name = dishes[row]
+            normalized = name.casefold()
+            if normalized not in seen:
+                picks.append({"name": name, "cuisine": cuisine})
+                seen.add(normalized)
+                added = True
+                if len(picks) == 10:
+                    break
+        if not added:
+            break
+        row += 1
+    return picks
+
+
 def _quiz_context(request: Request, user, **context):
+    draft = context.get("draft", {})
     return _base(
         request,
         user,
         cuisines=CUISINES,
-        favourites=FAVOURITES,
+        favourites=_favourite_quick_picks(draft.get("preferred_cuisines", [])),
         textures=TEXTURES,
         dietary=DIETARY,
         **context,
@@ -510,15 +561,24 @@ async def onboarding_submit(
     form = await request.form()
     if not _valid_csrf(request, form.get("csrf_token")):
         return RedirectResponse(f"/onboarding/{step}?error=expired", 303)
-    if form.get("direction") == "back":
-        return RedirectResponse(f"/onboarding/{max(1, step - 1)}", 303)
     draft = dict(request.session.get("onboarding", {}))
+    if form.get("direction") == "back":
+        if step == 2:
+            draft["favourite_dishes"] = _form_tags(
+                form,
+                "favourite_dishes",
+                "favourite_dishes_text",
+                "favourite_dishes_suggestions",
+            )
+        request.session["onboarding"] = draft
+        return RedirectResponse(f"/onboarding/{max(1, step - 1)}", 303)
     if step == 1:
         cuisines, city = (
             form.getlist("preferred_cuisines"),
             str(form.get("city", "")).strip(),
         )
         draft.update(preferred_cuisines=cuisines, city=city)
+        request.session["onboarding"] = draft
         if not cuisines or not city:
             return templates.TemplateResponse(
                 request,
@@ -625,9 +685,6 @@ def _feed_params(request: Request) -> list[tuple[str, str]]:
         "search",
         "budget_min",
         "budget_max",
-        "max_distance_km",
-        "user_lat",
-        "user_lng",
         "offset",
     )
     params = [
@@ -655,25 +712,19 @@ def _feed_filter_errors(request: Request) -> list[str]:
         except ValueError:
             errors.append(f"{label} must be a number.")
             return None
+        if not isfinite(value):
+            errors.append(f"{label} must be a finite number.")
+            return None
         if minimum is not None and value < minimum:
             errors.append(f"{label} must be at least {minimum:g}.")
         return value
 
     budget_min = number("budget_min", "Minimum budget", minimum=0)
     budget_max = number("budget_max", "Maximum budget", minimum=1)
-    distance = number("max_distance_km", "Maximum distance", minimum=0.1)
-    latitude = number("user_lat", "Latitude")
-    longitude = number("user_lng", "Longitude")
     if budget_min is not None and budget_max is not None and budget_min > budget_max:
         errors.append("Minimum budget cannot exceed maximum budget.")
-    if (latitude is None) != (longitude is None):
-        errors.append("Latitude and longitude must be supplied together.")
-    if latitude is not None and not -90 <= latitude <= 90:
-        errors.append("Latitude must be between -90 and 90.")
-    if longitude is not None and not -180 <= longitude <= 180:
-        errors.append("Longitude must be between -180 and 180.")
-    if distance is not None and (latitude is None or longitude is None):
-        errors.append("Maximum distance requires valid coordinates.")
+    if len(request.query_params.get("search", "")) > 100:
+        errors.append("Search must be 100 characters or fewer.")
     return errors
 
 

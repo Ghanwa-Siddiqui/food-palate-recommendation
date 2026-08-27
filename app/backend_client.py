@@ -117,6 +117,13 @@ class DealItem(APIModel):
     is_active: bool
 
 
+class TasteTwinReview(APIModel):
+    reviewer_name: str
+    rating: float
+    excerpt: str
+    similarity_percent: int
+
+
 class FeedItem(APIModel):
     dish_id: UUID
     dish_name: str
@@ -141,6 +148,8 @@ class FeedItem(APIModel):
     collaborative_reviewer_name: str | None = None
     collaborative_review_excerpt: str | None = None
     collaborative_review_rating: float | None = None
+    taste_twin_review_count: int = 0
+    taste_twin_reviews: list[TasteTwinReview] = Field(default_factory=list)
 
 
 class FeedResult(APIModel):

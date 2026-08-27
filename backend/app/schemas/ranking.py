@@ -49,6 +49,13 @@ class SignalScores(BaseModel):
     price: float = Field(ge=0, le=100)
 
 
+class TasteTwinReview(BaseModel):
+    reviewer_name: str
+    rating: float = Field(ge=1, le=5)
+    excerpt: str
+    similarity_percent: int = Field(ge=0, le=100)
+
+
 class RankedDishItem(BaseModel):
     dish_id: uuid.UUID
     dish_name: str
@@ -73,6 +80,8 @@ class RankedDishItem(BaseModel):
     collaborative_reviewer_name: str | None = None
     collaborative_review_excerpt: str | None = None
     collaborative_review_rating: float | None = Field(default=None, ge=1, le=5)
+    taste_twin_review_count: int = Field(default=0, ge=0)
+    taste_twin_reviews: list[TasteTwinReview] = Field(default_factory=list, max_length=2)
 
 
 class FeedResponse(BaseModel):

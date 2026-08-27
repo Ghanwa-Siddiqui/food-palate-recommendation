@@ -180,6 +180,76 @@ def test_ranking_endpoint_success_response_types_stable_ties_and_empty(client, s
     assert empty.json()["items"] == []
 
 
+def test_feed_filters_apply_individually_and_combine_with_and_logic(client, session):
+    user = User(name="Filter User", email="filter-user@example.test")
+    halal = restaurant(name="Verified Kitchen", halal_status="verified")
+    unknown = restaurant(name="Unknown Kitchen", halal_status="unknown")
+    session.add_all([user, halal, unknown])
+    session.flush()
+    session.add_all(
+        [
+            dish(
+                halal.id,
+                name="Garden Noodles",
+                cuisine="Chinese",
+                price=Decimal("700"),
+                dietary_tags=["vegetarian"],
+            ),
+            dish(
+                halal.id,
+                name="Beef Karahi",
+                cuisine="Pakistani",
+                price=Decimal("1200"),
+                dietary_tags=[],
+            ),
+            dish(
+                unknown.id,
+                name="Veg Pasta",
+                cuisine="Italian",
+                price=Decimal("900"),
+                dietary_tags=["vegetarian"],
+            ),
+            dish(
+                halal.id,
+                name="Budget Soup",
+                cuisine="Continental",
+                price=Decimal("400"),
+                dietary_tags=["vegetarian"],
+            ),
+        ]
+    )
+    session.commit()
+
+    def names(query: str) -> set[str]:
+        response = client.get(f"/ranking/feed/{user.id}?{query}")
+        assert response.status_code == 200
+        return {item["dish_name"] for item in response.json()["items"]}
+
+    assert names("search=nOoDlEs") == {"Garden Noodles"}
+    assert names("search=chINESE") == {"Garden Noodles"}
+    assert names("search=Verified%20Kitchen") == set()
+    assert names("budget_min=800") == {"Beef Karahi", "Veg Pasta"}
+    assert names("budget_max=500") == {"Budget Soup"}
+    assert names("require_halal=true") == {
+        "Garden Noodles",
+        "Beef Karahi",
+        "Budget Soup",
+    }
+    assert names("dietary_restrictions=vegetarian") == {
+        "Garden Noodles",
+        "Veg Pasta",
+        "Budget Soup",
+    }
+    assert names(
+        "search=continental&budget_min=300&budget_max=500&require_halal=true&"
+        "dietary_restrictions=vegetarian"
+    ) == {"Budget Soup"}
+    assert (
+        names("search=italian&budget_max=800&require_halal=true&dietary_restrictions=vegetarian")
+        == set()
+    )
+
+
 def test_ranking_endpoint_uses_integrated_reviews_and_interactions(client, session):
     user = User(name="Signal User", email="signals@example.test")
     owner = restaurant(name="Signal Restaurant")

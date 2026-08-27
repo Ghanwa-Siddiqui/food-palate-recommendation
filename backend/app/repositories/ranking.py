@@ -11,7 +11,7 @@ from app.models.interaction import Interaction
 from app.models.restaurant import Restaurant
 from app.models.review import Review
 from app.models.user import User
-from app.services.ranking.generator import RankingCandidate
+from app.services.ranking.generator import RankingCandidate, TasteTwinReviewEvidence
 from app.services.ranking.scoring import calculate_cosine_similarity
 
 ANONYMOUS_DINER = "Anonymous Chaska diner"
@@ -108,6 +108,7 @@ class RankingRepository:
         negative = {
             (item.user_id, item.dish_id) for item in interactions if item.action == "dislike"
         }
+        tried = {(item.user_id, item.dish_id) for item in interactions if item.action == "tried"}
         for item in interactions:
             quality = action_quality.get(item.action)
             if quality is not None:
@@ -118,6 +119,8 @@ class RankingRepository:
         for review in reviews:
             if review.rating < 4 or (review.sentiment is not None and review.sentiment < 0.5):
                 negative.add((review.user_id, review.dish_id))
+                continue
+            if (review.user_id, review.dish_id) not in tried:
                 continue
             quality = ((review.rating - 3) / 2) * self._recency(review.updated_at)
             evidence[review.user_id][review.dish_id] = max(
@@ -151,21 +154,23 @@ class RankingRepository:
             )
             if shared_quality < settings.collaborative_min_evidence:
                 continue
-            neighbours.append((user, 0.75 * similarity + 0.25 * shared_quality))
+            neighbours.append((user, 0.75 * similarity + 0.25 * shared_quality, similarity))
         enriched = []
         for candidate in candidates:
             dish_id = candidate.dish.id
             if dish_id in disliked:
                 continue
             contributions = []
-            for user, similarity in neighbours:
+            for user, evidence_weight, taste_similarity in neighbours:
                 quality = evidence[user.id].get(dish_id, 0)
-                if quality >= settings.collaborative_min_evidence:
+                review = positive_reviews.get((user.id, dish_id))
+                if quality >= settings.collaborative_min_evidence and review is not None:
                     contributions.append(
                         (
-                            min(1.0, similarity * quality),
+                            min(1.0, evidence_weight * quality),
                             user,
-                            positive_reviews.get((user.id, dish_id)),
+                            review,
+                            taste_similarity,
                         )
                     )
             contributions.sort(key=lambda value: (-value[0], str(value[1].id)))
@@ -177,6 +182,19 @@ class RankingRepository:
             best = capped[0]
             review = best[2]
             public_name = best[1].name if best[1].show_review_display_name else ANONYMOUS_DINER
+            preview_contributions = sorted(
+                capped,
+                key=lambda value: (-value[3], -value[0], str(value[1].id)),
+            )
+            previews = tuple(
+                TasteTwinReviewEvidence(
+                    reviewer_name=(user.name if user.show_review_display_name else ANONYMOUS_DINER),
+                    rating=float(twin_review.rating),
+                    excerpt=(twin_review.text or "")[:180],
+                    similarity_percent=round(taste_similarity * 100),
+                )
+                for _, user, twin_review, taste_similarity in preview_contributions[:2]
+            )
             if len(capped) == 1 and review is not None:
                 explanation = f"{public_name} has similar tastes and rated this {review.rating}/5."
             else:
@@ -193,6 +211,8 @@ class RankingRepository:
                     collaborative_reviewer_name=(public_name if review else None),
                     collaborative_review_excerpt=((review.text or "")[:180] if review else None),
                     collaborative_review_rating=(float(review.rating) if review else None),
+                    taste_twin_review_count=len(capped),
+                    taste_twin_reviews=previews,
                 )
             )
         return enriched
