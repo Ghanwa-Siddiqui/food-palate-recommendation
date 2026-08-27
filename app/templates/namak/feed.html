@@ -1,64 +1,48 @@
 {% extends "namak/base.html" %}
 {% block title %}For you — namak{% endblock %}
 {% block body %}
-{% include "namak/_nav.html" %}
-<div class="feed-grid" style="max-width:1240px;margin:0 auto;">
-  <aside class="side l">
-    <div class="eyebrow mb-10">Tune your feed</div>
-    <form id="feed-controls" action="/app/feed" method="get" style="display:grid;gap:12px;">
-      <label class="feed-label" for="user-id">Onboarding user ID</label>
-      <input class="feed-input" id="user-id" name="user_id" value="{{ user_id }}" required autocomplete="off" placeholder="UUID" aria-describedby="user-id-help">
-      <small id="user-id-help" style="color:var(--stone);line-height:1.4;">Shown after onboarding.</small>
-      <div class="grid-2" style="gap:8px;">
-        <label class="feed-label">Min PKR<input class="feed-input" name="budget_min" type="number" min="0" step="1" value="{{ budget_min }}"></label>
-        <label class="feed-label">Max PKR<input class="feed-input" name="budget_max" type="number" min="1" step="1" value="{{ budget_max }}"></label>
-      </div>
-      <label class="feed-check"><input type="checkbox" name="require_halal" value="true" {% if require_halal %}checked{% endif %}> Verified/claimed halal only</label>
-      <label class="feed-check"><input type="checkbox" name="dietary_restrictions" value="vegetarian" {% if 'vegetarian' in dietary_restrictions %}checked{% endif %}> Vegetarian</label>
-      <label class="feed-check"><input type="checkbox" name="dietary_restrictions" value="vegan" {% if 'vegan' in dietary_restrictions %}checked{% endif %}> Vegan</label>
-      <button class="btn btn-p" type="submit" style="border:0;cursor:pointer;">Refresh recommendations</button>
+{% set active='feed' %}{% include "namak/_nav.html" %}
+{% set active_count=(1 if filters.get('search') else 0)+(1 if filters.get('budget_min') else 0)+(1 if filters.get('budget_max') else 0)+(1 if filters.get('require_halal')=='true' else 0)+(1 if 'vegetarian' in filters.getlist('dietary_restrictions') else 0)+(1 if filters.get('max_distance_km') else 0) %}
+<div class="feed-shell">
+  <button class="btn btn-o filter-toggle" type="button" aria-expanded="false" aria-controls="feed-filters"><span>Filters</span>{% if active_count %}<b aria-label="{{ active_count }} active filters">{{ active_count }}</b>{% endif %}</button>
+  <div class="filter-scrim" data-filter-close hidden></div>
+  <aside class="feed-filters" id="feed-filters" aria-label="Feed filters">
+    <div class="filter-head"><div><p class="overline">Tune your feed</p><h2>Filters</h2></div><button type="button" class="filter-close" data-filter-close aria-label="Close filters">×</button></div>
+    <form id="feed-controls" method="get" action="/app/feed" novalidate>
+      <label class="filter-field">Search by dish or cuisine<input name="search" value="{{ filters.get('search','') }}" maxlength="100" placeholder="Biryani, Italian…"></label>
+      <div class="filter-pair"><label class="filter-field">Budget minimum<input name="budget_min" type="number" min="0" step="1" value="{{ filters.get('budget_min','') }}" placeholder="PKR"></label><label class="filter-field">Budget maximum<input name="budget_max" type="number" min="1" step="1" value="{{ filters.get('budget_max','') }}" placeholder="PKR"></label></div>
+      <fieldset class="filter-options"><legend>Dietary needs</legend><label><input type="checkbox" name="require_halal" value="true" {% if filters.get('require_halal')=='true' %}checked{% endif %}><span>Halal only</span></label><label><input type="checkbox" name="dietary_restrictions" value="vegetarian" {% if 'vegetarian' in filters.getlist('dietary_restrictions') %}checked{% endif %}><span>Vegetarian</span></label></fieldset>
+      <label class="filter-field">Maximum distance (km)<input name="max_distance_km" type="number" min="0.1" step="0.1" value="{{ filters.get('max_distance_km','') }}" placeholder="e.g. 10"></label>
+      <section class="coordinate-fields" aria-labelledby="coordinate-title"><div><b id="coordinate-title">Your coordinates</b><button class="btn btn-g geo-button" type="button">Use my coordinates</button></div><p class="geo-status" role="status" aria-live="polite">{% if filters.get('user_lat') and filters.get('user_lng') %}Coordinates ready.{% else %}Needed only for distance filtering.{% endif %}</p><div class="filter-pair"><label class="filter-field">Latitude<input name="user_lat" type="number" inputmode="decimal" min="-90" max="90" step="any" value="{{ filters.get('user_lat','') }}"></label><label class="filter-field">Longitude<input name="user_lng" type="number" inputmode="decimal" min="-180" max="180" step="any" value="{{ filters.get('user_lng','') }}"></label></div></section>
+      <div class="filter-error" role="alert" hidden></div>
+      {% if filter_errors %}<div class="filter-error server-filter-error" role="alert"><b>Check your filters</b><ul>{% for error in filter_errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      <div class="filter-actions"><button class="btn btn-p" type="submit">Apply filters</button><button class="btn btn-g reset-filters" type="button">Reset</button></div>
     </form>
-    <a class="side-item mt-18" href="/onboarding">＋ Create another taste profile</a>
+    <a class="edit-preferences" href="/app/preferences">⚙ Edit taste preferences</a>
   </aside>
-  <main style="padding:26px 28px 30px;">
-    <div class="flex-b" style="align-items:baseline;">
-      <h1 style="font-family:var(--serif);font-size:28px;font-weight:500;margin:0;letter-spacing:-0.02em;">Your ranked feed</h1>
-      {% if feed %}<span style="font-size:12px;color:var(--stone);">{{ feed.total_candidates }} eligible dishes</span>{% endif %}
-    </div>
-    <p style="font-size:13px;color:var(--stone-2);margin:4px 0 20px;">Recommendations come from the integrated Ranking API.</p>
-    <div id="feed-loading" class="feed-state" role="status" hidden><div class="eyebrow">Loading</div><h2>Ranking dishes for you…</h2></div>
-    {% if state != 'success' %}
-    <section class="feed-state feed-state-{{ state }}" data-feed-state="{{ state }}" role="{% if state in ['validation_error', 'backend_error', 'unavailable'] %}alert{% else %}status{% endif %}">
-      <div class="eyebrow">{% if state == 'prompt' %}Ready when you are{% elif state == 'empty' %}No matches{% elif state == 'missing_user' %}User not found{% elif state == 'validation_error' %}Check your filters{% elif state == 'unavailable' %}Data unavailable{% else %}Service unavailable{% endif %}</div>
-      <h2>{{ message }}</h2>
-      {% if state != 'prompt' %}<a class="btn btn-d" href="/app/feed{% if user_id %}?user_id={{ user_id | urlencode }}{% endif %}">Reset filters</a>{% endif %}
-    </section>
-    {% else %}
-    <div class="grid-2" data-feed-state="success">
-      {% for item in feed.items %}
-      <article class="ranked-card">
-        <div class="dish-placeholder" role="img" aria-label="No image available for {{ item.dish_name }}"><span>Image unavailable</span><strong>{{ item.dish_name[0] | upper }}</strong></div>
-        <div class="ranked-card-body">
-          <div class="flex-b"><span class="match">{{ item.match_percentage }}% match</span><span class="price">PKR {{ "%.0f" | format(item.price) }}</span></div>
-          <h2>{{ item.dish_name }}</h2><p>{{ item.restaurant_name }}</p>
-          {% if item.distance_km is not none %}<small>{{ "%.1f" | format(item.distance_km) }} km away</small>{% else %}<small>Distance unavailable</small>{% endif %}
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-    {% endif %}
+
+  <main class="feed-results">
+    <header class="feed-heading"><div><p class="overline">Personalized for {{ user.name }}</p><h1>Your ranked feed</h1></div>{% if feed %}<p><b>{{ feed.total_candidates }}</b> result{{ '' if feed.total_candidates==1 else 's' }}</p>{% endif %}</header>
+    {% if welcome %}<div class="notice">Your taste profile is ready. These recommendations use it now.</div>{% endif %}
+    {% if active_count %}<div class="active-filters" aria-label="Active filters"><span>{{ active_count }} active</span>{% if filters.get('search') %}<button data-remove-filter="search">Search: {{ filters.get('search') }} ×</button>{% endif %}{% if filters.get('budget_min') %}<button data-remove-filter="budget_min">Min PKR {{ filters.get('budget_min') }} ×</button>{% endif %}{% if filters.get('budget_max') %}<button data-remove-filter="budget_max">Max PKR {{ filters.get('budget_max') }} ×</button>{% endif %}{% if filters.get('require_halal')=='true' %}<button data-remove-filter="require_halal">Halal ×</button>{% endif %}{% if 'vegetarian' in filters.getlist('dietary_restrictions') %}<button data-remove-filter="dietary_restrictions">Vegetarian ×</button>{% endif %}{% if filters.get('max_distance_km') %}<button data-remove-filter="distance">Within {{ filters.get('max_distance_km') }} km ×</button>{% endif %}</div>{% endif %}
+    <div id="feed-loading" class="feed-state" hidden role="status" aria-live="polite">Updating your recommendations…</div>
+    {% if state=='validation' %}<section class="feed-state"><h2>Filters need attention.</h2><p>Correct the highlighted values and apply them again.</p></section>
+    {% elif state=='error' %}{% set state_img=context_image('unavailable') %}<section class="feed-state state-with-image" role="alert"><img src="{{ state_img.src }}" alt="" width="{{ state_img.width }}" height="{{ state_img.height }}"><div><h2>Recommendations are unavailable.</h2><p>The ranking service did not respond. Your filters are still here.</p><a class="btn btn-p" href="{{ request.url.path }}?{{ request.url.query }}">Try again</a></div></section>
+    {% elif state=='empty' %}{% set state_img=context_image('empty') %}<section class="feed-state state-with-image"><img src="{{ state_img.src }}" alt="" width="{{ state_img.width }}" height="{{ state_img.height }}"><div><h2>No dishes match these filters.</h2><p>Remove a filter or widen your budget and distance.</p><button class="btn btn-o reset-filters" type="button">Clear all filters</button></div></section>
+    {% else %}<div class="feed-card-grid">{% for item in feed.items %}{% set image=dish_image(item.dish_name,item.cuisine,item.image_url) %}<article class="feed-card">
+      <a class="feed-card-image" href="/app/dishes/{{ item.dish_id }}"><img src="{{ image.src }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}" loading="lazy" onerror="this.onerror=null;this.src='{{ fallback_image().src }}'"><span class="match-pill">{{ item.match_percentage }}% match</span></a>
+      <div class="feed-card-body"><div class="feed-card-title"><div><h2>{{ item.dish_name }}</h2><a href="/app/restaurants/{{ item.restaurant_id }}">{{ item.restaurant_name }}</a></div><strong>PKR {{ '%.0f'|format(item.price) }}</strong></div>
+        <div class="chip-row"><span class="chip">{{ item.cuisine }}</span>{% for tag in item.dietary_tags[:2] %}<span class="chip veg">{{ tag }}</span>{% endfor %}{% if item.halal_status in ['verified','claimed'] %}<span class="chip veg">Halal {{ item.halal_status }}</span>{% endif %}</div>
+        <section class="feed-evidence"><p><b>Taste match</b>{{ item.taste_explanation }}</p><p><b>Review insight</b>{{ item.review_insight or 'No review insight yet.' }}</p>{% if item.collaborative_explanation %}<p><b>Similar-diner evidence</b>{{ item.collaborative_explanation }}{% if item.collaborative_review_excerpt and item.collaborative_review_rating %}<q>{{ item.collaborative_review_excerpt }}</q><small>{{ item.collaborative_reviewer_name }} · {{ item.collaborative_review_rating }}/5</small>{% endif %}</p>{% endif %}{% if item.distance_km is not none %}<p><b>Distance</b>{{ '%.1f'|format(item.distance_km) }} km away</p>{% endif %}</section>
+        <div class="feed-card-actions"><form method="post" action="/app/interactions"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="dish_id" value="{{ item.dish_id }}"><input type="hidden" name="event_id" value="{{ event_id }}-{{ loop.index }}-save"><input type="hidden" name="next" value="/app/feed"><button class="btn {{ 'btn-g' if item.saved else 'btn-p' }}" name="action" value="{{ 'unsave' if item.saved else 'save' }}">{{ 'Saved ✓' if item.saved else 'Save dish' }}</button></form><a class="btn btn-o" href="/app/dishes/{{ item.dish_id }}">Open dish</a><form method="post" action="/app/interactions"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="dish_id" value="{{ item.dish_id }}"><input type="hidden" name="event_id" value="{{ event_id }}-{{ loop.index }}-order"><input type="hidden" name="next" value="/app/feed"><button class="btn btn-g" name="action" value="order">Order interest</button></form></div>
+      </div></article>{% endfor %}</div>{% endif %}
   </main>
-  <aside class="side r">
-    <div class="eyebrow">How this feed works</div>
-    <p style="font-size:12px;color:var(--stone-2);line-height:1.6;">The backend ranks catalog dishes from your selected constraints. Missing signals stay neutral; this screen never computes rankings.</p>
-    {% if feed and feed.neutral_signals %}<div class="eyebrow mt-24">Neutral signals</div><ul class="neutral-list">{% for signal in feed.neutral_signals %}<li>{{ signal | replace('_', ' ') | title }}</li>{% endfor %}</ul>{% endif %}
-    <a class="side-item mt-24" href="/app">← Back to namak home</a>
-  </aside>
 </div>
 <script>
-  document.getElementById("feed-controls").addEventListener("submit", function () {
-    document.getElementById("feed-loading").hidden = false;
-    document.querySelector("main").setAttribute("aria-busy", "true");
-  });
+(()=>{const form=document.querySelector('#feed-controls'),panel=document.querySelector('#feed-filters'),toggle=document.querySelector('.filter-toggle'),scrim=document.querySelector('.filter-scrim'),error=form.querySelector('.filter-error:not(.server-filter-error)'),status=form.querySelector('.geo-status'),lat=form.elements.user_lat,lng=form.elements.user_lng,distance=form.elements.max_distance_km;
+const close=()=>{panel.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');scrim.hidden=true;toggle.focus()};const open=()=>{panel.classList.add('is-open');toggle.setAttribute('aria-expanded','true');scrim.hidden=false;panel.querySelector('input').focus()};toggle.addEventListener('click',()=>panel.classList.contains('is-open')?close():open());document.querySelectorAll('[data-filter-close]').forEach(el=>el.addEventListener('click',close));document.addEventListener('keydown',event=>{if(event.key==='Escape'&&panel.classList.contains('is-open'))close()});
+const validate=()=>{const messages=[],min=Number(form.elements.budget_min.value),max=Number(form.elements.budget_max.value),hasMin=form.elements.budget_min.value!=='',hasMax=form.elements.budget_max.value!=='';if(hasMin&&(!Number.isFinite(min)||min<0))messages.push('Minimum budget must be zero or more.');if(hasMax&&(!Number.isFinite(max)||max<=0))messages.push('Maximum budget must be greater than zero.');if(hasMin&&hasMax&&min>max)messages.push('Minimum budget cannot exceed maximum budget.');const hasLat=lat.value!=='',hasLng=lng.value!=='';if(hasLat!==hasLng)messages.push('Latitude and longitude must be supplied together.');if(hasLat&&(+lat.value < -90 || +lat.value > 90 || +lng.value < -180 || +lng.value > 180))messages.push('Enter valid latitude and longitude.');if(distance.value&&(!hasLat||!hasLng))messages.push('Maximum distance requires valid coordinates.');error.hidden=!messages.length;error.textContent=messages.join(' ');return !messages.length};
+form.addEventListener('submit',event=>{if(!validate()){event.preventDefault();return}document.querySelector('#feed-loading').hidden=false;form.querySelector('button[type=submit]').disabled=true;panel.classList.remove('is-open');scrim.hidden=true});form.querySelector('.geo-button').addEventListener('click',()=>{if(!navigator.geolocation){status.textContent='Geolocation is unavailable in this browser.';return}status.textContent='Requesting your location…';navigator.geolocation.getCurrentPosition(position=>{lat.value=position.coords.latitude.toFixed(6);lng.value=position.coords.longitude.toFixed(6);status.textContent='Coordinates ready. Apply filters to update results.'},geoError=>{status.textContent=geoError.code===1?'Location permission was denied. Enter coordinates manually.':'Your location is unavailable. Enter coordinates manually.'},{enableHighAccuracy:false,timeout:10000,maximumAge:300000})});
+document.querySelectorAll('.reset-filters').forEach(button=>button.addEventListener('click',()=>{button.disabled=true;window.location.assign('/app/feed')}));document.querySelectorAll('[data-remove-filter]').forEach(button=>button.addEventListener('click',()=>{const url=new URL(window.location.href),name=button.dataset.removeFilter;if(name==='distance'){url.searchParams.delete('max_distance_km');url.searchParams.delete('user_lat');url.searchParams.delete('user_lng')}else url.searchParams.delete(name);url.searchParams.delete('offset');window.location.assign(url)}));})();
 </script>
 {% endblock %}

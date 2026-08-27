@@ -20,10 +20,18 @@ class DishLike(Protocol):
     id: UUID
     restaurant_id: UUID
     name: str
+    cuisine: str
     price: Decimal
     ingredients: list[str]
     dietary_tags: list[str]
     allergens: list[str]
+    spice_level: int
+    oiliness: int
+    sweetness: int
+    sourness: int
+    saltiness: int
+    richness: int
+    texture_tags: list[str]
     availability: bool
     embedding: list[float] | None
     restaurant: RestaurantLike
@@ -33,7 +41,15 @@ class DishLike(Protocol):
 class RankingCandidate:
     dish: DishLike
     review_average: float | None = None
+    review_sentiment: float | None = None
     interaction_count: int = 0
+    saved: bool = False
+    collaborative_score: float | None = None
+    similar_user_count: int = 0
+    collaborative_explanation: str | None = None
+    collaborative_reviewer_name: str | None = None
+    collaborative_review_excerpt: str | None = None
+    collaborative_review_rating: float | None = None
 
 
 def _normalized(values: list[str]) -> set[str]:
@@ -60,6 +76,16 @@ def filter_candidates(
     filtered: list[RankingCandidate] = []
     for candidate in candidates:
         dish = candidate.dish
+        if (
+            preferences.restaurant_id is not None
+            and dish.restaurant_id != preferences.restaurant_id
+        ):
+            continue
+        if preferences.search:
+            needle = preferences.search.casefold()
+            searchable = f"{dish.name} {dish.cuisine} {dish.restaurant.name}".casefold()
+            if needle not in searchable:
+                continue
         if not dish.availability:
             continue
         price = float(dish.price)

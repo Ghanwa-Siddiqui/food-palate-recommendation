@@ -3,6 +3,7 @@
 Each collection is one file under data/. Reads and writes are atomic on
 individual operations; concurrent writers are not supported (dev-only).
 """
+
 from __future__ import annotations
 
 import json
@@ -63,4 +64,6 @@ class JsonRepository:
         ]
 
     def all_interactions(self) -> list[Interaction]:
-        return [Interaction.model_validate(r) for r in self._read(self.interactions_path)]
+        return [
+            Interaction.model_validate(r) for r in self._read(self.interactions_path)
+        ]

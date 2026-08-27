@@ -1,19 +1,13 @@
-{# active: "for-you" | "explore" | "collections" | "following" | none. search: bool #}
-<div class="nav">
-  <div class="flex-c gap-20">
-    <a class="brand" href="/app">n<em>a</em>mak</a>
-    {% if search %}
-    <a class="search" style="width:280px;text-decoration:none;" href="/app/feed"><span class="icon">⌕</span><span>Find ranked dishes</span></a>
-    {% endif %}
-  </div>
-  <div class="navlinks">
-    <a class="{{ 'act' if active=='for-you' }}" href="/app/feed">For you</a>
-    <a class="{{ 'act' if active=='explore' }}" href="/app">Explore</a>
-    <a class="{{ 'act' if active=='collections' }}" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}">Collections</a>
-    <a class="{{ 'act' if active=='following' }}" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}">Following</a>
-  </div>
-  <div class="nav-r">
-    <span class="icon">◔</span><span class="icon">☆</span>
-    <a class="avatar" href="/app/u/{{ demo_user.username if demo_user else 'areeba' }}">{{ (demo_user.initial if demo_user else 'A') }}</a>
-  </div>
-</div>
+<header class="nav app-nav">
+  <a class="brand" href="/">n<em>a</em>mak</a>
+  <form class="search nav-search" action="/app/feed" method="get" role="search">
+    <label class="sr-only" for="nav-search">Search dishes and restaurants</label>
+    <span aria-hidden="true">⌕</span><input id="nav-search" name="search" placeholder="Search dishes and places" value="{{ filters.get('search','') if filters else '' }}">
+  </form>
+  <nav class="navlinks" aria-label="Main navigation">
+    <a class="{{ 'act' if active=='feed' }}" href="/app/feed">For you</a>
+    <a class="{{ 'act' if active=='saved' }}" href="/app/saved">Saved</a>
+    <a class="{{ 'act' if active=='profile' }}" href="/app/profile">Profile</a>
+  </nav>
+  <a class="avatar" href="/app/profile" aria-label="Open profile">{{ user.name[0] | upper }}</a>
+</header>

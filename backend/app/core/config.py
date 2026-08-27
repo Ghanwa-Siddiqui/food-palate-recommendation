@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     database_max_overflow: int = 5
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     expected_supabase_project_ref: str | None = None
+    internal_api_key: str | None = None
+    collaborative_min_similarity: float = Field(default=0.65, ge=0, le=1)
+    collaborative_min_evidence: float = Field(default=0.45, ge=0, le=1)
 
 
 @lru_cache

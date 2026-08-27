@@ -6,6 +6,7 @@ for the full users/interactions table DDL this expects.
 
 Enable by setting STORAGE_BACKEND=supabase and providing SUPABASE_URL + SUPABASE_KEY.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -53,7 +54,13 @@ class SupabaseRepository:
         self.client.table(self.USERS_TABLE).upsert(row).execute()
 
     def get_user(self, user_id: str) -> UserTaste | None:
-        resp = self.client.table(self.USERS_TABLE).select("*").eq("user_id", user_id).limit(1).execute()
+        resp = (
+            self.client.table(self.USERS_TABLE)
+            .select("*")
+            .eq("user_id", user_id)
+            .limit(1)
+            .execute()
+        )
         rows = resp.data or []
         if not rows:
             return None
@@ -74,7 +81,12 @@ class SupabaseRepository:
         self.client.table(self.INTERACTIONS_TABLE).insert(row).execute()
 
     def interactions_for_user(self, user_id: str) -> list[Interaction]:
-        resp = self.client.table(self.INTERACTIONS_TABLE).select("*").eq("user_id", user_id).execute()
+        resp = (
+            self.client.table(self.INTERACTIONS_TABLE)
+            .select("*")
+            .eq("user_id", user_id)
+            .execute()
+        )
         return [Interaction.model_validate(r) for r in (resp.data or [])]
 
     def all_interactions(self) -> list[Interaction]:

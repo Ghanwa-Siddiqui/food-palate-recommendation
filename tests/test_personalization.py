@@ -3,7 +3,11 @@ import numpy as np
 from app.config import VECTOR_DIM
 from app.embedding import embed_dish, embed_text
 from app.models import OnboardingAnswers
-from app.personalization import apply_interaction_update, build_taste_vector, user_from_onboarding
+from app.personalization import (
+    apply_interaction_update,
+    build_taste_vector,
+    user_from_onboarding,
+)
 from app.vector_math import cosine_similarity, ema_update
 
 
@@ -46,9 +50,13 @@ def test_ema_moves_vector_toward_signal():
 
 
 def test_apply_interaction_bumps_user_vector_toward_dish():
-    answers = OnboardingAnswers(preferred_cuisines=["Pakistani"], favourite_dishes=["biryani"])
+    answers = OnboardingAnswers(
+        preferred_cuisines=["Pakistani"], favourite_dishes=["biryani"]
+    )
     user = user_from_onboarding("11111111-1111-4111-8111-111111111111", answers)
     dish_v = embed_dish("Salmon Sushi", "Japanese", ["salmon", "rice"])
     updated = apply_interaction_update(user, dish_v)
-    assert cosine_similarity(updated.taste_vector, dish_v) > cosine_similarity(user.taste_vector, dish_v)
+    assert cosine_similarity(updated.taste_vector, dish_v) > cosine_similarity(
+        user.taste_vector, dish_v
+    )
     assert updated.last_updated >= user.last_updated

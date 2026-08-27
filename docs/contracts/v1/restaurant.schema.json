@@ -3,7 +3,7 @@
   "$id": "https://chaska.example/contracts/v1/restaurant.schema.json",
   "title": "Restaurant v1",
   "type": "object",
-  "required": ["id", "name", "description", "cuisine_types", "address", "city", "lat", "lng", "location_verified", "coordinates_source_url", "coordinates_verified_at", "price_range", "halal_status", "created_at", "updated_at"],
+  "required": ["id", "name", "description", "cuisine_types", "address", "city", "lat", "lng", "location_verified", "coordinates_source_url", "coordinates_verified_at", "price_range", "halal_status", "owner_id", "contact_phone", "halal_verification_status", "opening_information", "available", "image_path", "created_at", "updated_at"],
   "properties": {
     "id": {"type": "string", "format": "uuid"},
     "name": {"type": "string"},
@@ -18,6 +18,12 @@
     "coordinates_verified_at": {"type": ["string", "null"], "format": "date-time"},
     "price_range": {"type": "string"},
     "halal_status": {"type": "string", "enum": ["verified", "claimed", "not_halal", "unknown"]},
+    "owner_id": {"type": ["string", "null"], "format": "uuid"},
+    "contact_phone": {"type": ["string", "null"]},
+    "halal_verification_status": {"type": "string", "enum": ["unverified", "pending", "verified", "rejected"]},
+    "opening_information": {"type": ["string", "null"]},
+    "available": {"type": "boolean"},
+    "image_path": {"type": ["string", "null"], "pattern": "^/static/images/[^.][^/]*$"},
     "created_at": {"type": "string", "format": "date-time"},
     "updated_at": {"type": "string", "format": "date-time"}
   },

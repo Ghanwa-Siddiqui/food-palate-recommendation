@@ -1,8 +1,19 @@
 import uuid
+from datetime import datetime
 from decimal import Decimal
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, CheckConstraint, ForeignKey, Integer, Numeric, String, Text, Uuid
+from sqlalchemy import (
+    JSON,
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    Uuid,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.constants import EMBEDDING_DIMENSION
@@ -44,6 +55,17 @@ class Dish(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     preparation_style: Mapped[str] = mapped_column(String(100), nullable=False)
     availability: Mapped[bool] = mapped_column(default=True, nullable=False)
     embedding: Mapped[list[float] | None] = mapped_column(Vector(EMBEDDING_DIMENSION))
+    embedding_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    image_path: Mapped[str | None] = mapped_column(String(300))
+    creation_key: Mapped[str | None] = mapped_column(String(64), unique=True)
+    review_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    review_average: Mapped[float | None] = mapped_column(Numeric(3, 2))
+    review_sentiment: Mapped[float | None] = mapped_column(Numeric(5, 4))
+    review_spice: Mapped[float | None] = mapped_column(Numeric(5, 3))
+    review_oiliness: Mapped[float | None] = mapped_column(Numeric(5, 3))
+    review_flavor_tags: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    review_aggregated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     restaurant = relationship("Restaurant", back_populates="dishes")
     reviews = relationship("Review", back_populates="dish", cascade="all, delete-orphan")
     interactions = relationship("Interaction", back_populates="dish", cascade="all, delete-orphan")

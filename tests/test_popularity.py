@@ -11,8 +11,10 @@ def test_no_interactions_returns_empty():
 def test_weights_and_normalization():
     repo = get_repository()
     repo.add_interaction(Interaction(user_id="u1", dish_id="d_001", action="click"))
-    repo.add_interaction(Interaction(user_id="u2", dish_id="d_001", action="order"))  # 1 + 3 = 4
-    repo.add_interaction(Interaction(user_id="u1", dish_id="d_002", action="save"))   # 2
+    repo.add_interaction(
+        Interaction(user_id="u2", dish_id="d_001", action="order")
+    )  # 1 + 3 = 4
+    repo.add_interaction(Interaction(user_id="u1", dish_id="d_002", action="save"))  # 2
 
     raw = raw_dish_scores()
     assert raw["d_001"] == 4.0

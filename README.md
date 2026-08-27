@@ -1,179 +1,86 @@
-# Chaska Food Palate Recommendation System
+# Chaska / Namak
 
-Chaska is an AI-based food palate and restaurant recommendation system. Its backend is a modular FastAPI service designed for Supabase-hosted PostgreSQL and pgvector.
-
-All sample restaurants are synthetic development data, not verified real businesses.
-
-## Modules
-
-| Owner | Module | Branch | Docs |
-|---|---|---|---|
-| Ghanwa | Data Layer & Backend Core | `feature/data-core-ghanwa` | — |
-| Ifreen | Review Intelligence | `feature/review-intelligence-ifreen` | — |
-| Manahil | Personalization Engine | `feature/personalization-manahil` | [Personalization](docs/personalization.md) · [Contracts](docs/contracts.md) |
-| Esha | Ranking Engine & Feed UI | `feature/ranking-feed-esha` | — |
+Namak is Chaska's food-palate web experience. It combines a server-rendered FastAPI/Jinja UI with persisted Data Core records, Review Intelligence summaries, Personalization profiles/interactions, and a deterministic Ranking API.
 
 ## Architecture
 
-## Architecture
+Two separate Python processes avoid the ambiguous `app` package names:
 
-- `backend/app/models`: SQLAlchemy 2 ORM entities with UUID identifiers
-- `backend/app/schemas`: Pydantic API schemas and pagination envelopes
-- `backend/app/repositories`: database-only query and filter logic
-- `backend/app/services/data_core`: catalog business logic and replaceable embeddings
-- `backend/app/api/routes`: thin FastAPI route handlers
-- `backend/migrations`: Alembic setup and initial pgvector-compatible schema
-- `backend/scripts`: guarded, idempotent development seed command
-- `docs/contracts/v1`: versioned JSON Schema contracts
-- `data/seed`: sample dataset documentation
+- `backend/app` on port 8000: SQLAlchemy/PostgreSQL data, catalog APIs, review summaries, user profiles/interactions, and ranking.
+- root `app` on port 8001: Supabase Auth, signed HTTP-only sessions, CSRF-protected forms, backend client, and responsive Jinja screens.
+- `review_intelligence`: extraction/aggregation tools; structured results persist on reviews and are exposed by the backend review-summary API.
 
-Database engine and embedding model construction are lazy. Importing `app.main` neither opens a database connection nor loads/downloads a sentence-transformer model.
+The UI never duplicates ranking logic or connects directly to the database. Private backend calls carry the authenticated user ID and optional shared `CHASKA_INTERNAL_API_KEY`; ownership checks reject cross-user access when that key is configured.
 
-The versioned `user-taste.schema.json` contract provides a storage-neutral handoff for
-onboarding preferences: cuisines, favourite dishes, five taste preferences, textures,
-budget bounds, dietary requirements, allergies, disliked ingredients, a taste-vector
-slot, and update time. No user-taste table, endpoint, vector-generation algorithm, EMA
-update, or similarity logic is implemented here; those remain owned by the onboarding
-and personalization module.
+Phase 1 restaurant partners select their account type at signup, complete a restaurant profile at `/partner/onboarding`, and manage only their owned restaurants from `/partner/dashboard`. Roles are `customer`, `restaurant_partner`, and `admin`; the admin role is represented without an admin dashboard. Dish management is intentionally deferred.
 
-Storage-neutral `review-summary.schema.json` and `interaction.schema.json` contracts
-also preserve the agreed cross-module shapes without implementing sentiment analysis,
-review aggregation, feedback processing, or recommendation behaviour.
+## User journey
 
-## Installation
+Routes cover landing, signup, login, four-step onboarding, ranked feed, restaurant/menu, dish detail, saved dishes, profile/activity, preference editing, logout, and expired-session recovery. Onboarding stores a 384-dimensional taste vector. Click/save/order-interest actions use the interaction contract; save is idempotent and feedback updates the vector with EMA when a dish embedding exists. Missing coordinates, embeddings, reviews, deals, similarities, and images remain explicit unavailable/neutral states.
 
-Python 3.11 or later is required.
+Ranking uses the workbook weights exactly: taste 45%, food/profile 20%, reviews 10%, distance 10%, price 10%, and popularity 5%. Missing signals score a documented neutral 50 and are returned as `neutral_signals`.
+
+Generated local WebP assets in `app/static/images` provide honest cuisine-level fallbacks (Pakistani, pan-Asian, and Western/Mediterranean), plus restaurant and landing imagery. Nothing is hotlinked.
+
+## Configuration
+
+Copy `.env.example` locally and fill placeholders. Never commit the real `.env`.
+
+The backend requires `DATABASE_URL`. Auth requires `SUPABASE_URL` and the public/anon `SUPABASE_PUBLISHABLE_KEY`—never a service-role key. Set a random 32+ character `SESSION_SECRET`; set `SESSION_COOKIE_SECURE=true` behind HTTPS. Set the same optional `CHASKA_INTERNAL_API_KEY` for both processes. `BACKEND_API_BASE_URL` defaults to `http://127.0.0.1:8000`.
+
+## Install and run
+
+Use separate environments:
 
 ```powershell
-cd backend
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -e ".[test]"
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+python -m venv backend\.venv
+backend\.venv\Scripts\python.exe -m pip install -e "backend[test]"
 ```
 
-Install local embedding support only when needed:
+The launcher reads the ignored root `.env` into its own process before validation. Values
+already defined in the process environment take priority. It does not echo configuration
+values and never creates, seeds, or migrates a database.
+
+Start both services:
 
 ```powershell
-python -m pip install -e ".[embedding]"
+.\scripts\run_dev.ps1
 ```
 
-## Environment
+Backend and UI output is written to the ignored `.dev-logs` directory as separate
+`*.stdout.log` and `*.stderr.log` files. The launcher prints only that directory path.
+If either service exits early, the launcher reports which error log to inspect and stops
+both Uvicorn process trees. Pressing Ctrl+C also stops the reload parents and children.
 
-Copy `.env.example` to a local `.env` and replace placeholders locally. Never commit a real `.env` or credentials.
-
-Supabase's Transaction Pooler connection string should be expressed as a SQLAlchemy psycopg URL and retain SSL:
-
-```text
-DATABASE_URL=postgresql+psycopg://postgres.PROJECT_REF:PASSWORD@aws-0-REGION.pooler.supabase.com:6543/postgres?sslmode=require
-```
-
-Percent-encode special characters in passwords. For deployed workloads, tune the small application pool to fit Supabase connection limits.
-
-## Run locally
-
-From `backend`:
+Validate configuration and virtual environments without starting either service:
 
 ```powershell
-uvicorn app.main:app --reload
+.\scripts\run_dev.ps1 -ValidateOnly
 ```
 
-OpenAPI documentation is at `http://127.0.0.1:8000/docs`.
-
-## API summary
-
-- `GET /health`
-- `GET /restaurants` and `GET /restaurants/{restaurant_id}`
-- `GET /restaurants/{restaurant_id}/dishes`
-- `GET /dishes` and `GET /dishes/{dish_id}`
-- `GET /dishes/{dish_id}/vector` (the only endpoint exposing embeddings)
-- `GET /deals` and `GET /deals/{deal_id}`
-
-List endpoints support pagination. Catalog filters cover city, cuisine, halal status, restaurant, dish-name search, and price bounds as applicable.
-
-Public restaurant and dish responses use `lat` and `lng` for coordinates. Prices,
-coordinates, discounts, and other contract fields declared as JSON numbers are emitted
-as numbers rather than strings; internal database columns may retain descriptive names.
-
-## Tests
-
-Tests use an isolated in-memory SQLite database, fake repositories, and a deterministic fake embedding provider. They do not contact Supabase or download a model.
+Manual startup:
 
 ```powershell
 cd backend
-pytest
-ruff check .
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --port 8000 --reload
+cd ..
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --port 8001 --reload
 ```
 
-## Supabase migration
+After review, apply the forward-only migration manually with `cd backend; .\.venv\Scripts\alembic.exe upgrade head`. The launcher never runs migrations or seeds.
 
-Do not run migrations until a reviewed Supabase `DATABASE_URL` is configured. Then, from `backend`:
+## Validation
+
+Tests use SQLite, fake Supabase Auth, fake clients/repositories, deterministic embeddings, and local images. They do not contact Supabase or external services.
 
 ```powershell
-alembic current
-alembic upgrade head
+.\.venv\Scripts\python.exe -m pytest -q tests --basetemp=.pytest-work/root
+cd backend
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m ruff format --check app tests
+.\.venv\Scripts\python.exe -m ruff check app tests
 ```
 
-The initial migration uses `CREATE EXTENSION IF NOT EXISTS vector` and creates the six owned tables. The downgrade intentionally leaves the shared extension installed.
-
-## Development seed data
-
-Run only against an explicitly configured local development database after applying migrations:
-
-```powershell
-python -m scripts.seed --confirm-development-data
-```
-
-The script creates 30 deterministic sample restaurants, 90 dishes, and 30 deals. It is
-idempotent and runs only when `APP_ENV` is `development` or `test`, the confirmation flag
-is present, and the database is local SQLite or PostgreSQL on a loopback host. Every
-remote database—including Supabase—is rejected. It omits vectors by default;
-`--with-embeddings` lazily loads the configured model when local embedding dependencies
-are installed. Dish embeddings have one authoritative dimension of 384.
-
-### Explicit Chaska development Supabase seed
-
-Remote seeding remains disabled by default. Before using the one-time development mode,
-configure `APP_ENV=development`, `DATABASE_URL`, and `EXPECTED_SUPABASE_PROJECT_REF` in
-the ignored local `.env`. The expected project reference must exactly match the project
-reference extracted from the configured Supabase connection URL. Do not place credentials
-or a real project reference in tracked files.
-
-From `backend`, manually run exactly:
-
-```powershell
-python -m scripts.seed --confirm-development-data --allow-remote-development --remote-confirmation SEED_CHASKA_DEVELOPMENT
-```
-
-This command does not generate embeddings. Before inserting anything it verifies that the
-database is at the current Alembic head, all six owned tables exist, and `restaurants`,
-`dishes`, and `deals` are empty. It aborts if any catalog data exists. A successful run
-adds only 30 restaurants, 90 dishes, and 30 deals; it never seeds users, reviews, or
-interactions. Re-running it against the populated remote catalog safely aborts without a
-reset or deletion.
-
-### Correct an already-seeded development catalog
-
-For a development database seeded before BBQ was classified as a preparation style, set
-`APP_ENV=development`, `DATABASE_URL`, and `EXPECTED_SUPABASE_PROJECT_REF` for the intended
-Supabase project, then run this command manually from `backend`:
-
-```powershell
-python -m scripts.correct_bbq_cuisine --confirmation CORRECT_CHASKA_BBQ_CUISINE
-```
-
-The command verifies the Supabase project reference, Alembic head, required tables, four
-deterministic restaurant IDs, twelve deterministic dish IDs, and their relationships before
-making changes. It updates all records in one transaction, aborts on partial or unexpected
-data, and reports without writing when the correction has already been applied.
-
-## Ownership boundary
-
-### Shared location contract notice
-
-Restaurant `lat` and `lng` are nullable as of migration `20260826_0002`. They are always
-populated together or returned together as `null`. Consumers owned by Esha must treat
-`location_verified=false` as unavailable for distance filtering or ranking; these records
-remain valid catalog/search results. `coordinates_source_url` and
-`coordinates_verified_at` provide optional audit metadata.
-
-This module owns the data layer, data-core services, restaurant/dish/deal routes, migrations, seed data, contracts, and related tests. It deliberately excludes Review Intelligence, personalization, ranking, collaborative filtering, sentiment extraction, feed UI, and full frontend work. See `AGENTS.md` before editing shared areas.
+Run Review Intelligence tests from the repository root with its dependencies from `review_intelligence/requirements.txt` so package imports resolve correctly.

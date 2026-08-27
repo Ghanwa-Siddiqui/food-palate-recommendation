@@ -1,0 +1,40 @@
+{% extends "namak/base.html" %}
+{% block title %}{{ dish.name }} — namak{% endblock %}
+{% block body %}
+{% include "namak/_nav.html" %}{% set image=dish_image(dish.name,dish.cuisine,dish.image_url) %}
+{% set draft=review_draft or {} %}{% set rating_value=draft.get('rating', own_review.rating if own_review else '') %}{% set review_text=draft.get('text', own_review.text if own_review else '') %}
+<main class="dish-page">
+  <div class="dish-hero">
+    <figure class="dish-media"><img src="{{ image.src }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}" fetchpriority="high" onerror="this.onerror=null;this.src='{{ fallback_image().src }}'"></figure>
+    <section class="dish-copy">
+      <a class="dish-breadcrumb" href="/app/restaurants/{{ restaurant.id }}">← Back to {{ restaurant.name }}</a>
+      <p class="overline">{{ dish.cuisine }} · {{ restaurant.name }}</p>
+      <h1>{{ dish.name }}</h1>
+      <p class="dish-price">PKR {{ '%.0f'|format(dish.price) }}</p>
+      <div class="dish-badges"><span class="chip">{{ dish.cuisine }}</span><span class="chip {{ 'veg' if dish.availability else '' }}">{{ 'Available' if dish.availability else 'Unavailable' }}</span>{% if restaurant.halal_status in ['verified','claimed'] %}<span class="chip veg">Halal {{ restaurant.halal_status }}</span>{% endif %}</div>
+      <p class="dish-description">{{ dish.description or 'No published description is available for this dish.' }}</p>
+      {% if match %}<aside class="dish-match"><div><span class="dish-match-score">{{ match.match_percentage }}%</span><span>Taste match</span></div><p>{{ match.taste_explanation }}</p>{% if match.collaborative_explanation %}<p><b>Similar diners:</b> {{ match.collaborative_explanation }}</p>{% endif %}{% if match.review_insight %}<p><b>Review evidence:</b> {{ match.review_insight }}</p>{% endif %}</aside>{% endif %}
+      <div class="dish-facts"><section><h2>Ingredients</h2><p>{{ dish.ingredients|join(', ') if dish.ingredients else 'Ingredients are not catalogued.' }}</p>{% if dish.allergens %}<p class="muted"><b>Allergens:</b> {{ dish.allergens|join(', ') }}</p>{% endif %}</section><section><h2>Review insight</h2>{% if summary.review_count %}<p><b>{{ '%.1f'|format(summary.average_rating) }}/5</b> across {{ summary.review_count }} review{{ 's' if summary.review_count != 1 }}.</p>{% if summary.flavor_tags %}<p class="muted">Common notes: {{ summary.flavor_tags|join(', ') }}</p>{% endif %}{% else %}<p class="muted">No reviews are available yet.</p>{% endif %}</section></div>
+      <div class="dish-actions" aria-label="Dish actions">
+        <form method="post" action="/app/interactions"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="dish_id" value="{{ dish.id }}"><input type="hidden" name="event_id" value="{{ event_id }}-save"><input type="hidden" name="next" value="/app/dishes/{{ dish.id }}"><button class="btn btn-p dish-save" name="action" value="{{ 'unsave' if match and match.saved else 'save' }}">{{ 'Saved ✓' if match and match.saved else 'Save dish' }}</button></form>
+        {% for action,label in [('tried','I tried this'),('order','Order interest'),('like','Like'),('dislike','Dislike')] %}<form method="post" action="/app/interactions"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="dish_id" value="{{ dish.id }}"><input type="hidden" name="event_id" value="{{ event_id }}-{{ action }}"><input type="hidden" name="next" value="/app/dishes/{{ dish.id }}"><button class="btn {{ 'is-selected' if action in selected_actions else 'btn-o' }} dish-action-{{ action }}" name="action" value="{{ action }}" {% if action in ['tried','like','dislike'] and action in selected_actions %}aria-pressed="true"{% endif %}>{{ label }}{% if action in selected_actions %} ✓{% endif %}</button></form>{% endfor %}
+      </div>
+      {% if request.query_params.get('action') %}<p class="dish-feedback" role="status">Your dish action was saved.</p>{% elif request.query_params.get('action_error') %}<p class="form-error" role="alert">That action could not be saved. Please try again.</p>{% endif %}
+    </section>
+  </div>
+
+  {% if customer %}<section class="review-composer">
+    <div class="review-composer-head"><p class="overline">Your feedback</p><h2>{{ 'Edit Review' if own_review else 'Share your experience' }}</h2><p>Help other diners with a concise, honest note about taste, texture and value.</p></div>
+    {% if review_success %}<p class="notice" role="status">Your review was saved successfully.</p>{% endif %}{% if review_error %}<p class="form-error" role="alert">Check the highlighted review details. Your entries have been preserved.</p>{% endif %}
+    <form class="review-card-form" method="post" action="/app/dishes/{{ dish.id }}/reviews" data-review-form><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="submission_key" value="{{ event_id }}-review"><input type="hidden" name="tried_event_id" value="{{ event_id }}-tried">{% if own_review %}<input type="hidden" name="review_id" value="{{ own_review.id }}">{% else %}<label class="review-check"><input type="checkbox" name="tried_confirmation" required {% if draft.get('tried_confirmation') %}checked{% endif %}><span><b>I tried this dish</b><small>Required before publishing a review.</small></span></label>{% endif %}
+      <fieldset class="rating-field"><legend>Your rating</legend><div class="rating-stars">{% for n in range(1,6) %}<input class="sr-only" type="radio" id="rating-{{ n }}" name="rating" value="{{ n }}" required {% if rating_value|string == n|string %}checked{% endif %}><label for="rating-{{ n }}" title="{{ n }} out of 5"><span aria-hidden="true">★</span><span class="sr-only">{{ n }} out of 5</span></label>{% endfor %}</div><small>Choose 1 for poor through 5 for excellent.</small></fieldset>
+      <label class="review-text-field" for="review-text"><span>Your review</span><textarea id="review-text" name="text" minlength="10" maxlength="2000" rows="7" required placeholder="What stood out about the flavour, texture, portion or value?">{{ review_text }}</textarea><small><span data-character-count>{{ review_text|length }}</span>/2000 characters · minimum 10</small></label>
+      <label class="review-check"><input type="checkbox" name="show_display_name" {% if draft.get('show_display_name') %}checked{% endif %}><span><b>Show my display name</b><small>When off, your review appears as “Anonymous Chaska diner.”</small></span></label>
+      <button class="btn btn-p review-submit" type="submit">{{ 'Update Review' if own_review else 'Publish Review' }}</button>
+    </form>
+  </section>{% endif %}
+
+  <section class="customer-reviews"><div><p class="overline">Community notes</p><h2>Customer reviews</h2></div><div class="review-list">{% for review in reviews %}<article class="review-card"><header><div><b>{{ review.reviewer_name }}</b><p aria-label="{{ review.rating }} out of 5 stars">{{ '★' * review.rating }}<span class="review-stars-off">{{ '★' * (5-review.rating) }}</span></p></div><time datetime="{{ review.updated_at.isoformat() if review.updated_at else review.created_at.isoformat() }}">{{ (review.updated_at or review.created_at).strftime('%d %b %Y') }}</time></header><p>{{ review.text }}</p>{% if review.processing_status == 'complete' %}<small class="chip veg">Taste insight processed</small>{% endif %}</article>{% else %}<div class="review-empty"><h3>No reviews yet</h3><p>Be the first verified diner to share a thoughtful review.</p></div>{% endfor %}</div></section>
+</main>
+<script>(()=>{document.querySelectorAll('form').forEach(form=>form.addEventListener('submit',()=>{const button=form.querySelector('button[type="submit"],button[name="action"]');if(button){button.disabled=true;button.setAttribute('aria-busy','true');button.dataset.label=button.textContent;button.textContent='Saving…'}}));const text=document.querySelector('#review-text');const count=document.querySelector('[data-character-count]');if(text&&count)text.addEventListener('input',()=>count.textContent=text.value.length)})();</script>
+{% endblock %}

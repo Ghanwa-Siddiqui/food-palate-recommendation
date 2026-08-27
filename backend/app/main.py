@@ -1,8 +1,18 @@
 from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.api.routes import deals, dishes, ranking, restaurants
+from app.api.routes import (
+    deals,
+    dishes,
+    partner_dishes,
+    partner_restaurants,
+    ranking,
+    restaurants,
+    reviews,
+    users,
+)
 from app.core.config import get_settings
 from app.services.data_core.catalog import (
     EmbeddingUnavailableError,
@@ -75,7 +85,7 @@ def create_app() -> FastAPI:
                 "error": {
                     "code": "validation_error",
                     "message": "Request validation failed",
-                    "details": error.errors(),
+                    "details": jsonable_encoder(error.errors()),
                 }
             },
         )
@@ -84,6 +94,10 @@ def create_app() -> FastAPI:
     application.include_router(dishes.router)
     application.include_router(deals.router)
     application.include_router(ranking.router)
+    application.include_router(users.router)
+    application.include_router(reviews.router)
+    application.include_router(partner_restaurants.router)
+    application.include_router(partner_dishes.router)
 
     return application
 

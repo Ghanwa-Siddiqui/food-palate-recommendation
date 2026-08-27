@@ -1,35 +1,26 @@
-"""FastAPI entrypoint for the Personalization Engine.
-
-Run:  uvicorn app.main:app --reload
-"""
-from __future__ import annotations
+"""FastAPI/Jinja entrypoint for the Namak web application."""
 
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from .routers import onboarding, popularity, ui, user
+from .config import SESSION_COOKIE_SECURE, SESSION_SECRET
+from .routers import web
+from .session import SignedSessionMiddleware
 
-app = FastAPI(
-    title="Taste Engine — Personalization",
-    version="0.1.0",
-    description="User taste vectors, onboarding, interaction feedback loop.",
+app = FastAPI(title="Namak", version="1.0.0")
+app.add_middleware(
+    SignedSessionMiddleware,
+    secret_key=SESSION_SECRET,
+    cookie_name="namak_session",
+    max_age=60 * 60 * 24 * 7,
+    https_only=SESSION_COOKIE_SECURE,
 )
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-
-app.include_router(onboarding.router)
-app.include_router(user.router)
-app.include_router(popularity.router)
-app.include_router(ui.router)
-
-
-@app.get("/", include_in_schema=False)
-def root():
-    return RedirectResponse(url="/app")
+app.include_router(web.router)
 
 
 @app.get("/health", tags=["meta"])

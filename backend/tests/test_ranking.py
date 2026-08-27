@@ -114,7 +114,7 @@ def test_weighted_scoring_uses_named_independent_signals():
     assert scored.signals.review == pytest.approx(100)
     assert scored.signals.popularity == pytest.approx(50)
     assert scored.distance_km == pytest.approx(0)
-    assert scored.neutral_signals == {"context", "collaborative"}
+    assert scored.neutral_signals == {"food_profile"}
 
 
 def test_missing_vectors_and_unavailable_signals_are_neutral():
@@ -122,9 +122,7 @@ def test_missing_vectors_and_unavailable_signals_are_neutral():
     assert scored.signals.taste == NEUTRAL_SCORE
     assert scored.signals.review == NEUTRAL_SCORE
     assert scored.signals.popularity == NEUTRAL_SCORE
-    assert {"taste", "review", "popularity", "context", "collaborative"} <= set(
-        scored.neutral_signals
-    )
+    assert {"taste", "food_profile", "review", "popularity"} <= set(scored.neutral_signals)
 
 
 def test_preferences_reject_invalid_coordinate_and_budget_inputs():
@@ -161,8 +159,8 @@ def test_ranking_endpoint_success_response_types_stable_ties_and_empty(client, s
     owner = restaurant(name="Rank Restaurant")
     session.add_all([user, owner])
     session.flush()
-    second = dish(owner.id, name="Beta", embedding=None, price=Decimal("600"))
-    first = dish(owner.id, name="Alpha", embedding=None, price=Decimal("600"))
+    second = dish(owner.id, name="Beta", price=Decimal("600"))
+    first = dish(owner.id, name="Alpha", price=Decimal("600"))
     session.add_all([second, first])
     session.commit()
 
@@ -187,12 +185,18 @@ def test_ranking_endpoint_uses_integrated_reviews_and_interactions(client, sessi
     owner = restaurant(name="Signal Restaurant")
     session.add_all([user, owner])
     session.flush()
-    item = dish(owner.id, name="Observed Dish", embedding=None)
+    item = dish(owner.id, name="Observed Dish", review_average=5, review_sentiment=0.6)
     session.add(item)
     session.flush()
     session.add_all(
         [
-            Review(user_id=user.id, dish_id=item.id, rating=5, text="Excellent"),
+            Review(
+                user_id=user.id,
+                dish_id=item.id,
+                rating=5,
+                text="Excellent",
+                sentiment=0.6,
+            ),
             Interaction(user_id=user.id, dish_id=item.id, action="save"),
         ]
     )
@@ -201,7 +205,7 @@ def test_ranking_endpoint_uses_integrated_reviews_and_interactions(client, sessi
     response = client.get(f"/ranking/feed/{user.id}")
     assert response.status_code == 200
     signals = response.json()["items"][0]["signals"]
-    assert signals["review"] == 100
+    assert signals["review"] == 60
     assert signals["popularity"] == 100
     assert "review" not in response.json()["neutral_signals"]
     assert "popularity" not in response.json()["neutral_signals"]

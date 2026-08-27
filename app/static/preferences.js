@@ -1,0 +1,26 @@
+(() => {
+  const labels = ["Not for me", "Just a hint", "Balanced", "I enjoy it", "Bring it on", "Maximum"];
+  const spice = ["Keep it mild", "Gentle warmth", "A balanced kick", "Properly spicy", "Make me sweat", "Full fire"];
+  document.querySelectorAll("[data-taste-range]").forEach((range) => {
+    const paint = () => { const value = Number(range.value); const card = range.closest(".taste-card"); range.style.setProperty("--range-progress", `${value * 20}%`); card.querySelector("[data-range-output]").value = `${value} · ${labels[value]}`; card.querySelector("[data-range-copy]").textContent = range.dataset.kind === "spice" ? spice[value] : labels[value]; };
+    range.addEventListener("input", paint); paint();
+  });
+  document.querySelectorAll("[data-tag-editor]").forEach((editor) => {
+    const input = editor.querySelector("input"); const list = editor.querySelector("[data-tag-list]"); const name = editor.dataset.name;
+    let tags = input.value.split(",").map((value) => value.trim()).filter(Boolean);
+    tags = tags.filter((tag, index) => tags.findIndex((item) => item.toLocaleLowerCase() === tag.toLocaleLowerCase()) === index);
+    const render = () => { list.replaceChildren(...tags.map((tag) => { const chip = document.createElement("span"); chip.className = "tag-chip"; chip.append(document.createTextNode(tag)); const hidden = document.createElement("input"); hidden.type = "hidden"; hidden.name = name; hidden.value = tag; chip.append(hidden); const remove = document.createElement("button"); remove.type = "button"; remove.textContent = "×"; remove.setAttribute("aria-label", `Remove ${tag}`); remove.addEventListener("click", () => { tags = tags.filter((item) => item !== tag); render(); input.dispatchEvent(new Event("change", { bubbles: true })); }); chip.append(remove); return chip; })); input.value = ""; };
+    const add = () => { input.value.split(",").map((value) => value.trim()).filter(Boolean).forEach((tag) => { if (!tags.some((item) => item.toLocaleLowerCase() === tag.toLocaleLowerCase())) tags.push(tag); }); render(); };
+    input.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === ",") { event.preventDefault(); add(); } }); input.addEventListener("blur", add); render();
+    editor.querySelectorAll("[data-tag-suggestion]").forEach((button) => button.addEventListener("click", () => { input.value = button.dataset.tagSuggestion; add(); input.dispatchEvent(new Event("change", { bubbles: true })); }));
+  });
+  document.querySelectorAll("[data-budget-group]").forEach((group) => {
+    const inputs = [...group.querySelectorAll('input[type="number"]')]; const validate = () => { inputs.forEach((input) => { const output = group.querySelector(`[data-money-for="${input.id}"]`); if (output) output.textContent = `Rs. ${Number(input.value || 0).toLocaleString("en-PK")}`; }); const invalid = Number(inputs[0].value) > Number(inputs[1].value); group.querySelector("[data-budget-error]").textContent = invalid ? "Minimum budget cannot exceed maximum budget." : ""; inputs[1].setCustomValidity(invalid ? "Maximum must be at least the minimum." : ""); }; inputs.forEach((input) => input.addEventListener("input", validate)); validate();
+  });
+  document.querySelectorAll("[data-section-navigator]").forEach((navigator) => {
+    const panels = [...navigator.querySelectorAll("[data-section-panel]")]; const buttons = [...navigator.querySelectorAll("[data-section-button]")]; const prev = navigator.querySelector("[data-section-prev]"); const next = navigator.querySelector("[data-section-next]"); const save = navigator.querySelector('[type="submit"]'); let current = 0;
+    const show = (index) => { current = Math.max(0, Math.min(index, panels.length - 1)); panels.forEach((panel, i) => panel.hidden = i !== current); buttons.forEach((button, i) => { button.toggleAttribute("aria-current", i === current); button.classList.toggle("is-complete", i < current); }); prev.hidden = current === 0; next.hidden = current === panels.length - 1; save.hidden = current !== panels.length - 1; panels[current].querySelector("h2")?.focus({ preventScroll: true }); };
+    buttons.forEach((button, i) => button.addEventListener("click", () => show(i))); prev.addEventListener("click", () => show(current - 1)); next.addEventListener("click", () => show(current + 1)); show(0); navigator.querySelector("form").addEventListener("change", () => { const badge = document.querySelector("[data-unsaved]"); if (badge) badge.hidden = false; });
+  });
+  document.querySelectorAll("[data-preference-form]").forEach((form) => form.addEventListener("submit", () => { const button = form.querySelector("[data-submit-button]"); if (button) { button.disabled = true; button.textContent = "Saving…"; } }));
+})();
