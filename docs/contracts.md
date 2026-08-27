@@ -10,6 +10,14 @@ Interaction events also flow back in here from the feed.
 (on `feature/data-core-ghanwa`) — those are the source of truth if this
 doc and that schema ever drift; file an issue rather than picking one.
 
+**Known drift from the "Chaska Shared Data Contracts v1.0" PDF:** that doc
+specifies a 1–5 taste scale and an `id`+`timestamp` interaction shape.
+The deployed schema (and this module) use 0–5 and `ts`/no-`id` instead —
+0–5 matches the Dish Contract's own 0–5 attribute scale (spice_level,
+oiliness, etc.), so both sides of a taste/dish comparison share units.
+Treat the deployed schema as current; the PDF needs a version bump to
+match, not the other way around.
+
 Base URL: `/api`
 
 ---
