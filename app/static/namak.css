@@ -27,6 +27,117 @@ a:focus-visible,button:focus-visible,input:focus-visible,.dish:focus-visible{
   @keyframes namakFadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 }
 
+/* Opening splash: a warm glow blooms, a shockwave ring and spice/herb/
+   citrus particles burst outward on soft curved arcs, and the namak
+   wordmark lands letter by letter — then the whole overlay pulls back
+   (scale + blur) to reveal the page. Shown once per browser session
+   (namak/base.html gates it with sessionStorage + an html.no-splash
+   class set before first paint, so repeat navigations skip it). */
+@keyframes namakGlowPulse{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.4);}
+  35%{opacity:1;}
+  100%{opacity:.55;transform:translate(-50%,-50%) scale(1);}
+}
+@keyframes namakRingPulse{
+  0%{opacity:.7;transform:translate(-50%,-50%) scale(.2);}
+  70%{opacity:.18;}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(3.1);}
+}
+@keyframes namakLetterIn{
+  0%{opacity:0;transform:translateY(.5em) rotate(6deg) scale(.7);}
+  65%{opacity:1;}
+  100%{opacity:1;transform:translateY(0) rotate(0deg) scale(1);}
+}
+/* Keep the centring translate in every keyframe - animating bare scaleX()
+   would replace the whole transform and shunt the rule off to the right. */
+@keyframes namakRuleIn{
+  0%{transform:translateX(-50%) scaleX(0);opacity:0;}
+  40%{opacity:1;}
+  100%{transform:translateX(-50%) scaleX(1);opacity:1;}
+}
+@keyframes namakChilliBurst{
+  0%{transform:translate(-50%,-50%) scale(.15) rotate(var(--r0));opacity:0;}
+  14%{opacity:1;}
+  46%{transform:translate(calc(-50% + var(--mx)),calc(-50% + var(--my))) scale(1.04) rotate(calc((var(--r0) + var(--r1)) / 2));opacity:1;}
+  100%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(.88) rotate(var(--r1));opacity:0;}
+}
+@keyframes namakSplashOut{
+  0%{opacity:1;visibility:visible;filter:blur(0);transform:scale(1);}
+  100%{opacity:0;visibility:hidden;filter:blur(10px);transform:scale(1.06);}
+}
+.namak-splash{
+  position:fixed;inset:0;z-index:9999;overflow:hidden;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 46%,var(--bone) 0%,var(--cream) 55%,var(--cream-2) 100%);
+}
+html.no-splash .namak-splash{display:none;}
+.splash-glow{
+  position:absolute;top:50%;left:50%;width:min(60vmin,440px);height:min(60vmin,440px);
+  border-radius:50%;background:radial-gradient(circle,var(--saffron) 0%,rgba(232,169,58,0) 72%);
+  filter:blur(28px);opacity:0;z-index:1;
+}
+.splash-ring{
+  position:absolute;top:50%;left:50%;width:min(46vmin,320px);height:min(46vmin,320px);
+  border-radius:50%;border:1.5px solid var(--saffron-d);opacity:0;z-index:1;
+}
+.namak-splash .splash-word{
+  font-family:var(--serif);font-size:clamp(44px,10vw,80px);font-weight:500;
+  letter-spacing:-0.03em;color:var(--ink);position:relative;z-index:3;
+  display:inline-flex;filter:drop-shadow(0 6px 26px rgba(28,25,23,.14));
+}
+.namak-splash .splash-word .sl{display:inline-block;opacity:0;}
+.namak-splash .splash-word .sl.em{color:var(--saffron);}
+.splash-rule{
+  position:absolute;left:50%;bottom:calc(50% - clamp(30px,6vw,50px));width:min(30vmin,180px);height:2px;
+  background:linear-gradient(90deg,transparent,var(--saffron),transparent);
+  transform:translateX(-50%) scaleX(0);opacity:0;z-index:3;
+}
+/* Real chilli cut-outs (traced out of a single photographed sheet, one
+   sprite per piece) rather than drawn icons. Painted as background-images
+   so that when html.no-splash hides the overlay on later navigations the
+   browser never fetches them at all. */
+.splash-chilli{
+  position:absolute;top:50%;left:50%;z-index:1;
+  background-repeat:no-repeat;background-position:center;background-size:contain;
+  transform:translate(-50%,-50%) scale(.15);opacity:0;
+  filter:drop-shadow(0 6px 14px rgba(120,26,12,.28));
+}
+.splash-chilli.c-long{width:clamp(64px,14vmin,140px);aspect-ratio:156/209;background-image:url("/static/ingredients/chilli-long.webp");}
+.splash-chilli.c-stem-a{width:clamp(76px,17vmin,170px);aspect-ratio:167/78;background-image:url("/static/ingredients/chilli-stem-a.webp");}
+.splash-chilli.c-stem-b{width:clamp(72px,16vmin,160px);aspect-ratio:167/64;background-image:url("/static/ingredients/chilli-stem-b.webp");}
+.splash-chilli.c-half{width:clamp(46px,10vmin,100px);aspect-ratio:111/93;background-image:url("/static/ingredients/chilli-half.webp");}
+.splash-chilli.c-wedge{width:clamp(36px,8vmin,78px);aspect-ratio:67/79;background-image:url("/static/ingredients/chilli-wedge.webp");}
+.splash-chilli.c-slice-a{width:clamp(30px,7vmin,66px);aspect-ratio:56/64;background-image:url("/static/ingredients/chilli-slice-a.webp");}
+.splash-chilli.c-slice-b{width:clamp(32px,7.5vmin,70px);aspect-ratio:58/71;background-image:url("/static/ingredients/chilli-slice-b.webp");}
+.splash-chilli.c-slice-c{width:clamp(26px,6vmin,58px);aspect-ratio:47/55;background-image:url("/static/ingredients/chilli-slice-c.webp");}
+.splash-chilli.c-slice-d{width:clamp(28px,6.5vmin,62px);aspect-ratio:55/44;background-image:url("/static/ingredients/chilli-slice-d.webp");}
+.splash-chilli.c-sliver{width:clamp(24px,5.5vmin,54px);aspect-ratio:40/56;background-image:url("/static/ingredients/chilli-sliver.webp");}
+@media (prefers-reduced-motion: no-preference){
+  .namak-splash{animation:namakSplashOut .6s cubic-bezier(.4,0,.2,1) 2.05s forwards;}
+  .splash-glow{animation:namakGlowPulse 1.4s cubic-bezier(.2,.7,.3,1) .05s forwards;}
+  .splash-ring{animation:namakRingPulse 1.3s cubic-bezier(.15,.7,.3,1) .1s forwards;}
+  .namak-splash .splash-word .sl{animation:namakLetterIn .68s cubic-bezier(.16,1,.3,1) forwards;animation-delay:calc(.28s + var(--i) * .07s);}
+  .splash-rule{animation:namakRuleIn .5s cubic-bezier(.4,0,.2,1) .82s forwards;}
+  /* Heavier pieces tumble slower and land nearer; slices and slivers spin
+     faster and travel further, so the burst reads as weight, not a grid. */
+  .splash-chilli{animation:namakChilliBurst 1.5s cubic-bezier(.17,.78,.24,1) forwards;}
+  .c-long{--mx:15vmin;--my:-11vmin;--tx:31vmin;--ty:-25vmin;--r0:-22deg;--r1:-135deg;animation-delay:.10s;}
+  .c-stem-a{--mx:21vmin;--my:4vmin;--tx:43vmin;--ty:11vmin;--r0:8deg;--r1:95deg;animation-delay:.17s;}
+  .c-stem-b{--mx:-21vmin;--my:-5vmin;--tx:-43vmin;--ty:-9vmin;--r0:-6deg;--r1:-115deg;animation-delay:.13s;}
+  .c-half{--mx:13vmin;--my:15vmin;--tx:28vmin;--ty:32vmin;--r0:16deg;--r1:165deg;animation-delay:.23s;}
+  .c-wedge{--mx:-14vmin;--my:14vmin;--tx:-29vmin;--ty:31vmin;--r0:-14deg;--r1:-180deg;animation-delay:.20s;}
+  .c-slice-a{--mx:2vmin;--my:-18vmin;--tx:5vmin;--ty:-37vmin;--r0:0deg;--r1:210deg;animation-delay:.07s;}
+  .c-slice-b{--mx:-16vmin;--my:-14vmin;--tx:-32vmin;--ty:-28vmin;--r0:0deg;--r1:-230deg;animation-delay:.26s;}
+  .c-slice-c{--mx:-3vmin;--my:18vmin;--tx:-7vmin;--ty:37vmin;--r0:0deg;--r1:195deg;animation-delay:.12s;}
+  .c-slice-d{--mx:18vmin;--my:-13vmin;--tx:36vmin;--ty:-27vmin;--r0:0deg;--r1:-200deg;animation-delay:.29s;}
+  .c-sliver{--mx:-19vmin;--my:9vmin;--tx:-39vmin;--ty:19vmin;--r0:-25deg;--r1:130deg;animation-delay:.16s;}
+}
+@media (prefers-reduced-motion: reduce){
+  .namak-splash{animation:namakSplashOut .3s ease .45s forwards;}
+  .namak-splash .splash-word .sl{opacity:1;}
+  .splash-glow,.splash-ring,.splash-rule,.splash-chilli{display:none;}
+}
+
 .nav{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 16px;padding:14px clamp(14px,4vw,30px);border-bottom:0.5px solid var(--line);background:var(--cream);row-gap:8px;}
 .brand{font-family:var(--serif);font-size:22px;font-weight:500;letter-spacing:-0.03em;flex-shrink:0;}
 .brand em{color:var(--saffron);font-style:normal;}

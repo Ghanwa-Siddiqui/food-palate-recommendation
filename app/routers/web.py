@@ -29,6 +29,8 @@ from ..image_assets import (
     cuisine_image,
     dish_image,
     fallback_image,
+    feed_images,
+    image_attributions,
     restaurant_image,
 )
 from ..models import OnboardingAnswers
@@ -43,6 +45,7 @@ templates = Jinja2Templates(
 templates.env.globals.update(
     cuisine_image=cuisine_image,
     dish_image=dish_image,
+    feed_images=feed_images,
     restaurant_image=restaurant_image,
     context_image=context_image,
     fallback_image=fallback_image,
@@ -271,6 +274,24 @@ def landing(
 ):
     return templates.TemplateResponse(
         request, "namak/landing.html", _base(request, _current_user(request, auth))
+    )
+
+
+@router.get("/credits", response_class=HTMLResponse)
+def credits(
+    request: Request, auth: Annotated[AuthProvider, Depends(get_auth_provider)]
+):
+    """Photo attribution. CC BY and CC BY-SA both require visible credit, so
+    this is built from the manifest rather than hand-maintained - a newly
+    added photograph appears here automatically."""
+    return templates.TemplateResponse(
+        request,
+        "namak/credits.html",
+        _base(
+            request,
+            _current_user(request, auth),
+            attributions=image_attributions(),
+        ),
     )
 
 

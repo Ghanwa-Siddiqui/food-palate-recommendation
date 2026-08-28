@@ -6,9 +6,42 @@
   <title>{% block title %}namak{% endblock %}</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/namak.css">
+  <link rel="stylesheet" href="/static/ui.css">
+  <script>(function(){try{if(sessionStorage.getItem('namakSplashSeen')==='1'){document.documentElement.classList.add('no-splash');}}catch(e){}})();</script>
   {% block head %}{% endblock %}
 </head>
 <body>
+<div class="namak-splash" id="namak-splash" aria-hidden="true">
+  <div class="splash-glow"></div>
+  <div class="splash-ring"></div>
+  <div class="splash-chilli c-long"></div>
+  <div class="splash-chilli c-stem-a"></div>
+  <div class="splash-chilli c-stem-b"></div>
+  <div class="splash-chilli c-half"></div>
+  <div class="splash-chilli c-wedge"></div>
+  <div class="splash-chilli c-slice-a"></div>
+  <div class="splash-chilli c-slice-b"></div>
+  <div class="splash-chilli c-slice-c"></div>
+  <div class="splash-chilli c-slice-d"></div>
+  <div class="splash-chilli c-sliver"></div>
+  <div class="splash-word">
+    <span class="sl" style="--i:0">n</span><span class="sl em" style="--i:1">a</span><span class="sl" style="--i:2">m</span><span class="sl" style="--i:3">a</span><span class="sl" style="--i:4">k</span>
+  </div>
+  <div class="splash-rule"></div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('namak-splash');
+  if(!el || document.documentElement.classList.contains('no-splash')) return;
+  function done(){
+    try{ sessionStorage.setItem('namakSplashSeen','1'); }catch(e){}
+    el.style.display='none';
+  }
+  el.addEventListener('click', done);
+  el.addEventListener('animationend', function(ev){ if(ev.animationName==='namakSplashOut') done(); });
+  window.setTimeout(done, 3000);
+})();
+</script>
 {% block body %}{% endblock %}
 </body>
 </html>

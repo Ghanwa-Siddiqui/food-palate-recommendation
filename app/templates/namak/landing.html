@@ -1,13 +1,164 @@
 {% extends "namak/base.html" %}
 {% block title %}namak — restaurants that fit your taste{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/landing.css">{% endblock %}
 {% block body %}
-<header class="nav landing-nav"><a class="brand" href="/">n<em>a</em>mak</a><nav class="navlinks"><a href="#how">How it works</a><a href="#cities">Cities</a></nav><div class="nav-r">{% if user %}<a href="/app/feed">Open your feed</a>{% else %}<a href="/login">Log in</a><a class="btn btn-p" href="/signup">Join free</a>{% endif %}</div></header>
+{# Real dishes drawn from the local image manifest — every name here resolves
+   to an actual photograph, so nothing on this page is a placeholder block. #}
+{% set showcase = [
+  ('Chicken Biryani', 'Pakistani'),
+  ('Mutton Karahi', 'Pakistani'),
+  ('Turkish Kebab Platter', 'Turkish'),
+  ('Thai Curry', 'Thai'),
+  ('Sushi Platter', 'Japanese'),
+  ('Creamy Pasta', 'Italian'),
+] %}
+{% set ticker = [
+  'Chicken Biryani', 'Seekh Kebab', 'Nihari', 'Margherita Pizza', 'Chinese Noodles',
+  'Chicken Tikka', 'Haleem', 'Thai Curry', 'Sushi Platter', 'Daal with Naan',
+  'Chicken Karahi', 'Continental Grilled Chicken'
+] %}
+{% set cuisines = ['Pakistani', 'Chinese', 'Italian', 'Turkish', 'Japanese', 'Thai', 'Continental', 'Cafe'] %}
+
+<header class="nav landing-nav">
+  <a class="brand" href="/">n<em>a</em>mak</a>
+  <nav class="navlinks"><a href="#how">How it works</a><a href="#dishes">Dishes</a><a href="#cities">Cities</a></nav>
+  <div class="nav-r">
+    {% if user %}<a href="/app/feed">Open your feed</a>
+    {% else %}<a href="/login">Log in</a><a class="btn btn-p" href="/signup">Join free</a>{% endif %}
+  </div>
+</header>
+
 <main>
-  <section class="landing-hero">
-    <div><p class="overline">Food discovery, tuned to you</p><h1>Restaurants that <em>fit your taste,</em> not everyone else's.</h1><p>Build a private taste profile, then discover real dishes ranked against your budget, dietary needs, and food palate.</p><div class="hero-actions"><a class="btn btn-p" href="{{ '/app/feed' if user else '/signup' }}">{{ 'Open my feed' if user else 'Build my taste profile' }} →</a><a class="btn btn-o" href="#how">See how it works</a></div></div>
-    {% set hero=context_image('welcome') %}<div class="hero-photo"><img src="{{ hero.src }}" alt="{{ hero.alt }}" width="{{ hero.width }}" height="{{ hero.height }}" fetchpriority="high" onerror="this.onerror=null;this.src='{{ fallback_image().src }}'"><span class="match-pill">Personal, not generic</span></div>
+  <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+  <section class="lx-hero">
+    <div class="lx-hero-copy">
+      <p class="overline">Food discovery, tuned to you</p>
+      <h1>Restaurants that <em>fit your taste,</em> not everyone else's.</h1>
+      <p class="lx-lede">Build a private taste profile, then discover real dishes ranked against your budget, dietary needs, and food palate.</p>
+      <div class="hero-actions">
+        <a class="btn btn-p lx-btn-lg" href="{{ '/app/feed' if user else '/signup' }}">{{ 'Open my feed' if user else 'Build my taste profile' }} →</a>
+        <a class="btn btn-o lx-btn-lg" href="#how">See how it works</a>
+      </div>
+      <dl class="lx-stats">
+        <div><dt>6</dt><dd>ranking signals</dd></div>
+        <div><dt>8</dt><dd>cuisines covered</dd></div>
+        <div><dt>3</dt><dd>cities live</dd></div>
+      </dl>
+    </div>
+
+    <div class="lx-hero-art">
+      {% set hero = context_image('welcome') %}
+      <figure class="lx-hero-main">
+        <img src="{{ hero.src }}" alt="{{ hero.alt }}" width="{{ hero.width }}" height="{{ hero.height }}"
+             fetchpriority="high" decoding="async"
+             onerror="this.onerror=null;this.src='{{ fallback_image().src }}'">
+      </figure>
+      {% set fa = dish_image('Chicken Karahi', 'Pakistani') %}
+      <figure class="lx-float lx-float-a">
+        <img src="{{ fa.src }}" alt="{{ fa.alt }}" loading="lazy" decoding="async"
+             onerror="this.onerror=null;this.src='{{ fallback_image().src }}'">
+        <figcaption><span class="lx-dot"></span>Ranked for your palate</figcaption>
+      </figure>
+      {% set fb = dish_image('Sweet Dessert', 'Bakery') %}
+      <figure class="lx-float lx-float-b">
+        <img src="{{ fb.src }}" alt="{{ fb.alt }}" loading="lazy" decoding="async"
+             onerror="this.onerror=null;this.src='{{ fallback_image().src }}'">
+        <figcaption>Within your budget</figcaption>
+      </figure>
+    </div>
   </section>
-  <section id="how" class="how-grid"><article><b>01</b><h2>Tell us your taste</h2><p>Choose cuisines, favourite foods, flavour levels, textures and practical constraints.</p></article><article><b>02</b><h2>We rank real menus</h2><p>Six named signals reorder persisted dishes for your profile without inventing missing data.</p></article><article><b>03</b><h2>Your feed learns</h2><p>Clicks, saves and order interest update your profile and make later recommendations sharper.</p></article></section>
-  <section id="cities" class="cities"><span>Lahore</span><span>Karachi</span><span>Islamabad &amp; Rawalpindi</span></section>
+
+  <!-- ── Scrolling dish ticker ────────────────────────────────────────── -->
+  <section class="lx-ticker" aria-label="A sample of dishes on namak">
+    <div class="lx-ticker-track">
+      {% for pass in [1, 2] %}
+      <ul class="lx-ticker-row" {% if pass == 2 %}aria-hidden="true"{% endif %}>
+        {% for name in ticker %}
+        {% set img = dish_image(name) %}
+        <li><img src="{{ img.src }}" alt="{{ img.alt if pass == 1 else '' }}" loading="lazy" decoding="async"><span>{{ name }}</span></li>
+        {% endfor %}
+      </ul>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ── How it works ─────────────────────────────────────────────────── -->
+  <section id="how" class="lx-how">
+    <header class="lx-sec-head lx-sec-head-dark">
+      <p class="overline">How it works</p>
+      <h2>Three steps to a feed that's actually yours.</h2>
+    </header>
+    <div class="lx-how-grid">
+      {% set steps = [
+        ('01', 'Tell us your taste', 'Choose cuisines, favourite foods, flavour levels, textures and practical constraints.', 'Chicken Tikka'),
+        ('02', 'We rank real menus', 'Six named signals reorder persisted dishes for your profile without inventing missing data.', 'Pakistani BBQ Platter'),
+        ('03', 'Your feed learns', 'Clicks, saves and order interest update your profile and make later recommendations sharper.', 'Chinese Fried Rice')
+      ] %}
+      {% for num, title, body, dish in steps %}
+      {% set img = dish_image(dish) %}
+      <article class="lx-step">
+        <div class="lx-step-photo"><img src="{{ img.src }}" alt="{{ img.alt }}" loading="lazy" decoding="async"></div>
+        <b>{{ num }}</b>
+        <h3>{{ title }}</h3>
+        <p>{{ body }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ── Cuisines ─────────────────────────────────────────────────────── -->
+  <section class="lx-section">
+    <header class="lx-sec-head">
+      <p class="overline">Every craving</p>
+      <h2>Eight cuisines, ranked the same careful way.</h2>
+    </header>
+    <ul class="lx-cuisine-grid">
+      {% for c in cuisines %}
+      {% set img = cuisine_image(c) %}
+      <li class="lx-cuisine">
+        <img src="{{ img.src }}" alt="{{ img.alt }}" loading="lazy" decoding="async">
+        <span>{{ c }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <!-- ── Dish showcase ────────────────────────────────────────────────── -->
+  <section id="dishes" class="lx-section lx-section-tint">
+    <header class="lx-sec-head">
+      <p class="overline">On the menu</p>
+      <h2>Real dishes, real kitchens — not stock suggestions.</h2>
+      <p class="lx-sec-sub">A sample of what the catalogue already holds. Your own feed is ordered by your profile, not by this list.</p>
+    </header>
+    <ul class="lx-dish-grid">
+      {% for name, cuisine in showcase %}
+      {% set img = dish_image(name, cuisine) %}
+      <li class="lx-dish">
+        <div class="lx-dish-photo"><img src="{{ img.src }}" alt="{{ img.alt }}" loading="lazy" decoding="async"></div>
+        <div class="lx-dish-body">
+          <h3>{{ name }}</h3>
+          <span class="lx-tag">{{ cuisine }}</span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <!-- ── Closing call to action ───────────────────────────────────────── -->
+  <section id="cities" class="lx-cta">
+    {% set cta = context_image('street food') %}
+    <img class="lx-cta-bg" src="{{ cta.src }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
+    <div class="lx-cta-inner">
+      <p class="overline lx-overline-light">Now serving</p>
+      <h2>Lahore. Karachi. Islamabad &amp; Rawalpindi.</h2>
+      <p>Set your palate once, and every menu in your city reorders itself around it.</p>
+      <a class="btn btn-p lx-btn-lg" href="{{ '/app/feed' if user else '/signup' }}">{{ 'Open my feed' if user else 'Build my taste profile' }} →</a>
+    </div>
+  </section>
 </main>
+
+<footer class="lx-footer">
+  <a class="brand" href="/">n<em>a</em>mak</a>
+  <p>Food discovery tuned to your palate. <a href="/credits">Photo credits</a></p>
+</footer>
 {% endblock %}

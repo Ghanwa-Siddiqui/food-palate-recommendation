@@ -1,0 +1,45 @@
+{% extends "namak/base.html" %}
+{% block title %}Photo credits — namak{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/landing.css">{% endblock %}
+{% block body %}
+<header class="nav landing-nav">
+  <a class="brand" href="/">n<em>a</em>mak</a>
+  <div class="nav-r">{% if user %}<a href="/app/feed">Open your feed</a>{% else %}<a href="/login">Log in</a>{% endif %}</div>
+</header>
+
+<main class="lx-section">
+  <header class="lx-sec-head">
+    <p class="overline">Attribution</p>
+    <h1>Photo credits</h1>
+    <p class="lx-sec-sub">
+      Every photograph shipped with namak, with its creator and licence. Images marked
+      <b>credit required</b> are licensed under CC BY or CC BY-SA, which oblige us to name the
+      photographer and the licence. None of these photographs depicts a named restaurant's
+      actual food — they are illustrative of the dish only.
+    </p>
+  </header>
+
+  <ul class="cr-list">
+    {% for a in attributions %}
+    <li class="cr-row{{ ' cr-required' if a.required }}">
+      <img src="{{ a.src }}" alt="{{ a.alt }}" loading="lazy" decoding="async" width="120" height="80">
+      <div>
+        <p class="cr-alt">{{ a.alt }}</p>
+        <p class="cr-meta">
+          <span>{{ a.creator }}</span>
+          {% if a.platform %}<span>· {{ a.platform }}</span>{% endif %}
+          <span>· {{ a.licence }}</span>
+          {% if a.page %}· <a href="{{ a.page }}" rel="noopener nofollow" target="_blank">source</a>{% endif %}
+        </p>
+      </div>
+      {% if a.required %}<span class="cr-flag">credit required</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</main>
+
+<footer class="lx-footer">
+  <a class="brand" href="/">n<em>a</em>mak</a>
+  <p>Food discovery tuned to your palate.</p>
+</footer>
+{% endblock %}

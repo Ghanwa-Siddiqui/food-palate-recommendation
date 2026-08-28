@@ -1,0 +1,266 @@
+/* Ranked-feed styles (fx-*, plus overrides of the shared feed-* classes).
+   Loaded only by namak/feed.html.
+
+   Everything visual here is driven by data the ranking service actually
+   returns — the match ring is the real match_percentage, the evidence rows
+   render only when their field is populated. Nothing is invented. */
+
+/* ── Shell ─────────────────────────────────────────────────────────── */
+.feed-shell{
+  max-width:1500px;margin:auto;
+  display:grid;grid-template-columns:288px minmax(0,1fr);
+  gap:clamp(18px,2.2vw,34px);
+  padding:clamp(18px,2.4vw,32px) clamp(16px,3vw,38px) 72px;
+  align-items:start;
+}
+
+/* ── Filter rail ───────────────────────────────────────────────────── */
+/* Only restyle the docked rail. Below 980px the base stylesheet turns this
+   panel into a fixed off-canvas drawer driven by the Filters toggle, so
+   position/size/radius must be left alone there — overriding them makes the
+   hidden drawer occupy flow space and shoves the results down the page. */
+@media (min-width:981px){
+  .feed-filters{
+    position:sticky;top:80px;border-radius:16px;
+    max-height:calc(100vh - 100px);overflow:auto;overscroll-behavior:contain;
+    box-shadow:0 12px 30px -20px rgba(60,32,14,.34);
+  }
+}
+.feed-filters{background:var(--bone);border:1px solid var(--line);padding:20px;}
+.filter-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:16px;}
+.filter-head h2{font-family:var(--serif);font-size:26px;font-weight:500;letter-spacing:-.02em;margin:4px 0 0;}
+.feed-filters .filter-field{display:grid;gap:6px;font-size:12px;font-weight:600;color:var(--stone-2);margin-bottom:14px;}
+.feed-filters input[type=number],.feed-filters input[type=text],.feed-filters input:not([type]){
+  width:100%;padding:10px 11px;border:1px solid var(--line-2);border-radius:9px;
+  background:#fff;color:var(--ink);font-weight:400;font-size:13.5px;
+  transition:border-color .18s ease,box-shadow .18s ease;
+}
+.feed-filters input:focus{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(232,169,58,.22);outline:none;}
+.filter-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;}
+.filter-options{border:0;padding:0;margin:0 0 14px;}
+.filter-options legend{font-size:12px;font-weight:600;color:var(--stone-2);padding:0;margin-bottom:7px;}
+.filter-options label{
+  display:flex;align-items:center;gap:9px;padding:10px 12px;margin-bottom:7px;
+  border:1px solid var(--line-2);border-radius:9px;background:#fff;
+  font-size:13.5px;cursor:pointer;transition:border-color .18s ease,background .18s ease;
+}
+.filter-options label:hover{border-color:var(--saffron-d);}
+/* Size/appearance intentionally left to ui.css, which renders these two
+   binary filters as toggle switches. */
+.filter-options label:has(input:checked){border-color:var(--mint);background:rgba(74,124,89,.06);}
+.coordinate-fields{
+  border-top:1px solid var(--line);padding-top:14px;margin-top:4px;
+}
+.coordinate-fields>div{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.coordinate-fields b{font-size:12px;font-weight:600;color:var(--stone-2);}
+.geo-button{font-size:11px;padding:6px 10px;border-radius:999px;}
+.geo-status{font-size:11.5px;color:var(--stone);margin:6px 0 10px;line-height:1.45;}
+.filter-actions{display:flex;gap:8px;margin-top:16px;}
+.filter-actions .btn{flex:1;justify-content:center;padding:11px;border-radius:999px;}
+.edit-preferences{
+  display:block;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
+  font-size:12.5px;color:var(--stone-2);
+}
+.edit-preferences:hover{color:var(--ink);}
+.filter-error{
+  background:#f5dfd8;color:#7d2916;border-radius:9px;padding:10px 12px;
+  font-size:12.5px;line-height:1.5;margin-top:12px;
+}
+.filter-error ul{margin:6px 0 0;padding-left:16px;}
+
+/* ── Results header ────────────────────────────────────────────────── */
+.feed-heading{
+  display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
+  gap:12px;margin-bottom:18px;
+}
+.feed-heading h1{
+  font-family:var(--serif);font-weight:500;letter-spacing:-.032em;
+  font-size:clamp(30px,3.4vw,46px);line-height:1.05;margin:6px 0 0;
+}
+.fx-sub{font-size:13.5px;line-height:1.6;color:var(--stone-2);margin:9px 0 0;max-width:46em;}
+.feed-heading>p:last-child{font-size:13px;color:var(--stone-2);white-space:nowrap;}
+.feed-heading>p:last-child b{font-family:var(--serif);font-size:24px;color:var(--ink);}
+
+.active-filters{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:18px;}
+.active-filters>span{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--stone);}
+.active-filters button{
+  border:1px solid var(--line-2);background:var(--bone);color:var(--ink);
+  font-size:12px;padding:6px 11px;border-radius:999px;cursor:pointer;
+  transition:border-color .18s ease,background .18s ease;
+}
+.active-filters button:hover{border-color:var(--paprika);background:#f7e7e1;}
+
+/* ── Card grid ─────────────────────────────────────────────────────── */
+/* ── Cuisine quick-filter tabs ─────────────────────────────────────── */
+.fx-tabs{
+  display:flex;gap:7px;margin:0 0 18px;padding-bottom:3px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.fx-tabs::-webkit-scrollbar{display:none;}
+.fx-tab{
+  flex:0 0 auto;padding:8px 15px;border-radius:999px;
+  border:1px solid var(--line-2);background:var(--bone);
+  font-size:12.5px;font-weight:500;color:var(--stone-2);white-space:nowrap;
+  transition:border-color .18s ease,background .18s ease,color .18s ease;
+}
+.fx-tab:hover{border-color:var(--saffron-d);color:var(--ink);}
+.fx-tab.is-on{
+  background:var(--ink);border-color:var(--ink);color:var(--cream);font-weight:600;
+}
+
+.feed-card-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));
+  gap:clamp(13px,1.4vw,20px);
+}
+.feed-card{
+  display:flex;flex-direction:column;
+  background:var(--bone);border:1px solid var(--line);border-radius:17px;overflow:hidden;
+  transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease;
+}
+@media (hover:hover){
+  .feed-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 22px 44px -22px rgba(60,32,14,.42);}
+  .feed-card:hover .feed-card-image img{transform:scale(1.05);}
+}
+.feed-card-image{
+  position:relative;display:block;height:198px;overflow:hidden;
+  background:linear-gradient(135deg,#92411d,#e8a93a);
+}
+.feed-card-image img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .6s cubic-bezier(.2,.7,.3,1);
+}
+.feed-card-image::after{
+  content:'';position:absolute;inset:auto 0 0 0;height:52%;
+  background:linear-gradient(180deg,transparent,rgba(20,14,10,.42));
+}
+
+/* Match ring — arc length is the real score, colour bands it. */
+.fx-ring{
+  position:absolute;right:12px;top:12px;width:52px;height:52px;z-index:1;
+  display:grid;place-items:center;
+  background:rgba(251,247,238,.94);border-radius:50%;
+  box-shadow:0 6px 16px -6px rgba(28,25,23,.5);
+}
+.fx-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.fx-ring circle{fill:none;stroke-width:3.4;cx:22;cy:22;r:19;}
+.fx-ring-track{stroke:rgba(28,25,23,.13);}
+.fx-ring-value{
+  stroke:var(--saffron-d);stroke-linecap:round;
+  /* r=19 → circumference = 2πr ≈ 119.38 */
+  stroke-dasharray:calc(var(--pct) * 1.1938) 119.38;
+}
+.fx-ring[data-band="high"] .fx-ring-value{stroke:var(--mint);}
+.fx-ring[data-band="low"] .fx-ring-value{stroke:var(--stone);}
+.fx-ring b{
+  font-family:var(--serif);font-size:13.5px;font-weight:500;color:var(--ink);
+  line-height:1;letter-spacing:-.03em;z-index:1;
+}
+
+/* ── Card body ─────────────────────────────────────────────────────── */
+.feed-card-body{display:flex;flex-direction:column;flex:1;padding:15px 16px 16px;}
+.feed-card-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.feed-card-title h2{
+  font-family:var(--serif);font-size:19.5px;font-weight:500;letter-spacing:-.018em;
+  margin:0;line-height:1.2;
+}
+.fx-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:5px 0 0;}
+.fx-meta a{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12.5px;color:var(--stone-2);
+}
+.fx-meta a:hover{color:var(--ink);}
+.fx-meta a:hover .fx-mono{transform:scale(1.08);}
+/* Lettermark stands in for a venue photo — see the note in feed.html. */
+.fx-mono{
+  width:19px;height:19px;border-radius:50%;flex-shrink:0;
+  display:inline-grid;place-items:center;
+  font-size:9.5px;font-weight:700;color:var(--bone);
+  transition:transform .2s ease;
+}
+.fx-mono-0{background:var(--paprika);}
+.fx-mono-1{background:var(--mint);}
+.fx-mono-2{background:var(--saffron-d);}
+.fx-mono-3{background:#5B6F87;}
+.fx-mono-4{background:#8B4A2F;}
+.fx-mono-5{background:var(--ink-2);}
+.fx-dist{
+  font-size:11.5px;color:var(--stone);
+  padding-left:7px;border-left:1px solid var(--line-2);
+}
+.feed-card-title strong{
+  font-family:var(--serif);font-size:16px;font-weight:500;white-space:nowrap;color:var(--ink);
+}
+.chip-row{display:flex;flex-wrap:wrap;gap:5px;margin:11px 0 0;}
+.chip{
+  font-size:10.5px;font-weight:600;letter-spacing:.045em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;
+  background:rgba(232,169,58,.17);color:var(--saffron-d);
+}
+.chip.veg{background:rgba(74,124,89,.14);color:var(--mint);}
+
+/* ── Evidence ──────────────────────────────────────────────────────── */
+.feed-evidence{
+  margin:13px 0 0;padding:12px 0 0;border-top:1px solid var(--line);
+  display:grid;gap:9px;flex:1;
+}
+.fx-ev{
+  position:relative;padding-left:13px;font-size:12.5px;line-height:1.55;color:var(--stone-2);margin:0;
+}
+.fx-ev::before{
+  content:'';position:absolute;left:0;top:4px;bottom:2px;width:2.5px;border-radius:2px;
+}
+.fx-ev-taste::before{background:var(--saffron);}
+.fx-ev-review::before{background:var(--mint);}
+.fx-ev-similar::before{background:var(--paprika);}
+.fx-ev b{
+  display:block;font-size:10px;font-weight:700;letter-spacing:.075em;text-transform:uppercase;
+  color:var(--ink);margin-bottom:2px;
+}
+.fx-ev-none{opacity:.6;font-style:italic;}
+.fx-ev-none::before{background:var(--line-2);}
+.fx-ev q{display:block;margin-top:6px;font-style:italic;color:var(--ink-2);quotes:'"' '"';}
+.fx-ev small{display:block;margin-top:3px;font-size:11px;color:var(--stone);}
+
+/* ── Actions ───────────────────────────────────────────────────────── */
+/* Primary action spans the full width; the two secondary actions share the
+   row beneath it, so every label stays readable at a 288px card width. */
+.feed-card-actions{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:7px;margin-top:14px;
+}
+.feed-card-actions form{display:contents;}
+.fx-open{
+  grid-column:1/-1;
+  font-size:12.5px;padding:10px 14px;border-radius:999px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;
+}
+.fx-act{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  padding:9px 8px;border-radius:999px;
+  border:1px solid var(--line-2);background:var(--cream-2);color:var(--stone-2);
+  font-size:11.5px;font-weight:600;line-height:1;cursor:pointer;white-space:nowrap;
+  transition:border-color .18s ease,background .18s ease,color .18s ease;
+}
+.fx-act span{font-size:13px;line-height:1;}
+.fx-act:hover{border-color:var(--saffron-d);background:var(--bone);color:var(--ink);}
+.fx-act.is-on{border-color:var(--saffron);background:rgba(232,169,58,.2);color:var(--saffron-d);}
+
+/* ── States ────────────────────────────────────────────────────────── */
+.feed-state{
+  background:var(--bone);border:1px solid var(--line);border-radius:17px;
+  padding:clamp(24px,3.5vw,42px);text-align:center;
+}
+.feed-state h2{font-family:var(--serif);font-size:24px;font-weight:500;margin:0 0 8px;}
+.feed-state p{font-size:14px;color:var(--stone-2);margin:0 0 16px;}
+.state-with-image{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:24px;text-align:left;align-items:center;}
+.state-with-image img{width:100%;height:auto;border-radius:12px;display:block;}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+/* Matches the base stylesheet's own drawer breakpoint so the two agree. */
+@media (max-width:980px){
+  .feed-shell{grid-template-columns:minmax(0,1fr);}
+}
+@media (max-width:560px){
+  .feed-card-grid{grid-template-columns:minmax(0,1fr);}
+  .state-with-image{grid-template-columns:minmax(0,1fr);text-align:center;}
+}

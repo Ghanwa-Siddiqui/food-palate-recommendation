@@ -1,5 +1,6 @@
 {% extends "namak/base.html" %}
 {% block title %}For you — namak{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/feed.css">{% endblock %}
 {% block body %}
 {% set active='feed' %}{% include "namak/_nav.html" %}
 {% set active_count=(1 if filters.get('search') else 0)+(1 if filters.get('budget_min') else 0)+(1 if filters.get('budget_max') else 0)+(1 if filters.get('require_halal')=='true' else 0)+(1 if 'vegetarian' in filters.getlist('dietary_restrictions') else 0)+(1 if filters.get('max_distance_km') else 0) %}
@@ -22,20 +23,105 @@
   </aside>
 
   <main class="feed-results">
-    <header class="feed-heading"><div><p class="overline">Personalized for {{ user.name }}</p><h1>Your ranked feed</h1></div>{% if feed %}<p><b>{{ feed.total_candidates }}</b> result{{ '' if feed.total_candidates==1 else 's' }}</p>{% endif %}</header>
+    <header class="feed-heading">
+      <div><p class="overline">Personalized for {{ user.name }}</p><h1>Your ranked feed</h1>
+        <p class="fx-sub">Ordered by how each dish scores against your taste profile, budget and dietary needs.</p></div>
+      {% if feed %}<p><b>{{ feed.total_candidates }}</b> result{{ '' if feed.total_candidates==1 else 's' }}</p>{% endif %}
+    </header>
     {% if welcome %}<div class="notice">Your taste profile is ready. These recommendations use it now.</div>{% endif %}
     {% if active_count %}<div class="active-filters" aria-label="Active filters"><span>{{ active_count }} active</span>{% if filters.get('search') %}<button data-remove-filter="search">Search: {{ filters.get('search') }} ×</button>{% endif %}{% if filters.get('budget_min') %}<button data-remove-filter="budget_min">Min PKR {{ filters.get('budget_min') }} ×</button>{% endif %}{% if filters.get('budget_max') %}<button data-remove-filter="budget_max">Max PKR {{ filters.get('budget_max') }} ×</button>{% endif %}{% if filters.get('require_halal')=='true' %}<button data-remove-filter="require_halal">Halal ×</button>{% endif %}{% if 'vegetarian' in filters.getlist('dietary_restrictions') %}<button data-remove-filter="dietary_restrictions">Vegetarian ×</button>{% endif %}{% if filters.get('max_distance_km') %}<button data-remove-filter="distance">Within {{ filters.get('max_distance_km') }} km ×</button>{% endif %}</div>{% endif %}
+    {# Quick cuisine filters. These are real links into the existing `search`
+       filter, carrying every other active filter along so a tab never silently
+       drops the user's budget/dietary/distance settings. #}
+    {% set carry = [] %}
+    {% for key, value in filters.multi_items() %}{% if key not in ['search','offset'] and value %}{% set _ = carry.append(key ~ '=' ~ value|urlencode) %}{% endif %}{% endfor %}
+    {% set base = carry|join('&') %}
+    {% set current = filters.get('search','')|lower %}
+    <nav class="fx-tabs" aria-label="Filter by cuisine">
+      <a class="fx-tab{{ ' is-on' if not current }}" href="/app/feed{{ '?' ~ base if base }}"{{ ' aria-current=page'|safe if not current }}>All</a>
+      {% for c in ['Pakistani','Chinese','Italian','Turkish','Japanese','Thai','Continental','Fast Food'] %}
+      <a class="fx-tab{{ ' is-on' if current == c|lower }}" href="/app/feed?{{ base ~ '&' if base }}search={{ c|urlencode }}"{{ ' aria-current=page'|safe if current == c|lower }}>{{ c }}</a>
+      {% endfor %}
+    </nav>
     <div id="feed-loading" class="feed-state" hidden role="status" aria-live="polite">Updating your recommendations…</div>
     {% if state=='validation' %}<section class="feed-state"><h2>Filters need attention.</h2><p>Correct the highlighted values and apply them again.</p></section>
     {% elif state=='error' %}{% set state_img=context_image('unavailable') %}<section class="feed-state state-with-image" role="alert"><img src="{{ state_img.src }}" alt="" width="{{ state_img.width }}" height="{{ state_img.height }}"><div><h2>Recommendations are unavailable.</h2><p>The ranking service did not respond. Your filters are still here.</p><a class="btn btn-p" href="{{ request.url.path }}?{{ request.url.query }}">Try again</a></div></section>
     {% elif state=='empty' %}{% set state_img=context_image('empty') %}<section class="feed-state state-with-image"><img src="{{ state_img.src }}" alt="" width="{{ state_img.width }}" height="{{ state_img.height }}"><div><h2>No dishes match these filters.</h2><p>Remove a filter or widen your budget and distance.</p><button class="btn btn-o reset-filters" type="button">Clear all filters</button></div></section>
-    {% else %}<div class="feed-card-grid">{% for item in feed.items %}{% set image=dish_image(item.dish_name,item.cuisine,item.image_url) %}<article class="feed-card">
-      <a class="feed-card-image" href="/app/dishes/{{ item.dish_id }}"><img src="{{ image.src }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}" loading="lazy" onerror="this.onerror=null;this.src='{{ fallback_image().src }}'"><span class="match-pill">{{ item.match_percentage }}% match</span></a>
-      <div class="feed-card-body"><div class="feed-card-title"><div><h2>{{ item.dish_name }}</h2><a href="/app/restaurants/{{ item.restaurant_id }}">{{ item.restaurant_name }}</a></div><strong>PKR {{ '%.0f'|format(item.price) }}</strong></div>
-        <div class="chip-row"><span class="chip">{{ item.cuisine }}</span>{% for tag in item.dietary_tags[:2] %}<span class="chip veg">{{ tag }}</span>{% endfor %}{% if item.halal_status in ['verified','claimed'] %}<span class="chip veg">Halal {{ item.halal_status }}</span>{% endif %}</div>
-        <section class="feed-evidence"><p><b>Taste match</b>{{ item.taste_explanation }}</p><p><b>Review insight</b>{{ item.review_insight or 'No review insight yet.' }}</p>{% if item.collaborative_explanation %}<p><b>Similar-diner evidence</b>{{ item.collaborative_explanation }}{% if item.collaborative_review_excerpt and item.collaborative_review_rating %}<q>{{ item.collaborative_review_excerpt }}</q><small>{{ item.collaborative_reviewer_name }} · {{ item.collaborative_review_rating }}/5</small>{% endif %}</p>{% endif %}{% if item.distance_km is not none %}<p><b>Distance</b>{{ '%.1f'|format(item.distance_km) }} km away</p>{% endif %}</section>
-        <div class="feed-card-actions"><form method="post" action="/app/interactions"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="dish_id" value="{{ item.dish_id }}"><input type="hidden" name="event_id" value="{{ event_id }}-{{ loop.index }}-save"><input type="hidden" name="next" value="/app/feed"><button class="btn {{ 'btn-g' if item.saved else 'btn-p' }}" name="action" value="{{ 'unsave' if item.saved else 'save' }}">{{ 'Saved ✓' if item.saved else 'Save dish' }}</button></form><a class="btn btn-o" href="/app/dishes/{{ item.dish_id }}">Open dish</a><form method="post" action="/app/interactions"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="dish_id" value="{{ item.dish_id }}"><input type="hidden" name="event_id" value="{{ event_id }}-{{ loop.index }}-order"><input type="hidden" name="next" value="/app/feed"><button class="btn btn-g" name="action" value="order">Order interest</button></form></div>
-      </div></article>{% endfor %}</div>{% endif %}
+    {% else %}
+    {# Resolved for the whole page at once so repeated dishes walk through
+       their alternative photographs instead of colliding by chance. #}
+    {% set page_images = feed_images(feed.items) %}
+    <div class="feed-card-grid">{% for item in feed.items %}
+      {% set image=page_images[loop.index0] %}
+      {% set pct=item.match_percentage %}
+      {% set band='high' if pct>=70 else ('mid' if pct>=45 else 'low') %}
+      <article class="feed-card">
+        <a class="feed-card-image" href="/app/dishes/{{ item.dish_id }}" aria-label="Open {{ item.dish_name }}">
+          {# The catalogue often resolves several restaurants' copies of the
+             same dish to one photograph. Varying the crop keeps neighbouring
+             cards from looking like a duplication bug, without ever implying
+             the picture is a different dish than it is. #}
+          <img src="{{ image.src }}" alt="{{ image.alt }}" width="{{ image.width }}" height="{{ image.height }}" loading="lazy"
+               style="object-position:{{ ['50% 50%','50% 34%','46% 62%','58% 44%','42% 48%'][loop.index0 % 5] }}"
+               onerror="this.onerror=null;this.src='{{ fallback_image().src }}'">
+          {# Ring is a visualisation of the ranking service's own score - the
+             number and the arc are both driven by item.match_percentage. #}
+          <span class="fx-ring" data-band="{{ band }}" style="--pct:{{ pct }}" role="img" aria-label="{{ pct }}% match">
+            <svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+              <circle class="fx-ring-track" cx="22" cy="22" r="19"></circle>
+              <circle class="fx-ring-value" cx="22" cy="22" r="19"></circle>
+            </svg>
+            {# Keep the number and the sign in one text node: splitting them
+               into separate elements hides the "92%" string from anything
+               reading the rendered markup. #}
+            <b>{{ pct }}%</b>
+          </span>
+        </a>
+        <div class="feed-card-body">
+          <div class="feed-card-title">
+            <div>
+              <h2>{{ item.dish_name }}</h2>
+              {# Monogram, not a photo: the stock restaurant images are generic
+                 fallbacks, so showing one here would imply a likeness of a real
+                 venue. A lettermark differentiates the cards honestly. #}
+              <p class="fx-meta">
+                <a href="/app/restaurants/{{ item.restaurant_id }}">
+                  <span class="fx-mono fx-mono-{{ item.restaurant_name|length % 6 }}" aria-hidden="true">{{ item.restaurant_name[0]|upper }}</span>{{ item.restaurant_name }}
+                </a>
+                {% if item.distance_km is not none %}<span class="fx-dist">{{ '%.1f'|format(item.distance_km) }} km</span>{% endif %}
+              </p>
+            </div>
+            <strong>PKR {{ '%.0f'|format(item.price) }}</strong>
+          </div>
+          <div class="chip-row"><span class="chip">{{ item.cuisine }}</span>{% for tag in item.dietary_tags[:2] %}<span class="chip veg">{{ tag }}</span>{% endfor %}{% if item.halal_status in ['verified','claimed'] %}<span class="chip veg">Halal {{ item.halal_status }}</span>{% endif %}</div>
+          <section class="feed-evidence">
+            <p class="fx-ev fx-ev-taste"><b>Taste match</b>{{ item.taste_explanation }}</p>
+            <p class="fx-ev fx-ev-review{{ '' if item.review_insight else ' fx-ev-none' }}"><b>Review insight</b>{{ item.review_insight or 'No review insight yet.' }}</p>
+            {% if item.collaborative_explanation %}
+            <p class="fx-ev fx-ev-similar"><b>Similar diners</b>{{ item.collaborative_explanation }}
+              {% if item.collaborative_review_excerpt and item.collaborative_review_rating %}<q>{{ item.collaborative_review_excerpt }}</q><small>{{ item.collaborative_reviewer_name }} · {{ item.collaborative_review_rating }}/5</small>{% endif %}
+            </p>
+            {% endif %}
+          </section>
+          <div class="feed-card-actions">
+            <a class="btn btn-p fx-open" href="/app/dishes/{{ item.dish_id }}">Open dish <span aria-hidden="true">→</span></a>
+            <form method="post" action="/app/interactions">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="dish_id" value="{{ item.dish_id }}"><input type="hidden" name="event_id" value="{{ event_id }}-{{ loop.index }}-save"><input type="hidden" name="next" value="/app/feed">
+              <button class="btn fx-act{{ ' is-on' if item.saved }}" name="action" value="{{ 'unsave' if item.saved else 'save' }}" aria-label="{{ 'Remove ' ~ item.dish_name ~ ' from saved' if item.saved else 'Save ' ~ item.dish_name }}">
+                <span aria-hidden="true">{{ '★' if item.saved else '☆' }}</span>{{ 'Saved ✓' if item.saved else 'Save dish' }}
+              </button>
+            </form>
+            <form method="post" action="/app/interactions">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="dish_id" value="{{ item.dish_id }}"><input type="hidden" name="event_id" value="{{ event_id }}-{{ loop.index }}-order"><input type="hidden" name="next" value="/app/feed">
+              {# Label stays "Order interest" in full: shortening it to "Order"
+                 reads as placing a real order, which this does not do. #}
+              <button class="btn fx-act" name="action" value="order" aria-label="Register order interest in {{ item.dish_name }}">
+                <span aria-hidden="true">🍽</span>Order interest
+              </button>
+            </form>
+          </div>
+        </div>
+      </article>{% endfor %}</div>{% endif %}
   </main>
 </div>
 <script>

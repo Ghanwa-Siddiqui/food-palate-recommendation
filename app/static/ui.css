@@ -1,0 +1,195 @@
+/* Shared interaction layer, loaded on every page from namak/base.html.
+
+   This adds motion, feedback and control polish only — no layout changes, so
+   it cannot shift any existing page. It is linked after namak.css and before
+   the per-page stylesheets, so a page can still override anything here.
+
+   Everything that moves sits inside `prefers-reduced-motion: no-preference`. */
+
+:root{
+  --ui-ease:cubic-bezier(.2,.7,.3,1);
+  --ui-fast:.16s;
+  --ui-base:.24s;
+}
+
+/* ── Anchor scrolling ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference){
+  html{scroll-behavior:smooth;}
+}
+/* Sticky headers would otherwise cover a freshly jumped-to section. */
+[id]{scroll-margin-top:88px;}
+
+/* ── Focus ─────────────────────────────────────────────────────────── */
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{
+  outline:2px solid var(--saffron);
+  outline-offset:2px;
+  border-radius:6px;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────── */
+.btn,button,[role="button"]{
+  transition:background-color var(--ui-base) var(--ui-ease),
+             border-color var(--ui-base) var(--ui-ease),
+             color var(--ui-base) var(--ui-ease),
+             box-shadow var(--ui-base) var(--ui-ease),
+             transform var(--ui-fast) var(--ui-ease),
+             opacity var(--ui-base) var(--ui-ease);
+}
+@media (prefers-reduced-motion: no-preference){
+  .btn:not(:disabled):hover,button:not(:disabled):hover{transform:translateY(-1px);}
+  /* Press feedback: the control should feel like it takes the click. */
+  .btn:not(:disabled):active,button:not(:disabled):active{
+    transform:translateY(0) scale(.985);
+    transition-duration:.06s;
+  }
+}
+.btn:disabled,button:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+
+/* ── Links ─────────────────────────────────────────────────────────── */
+a{transition:color var(--ui-base) var(--ui-ease),opacity var(--ui-base) var(--ui-ease);}
+
+/* Hit areas. Measured across the rendered screens, these links were only
+   16-17px tall — under the 24px WCAG 2.2 minimum and awkward on touch. The
+   padding grows the target without moving the text, so no layout shifts. */
+.navlinks a,.nav-r a,.back,.dish-breadcrumb,.edit-preferences,.lx-footer a,.auth-switch a{
+  display:inline-flex;align-items:center;
+  padding-block:9px;
+  min-height:38px;
+}
+.navlinks{align-items:center;}
+/* The active-tab underline is positioned against the link box, so it has to
+   come back up now that the box is taller than the text. */
+.navlinks .act::after{bottom:6px;}
+.brand{display:inline-flex;align-items:center;min-height:38px;}
+
+/* ── Fields ────────────────────────────────────────────────────────── */
+input:not([type=checkbox]):not([type=radio]):not([type=range]),
+select,textarea{
+  transition:border-color var(--ui-base) var(--ui-ease),
+             box-shadow var(--ui-base) var(--ui-ease),
+             background-color var(--ui-base) var(--ui-ease);
+}
+input:not([type=checkbox]):not([type=radio]):not([type=range]):hover,
+select:hover,textarea:hover{border-color:var(--line-2);}
+input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,
+select:focus,textarea:focus{
+  border-color:var(--saffron);
+  box-shadow:0 0 0 3px rgba(232,169,58,.22);
+  outline:none;
+}
+::placeholder{color:var(--stone);opacity:.85;}
+
+/* Search fields read as one unit when focused rather than a bare input. */
+.nav-search,.search{
+  transition:border-color var(--ui-base) var(--ui-ease),
+             box-shadow var(--ui-base) var(--ui-ease),
+             background-color var(--ui-base) var(--ui-ease);
+}
+.nav-search:focus-within,.search:focus-within{
+  border-color:var(--saffron);
+  box-shadow:0 0 0 3px rgba(232,169,58,.2);
+}
+.nav-search:focus-within input:focus,.search:focus-within input:focus{
+  box-shadow:none;border-color:transparent;
+}
+
+/* ── Toggle switches ───────────────────────────────────────────────────
+   Applied only to genuinely binary choices. Multi-select chips
+   (.choice, .select-card) stay as chips — a switch would misrepresent
+   "pick any of these" as "on or off". */
+.filter-options label input[type=checkbox],
+.halal-card input[type=checkbox],
+.review-check input[type=checkbox],
+input[type=checkbox].ui-switch{
+  appearance:none;-webkit-appearance:none;
+  box-sizing:border-box;flex:0 0 auto;position:relative;
+  width:42px;height:24px;margin:0;border-radius:999px;
+  background:var(--line-2);border:1px solid var(--line-2);
+  cursor:pointer;
+  transition:background-color var(--ui-base) var(--ui-ease),
+             border-color var(--ui-base) var(--ui-ease);
+}
+.filter-options label input[type=checkbox]::after,
+.halal-card input[type=checkbox]::after,
+.review-check input[type=checkbox]::after,
+input[type=checkbox].ui-switch::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:18px;height:18px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(28,25,23,.32);
+  transition:transform var(--ui-base) var(--ui-ease);
+}
+.filter-options label input[type=checkbox]:checked,
+.halal-card input[type=checkbox]:checked,
+.review-check input[type=checkbox]:checked,
+input[type=checkbox].ui-switch:checked{
+  background:var(--mint);border-color:var(--mint);
+}
+.filter-options label input[type=checkbox]:checked::after,
+.halal-card input[type=checkbox]:checked::after,
+.review-check input[type=checkbox]:checked::after,
+input[type=checkbox].ui-switch:checked::after{transform:translateX(18px);}
+@media (prefers-reduced-motion: reduce){
+  .filter-options label input[type=checkbox]::after,
+  .halal-card input[type=checkbox]::after,
+  .review-check input[type=checkbox]::after,
+  input[type=checkbox].ui-switch::after{transition:none;}
+}
+
+/* ── Selection chips and cards ─────────────────────────────────────── */
+.choice span,.select-card-body,.chip,.tag-chip,.fx-tab,.active-filters button{
+  transition:background-color var(--ui-base) var(--ui-ease),
+             border-color var(--ui-base) var(--ui-ease),
+             color var(--ui-base) var(--ui-ease),
+             transform var(--ui-fast) var(--ui-ease),
+             box-shadow var(--ui-base) var(--ui-ease);
+}
+@media (hover:hover) and (prefers-reduced-motion: no-preference){
+  .choice:hover span,.select-card:hover .select-card-body{transform:translateY(-2px);}
+}
+.choice span,.select-card-body{cursor:pointer;}
+
+/* ── Cards ─────────────────────────────────────────────────────────── */
+.card,.food-card,.menu-card,.act-body{
+  transition:border-color var(--ui-base) var(--ui-ease),
+             box-shadow var(--ui-base) var(--ui-ease),
+             transform var(--ui-base) var(--ui-ease);
+}
+@media (hover:hover) and (prefers-reduced-motion: no-preference){
+  .food-card:hover,.menu-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 20px 40px -20px rgba(60,32,14,.4);
+  }
+}
+
+/* ── Entrances ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference){
+  @keyframes uiRise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .auth-card,.onboard-card,.feed-state{animation:uiRise .34s var(--ui-ease) both;}
+  /* Results settle in sequence rather than snapping in as one block. */
+  .feed-card{animation:uiRise .38s var(--ui-ease) both;}
+  .feed-card:nth-child(1){animation-delay:.02s}
+  .feed-card:nth-child(2){animation-delay:.05s}
+  .feed-card:nth-child(3){animation-delay:.08s}
+  .feed-card:nth-child(4){animation-delay:.11s}
+  .feed-card:nth-child(5){animation-delay:.14s}
+  .feed-card:nth-child(6){animation-delay:.17s}
+  .feed-card:nth-child(7){animation-delay:.19s}
+  .feed-card:nth-child(8){animation-delay:.21s}
+  .feed-card:nth-child(n+9){animation-delay:.23s}
+}
+
+/* ── Loading ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference){
+  @keyframes uiPulse{0%,100%{opacity:1}50%{opacity:.55}}
+  #feed-loading:not([hidden]){animation:uiPulse 1.2s ease-in-out infinite;}
+}
+
+/* ── Off-canvas filter drawer ──────────────────────────────────────── */
+.filter-scrim:not([hidden]){
+  position:fixed;inset:0;z-index:50;background:rgba(28,25,23,.45);
+  backdrop-filter:blur(2px);
+}
+@media (prefers-reduced-motion: no-preference){
+  .filter-scrim:not([hidden]){animation:uiFade .2s ease both;}
+  @keyframes uiFade{from{opacity:0}to{opacity:1}}
+}
