@@ -211,3 +211,22 @@ input[type=checkbox].ui-switch:checked::after{transform:translateX(18px);}
   .rating-stars:has(label:hover) label{color:var(--saffron);}
   .rating-stars label:hover ~ input + label{color:#cfc5b8;text-shadow:none;}
 }
+
+/* ── The hidden attribute must actually hide ───────────────────────────
+   .btn sets display:inline-block, and an author rule outranks the UA rule
+   for [hidden]. The step navigator sets .hidden on Previous/Next/Save to
+   control the flow, so without this the Save button stayed visible on every
+   section and Next stayed visible on the last one. */
+[hidden]{display:none !important;}
+
+/* ── Step navigation ───────────────────────────────────────────────────
+   Three buttons under space-between left Next stranded in the middle of the
+   row. Previous holds the left edge; the forward actions group on the right,
+   which also keeps them stable as buttons hide and show between steps. */
+.quiz-actions{justify-content:flex-end;}
+.quiz-actions>*:first-child{margin-right:auto;}
+@media (max-width:560px){
+  .quiz-actions{display:flex;flex-wrap:wrap;}
+  .quiz-actions>*{flex:1 1 auto;}
+  .quiz-actions>*:first-child{margin-right:0;}
+}
