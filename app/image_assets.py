@@ -125,6 +125,68 @@ _DISH_KEYWORDS: tuple[tuple[tuple[str, ...], str], ...] = (
 # of them depicts a named restaurant's actual food, so rotating between them
 # claims nothing that showing a single one did not already claim.
 _DISH_VARIANTS: dict[str, tuple[str, ...]] = {
+    "chinese-fried-rice.webp": (
+        "chinese-fried-rice.webp",
+        "fried-rice-2.webp",
+        "fried-rice-3.webp",
+        "fried-rice-4.webp",
+        "fried-rice-5.webp",
+    ),
+    "chinese-noodles.webp": (
+        "chinese-noodles.webp",
+        "noodles-2.webp",
+        "noodles-3.webp",
+        "noodles-4.webp",
+        "noodles-5.webp",
+        "noodles-6.webp",
+    ),
+    "creamy-pasta.webp": (
+        "creamy-pasta.webp",
+        "pasta-2.webp",
+        "pasta-3.webp",
+        "pasta-4.webp",
+        "pasta-5.webp",
+    ),
+    "continental-grilled-chicken.webp": (
+        "continental-grilled-chicken.webp",
+        "grilled-chicken-2.webp",
+        "grilled-chicken-3.webp",
+        "grilled-chicken-4.webp",
+        "grilled-chicken-5.webp",
+        "grilled-chicken-6.webp",
+    ),
+    "crispy-food.webp": (
+        "crispy-food.webp",
+        "crispy-2.webp",
+        "crispy-3.webp",
+        "crispy-4.webp",
+        "crispy-5.webp",
+    ),
+    "chicken-biryani.webp": (
+        "chicken-biryani.webp",
+        "biryani-2.webp",
+        "biryani-3.webp",
+        "biryani-4.webp",
+        "biryani-5.webp",
+        "biryani-6.webp",
+    ),
+    "thai-curry.webp": (
+        "thai-curry.webp",
+        "curry-2.webp",
+        "curry-3.webp",
+        "curry-4.webp",
+        "curry-5.webp",
+        "curry-6.webp",
+    ),
+    "crunchy-snacks.webp": (
+        "crunchy-snacks.webp",
+        "snack-2.webp",
+        "snack-3.webp",
+        "snack-4.webp",
+        "snack-5.webp",
+        "snack-6.webp",
+        "snack-7.webp",
+    ),
     "italian-pizza.webp": (
         "italian-pizza.webp",
         "pizza-margherita-classic.webp",
