@@ -96,25 +96,28 @@
             <p class="fx-ev fx-ev-taste"><b>Taste match</b>{{ item.taste_explanation }}</p>
             <p class="fx-ev fx-ev-review{{ '' if item.review_insight else ' fx-ev-none' }}"><b>Review insight</b>{{ item.review_insight or 'No review insight yet.' }}</p>
             {% if item.taste_twin_reviews %}
-            {# Taste Twins (from develop): diners whose palate vector is closest
-               to this user. Copy matches the feature's own contract; only the
-               presentation is restyled to match the rest of the card. #}
-            <div class="fx-ev fx-ev-similar fx-twins">
-              <b>TASTE TWINS TRIED THIS</b>
-              <p class="fx-twin-meta">
+            {# Collapsed by default so a card with twins stays the same height
+               as its neighbours. <details> keeps it working without JS and
+               gives keyboard and screen-reader behaviour for free. #}
+            <details class="fx-ev fx-ev-similar fx-twins">
+              <summary class="fx-twins-summary">
+                <b>TASTE TWINS TRIED THIS</b>
                 <span class="fx-twin-badge">Best match · {{ item.taste_twin_reviews[0].similarity_percent }}% similar</span>
-                {% if item.taste_twin_review_count > 1 %}<span class="fx-twin-count">{{ item.taste_twin_review_count }} taste twins tried this</span>{% endif %}
-              </p>
-              {% for review in item.taste_twin_reviews[:2] %}
-              <article class="fx-twin">
-                <span class="fx-twin-who">{{ review.reviewer_name }}</span>
-                <span class="fx-twin-rating" aria-label="{{ review.rating }} out of 5">{{ review.rating }}<i aria-hidden="true">★</i></span>
-                {% if review.excerpt %}<q>{{ review.excerpt }}</q>{% endif %}
-              </article>
-              {% endfor %}
-              {% set remaining = item.taste_twin_review_count - (item.taste_twin_reviews|length) %}
-              <p class="fx-twin-foot">{% if remaining > 0 %}<span class="fx-twin-extra">+{{ remaining }} more</span>{% endif %}<a class="fx-twin-more" href="/app/dishes/{{ item.dish_id }}">View all twin reviews</a></p>
-            </div>
+                <span class="fx-twins-chevron" aria-hidden="true"></span>
+              </summary>
+              <div class="fx-twins-body">
+                {% if item.taste_twin_review_count > 1 %}<p class="fx-twin-count">{{ item.taste_twin_review_count }} taste twins tried this</p>{% endif %}
+                {% for review in item.taste_twin_reviews[:2] %}
+                <article class="fx-twin">
+                  <span class="fx-twin-who">{{ review.reviewer_name }}</span>
+                  <span class="fx-twin-rating" aria-label="{{ review.rating }} out of 5">{{ review.rating }}<i aria-hidden="true">★</i></span>
+                  {% if review.excerpt %}<q>{{ review.excerpt }}</q>{% endif %}
+                </article>
+                {% endfor %}
+                {% set remaining = item.taste_twin_review_count - (item.taste_twin_reviews|length) %}
+                <p class="fx-twin-foot">{% if remaining > 0 %}<span class="fx-twin-extra">+{{ remaining }} more</span>{% endif %}<a class="fx-twin-more" href="/app/dishes/{{ item.dish_id }}">View all twin reviews</a></p>
+              </div>
+            </details>
             {% endif %}
           </section>
           <div class="feed-card-actions">

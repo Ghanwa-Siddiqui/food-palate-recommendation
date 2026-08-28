@@ -104,10 +104,6 @@
 .feed-card-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));
   gap:clamp(13px,1.4vw,20px);
-  /* Cards take their natural height. Stretching them to match the tallest in
-     the row left a card with no taste twins carrying a large empty block
-     above its buttons. */
-  align-items:start;
 }
 .feed-card{
   display:flex;flex-direction:column;
@@ -269,16 +265,33 @@
 
 /* ── Taste Twins ───────────────────────────────────────────────────────
    Collaborative evidence from develop: reviews by diners whose taste vector
-   is closest to this user's. Rendered as an evidence row so it shares the
-   visual language of the taste and review rows above it. */
+   is closest to this user's. Collapsed by default so one card carrying twins
+   does not tower over its row-mates; <details> handles the toggle natively. */
 .fx-twins{display:block;}
-.fx-twins .fx-twin-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 0;}
-.fx-twins .fx-twin-badge{justify-self:start;align-self:flex-start;
+.fx-twins-summary{
+  display:flex;flex-wrap:wrap;align-items:center;gap:7px;
+  cursor:pointer;list-style:none;
+}
+.fx-twins-summary::-webkit-details-marker{display:none;}
+.fx-twins-summary>b{margin-bottom:0;}
+.fx-twin-badge{
   font-size:9.5px;font-weight:700;letter-spacing:.03em;
   color:var(--paprika);background:rgba(166,58,30,.12);
   padding:3px 8px;border-radius:999px;white-space:nowrap;
 }
-.fx-twin-count{font-size:11px;color:var(--stone);}
+/* Chevron doubles as the affordance: it rotates when the block opens. */
+.fx-twins-chevron{
+  margin-left:auto;width:0;height:0;flex-shrink:0;
+  border-left:4.5px solid transparent;border-right:4.5px solid transparent;
+  border-top:5px solid var(--stone);
+  transition:transform .2s var(--ui-ease,ease);
+}
+.fx-twins[open] .fx-twins-chevron{transform:rotate(180deg);}
+@media (hover:hover){.fx-twins-summary:hover .fx-twins-chevron{border-top-color:var(--paprika);}}
+.fx-twins-summary:focus-visible{outline:2px solid var(--saffron);outline-offset:3px;border-radius:5px;}
+
+.fx-twins-body{padding-top:4px;}
+.fx-twin-count{font-size:11px;color:var(--stone);margin:0 0 2px;}
 .fx-twin{margin-top:8px;}
 .fx-twin-who{font-size:12px;font-weight:600;color:var(--ink);}
 .fx-twin-rating{
@@ -290,7 +303,7 @@
   display:block;margin-top:3px;font-style:italic;color:var(--stone-2);
   quotes:'"' '"';line-height:1.5;
 }
-.fx-twins .fx-twin-foot{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:9px 0 0;}
+.fx-twin-foot{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:9px 0 0;}
 .fx-twin-extra{font-size:11px;color:var(--stone);}
 .fx-twin-more{
   font-size:11.5px;font-weight:600;color:var(--paprika);
