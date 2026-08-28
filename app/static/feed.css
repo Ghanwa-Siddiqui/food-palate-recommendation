@@ -104,6 +104,10 @@
 .feed-card-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));
   gap:clamp(13px,1.4vw,20px);
+  /* Cards take their natural height. Stretching them to match the tallest in
+     the row left a card with no taste twins carrying a large empty block
+     above its buttons. */
+  align-items:start;
 }
 .feed-card{
   display:flex;flex-direction:column;
@@ -195,6 +199,11 @@
 .feed-evidence{
   margin:13px 0 0;padding:12px 0 0;border-top:1px solid var(--line);
   display:grid;gap:9px;flex:1;
+  /* flex:1 lets this block absorb the card's spare height so the actions stay
+     pinned to the bottom. Without align-content the grid shares that spare
+     height between the rows, and a card with fewer evidence rows than its
+     neighbours stretches them into big empty gaps. */
+  align-content:start;
 }
 .fx-ev{
   position:relative;padding-left:13px;font-size:12.5px;line-height:1.55;color:var(--stone-2);margin:0;
