@@ -1,3 +1,4 @@
+import time
 from collections import defaultdict
 from dataclasses import replace
 from datetime import UTC, datetime
@@ -16,10 +17,38 @@ from app.services.ranking.scoring import calculate_cosine_similarity
 
 ANONYMOUS_DINER = "Anonymous Chaska diner"
 
+# The candidate query returns every available dish together with its 384-float
+# embedding — roughly 2MB against a database with a ~300ms round trip, paid on
+# every feed request. Profiling put 3.98s of a 4.70s request in socket wait for
+# exactly this. The rows are identical for every user (the per-user "saved"
+# flag and collaborative evidence are separate queries), so one process-wide
+# snapshot serves everyone.
+#
+# Only enabled on PostgreSQL: the test-suite runs on SQLite and builds fresh
+# data per test, where a stale snapshot would be wrong.
+_CANDIDATE_CACHE: dict[str, tuple[float, list]] = {}
+# Dishes change rarely, so the catalogue snapshot can live a while.
+_CANDIDATE_CACHE_TTL_SECONDS = 300.0
+# The collaborative inputs (every user's taste vector, all interactions, all
+# reviews) are also identical for every requester and were re-fetched per
+# request — another ~150KB of vectors across the same slow link. Shorter TTL
+# because interactions and reviews do change as people use the app.
+_COLLAB_CACHE: dict[str, tuple[float, tuple]] = {}
+_COLLAB_CACHE_TTL_SECONDS = 60.0
+
+
+def invalidate_candidate_cache() -> None:
+    """Drop the cached catalogue and collaborative inputs."""
+    _CANDIDATE_CACHE.clear()
+    _COLLAB_CACHE.clear()
+
 
 class RankingRepository:
     def __init__(self, session: Session) -> None:
         self.session = session
+
+    def _cacheable(self) -> bool:
+        return self.session.get_bind().dialect.name == "postgresql"
 
     def list_candidates(self, user_id=None) -> list[RankingCandidate]:
         interaction_subquery = (
@@ -47,27 +76,36 @@ class RankingRepository:
             if user_id is not None
             else set()
         )
-        rows = (
-            self.session.execute(
-                select(
-                    Dish,
-                    Dish.review_average,
-                    Dish.review_sentiment,
-                    interaction_subquery.c.interaction_count,
+        cached = _CANDIDATE_CACHE.get("rows") if self._cacheable() else None
+        if cached is not None and (time.monotonic() - cached[0]) < _CANDIDATE_CACHE_TTL_SECONDS:
+            rows = cached[1]
+        else:
+            rows = (
+                self.session.execute(
+                    select(
+                        Dish,
+                        Dish.review_average,
+                        Dish.review_sentiment,
+                        interaction_subquery.c.interaction_count,
+                    )
+                    .options(joinedload(Dish.restaurant).joinedload(Restaurant.deals))
+                    .join(Dish.restaurant)
+                    .outerjoin(interaction_subquery, interaction_subquery.c.dish_id == Dish.id)
+                    .where(
+                        Dish.availability.is_(True),
+                        Dish.archived_at.is_(None),
+                        Dish.embedding.is_not(None),
+                        Restaurant.available.is_(True),
+                    )
                 )
-                .options(joinedload(Dish.restaurant).joinedload(Restaurant.deals))
-                .join(Dish.restaurant)
-                .outerjoin(interaction_subquery, interaction_subquery.c.dish_id == Dish.id)
-                .where(
-                    Dish.availability.is_(True),
-                    Dish.archived_at.is_(None),
-                    Dish.embedding.is_not(None),
-                    Restaurant.available.is_(True),
-                )
+                .unique()
+                .all()
             )
-            .unique()
-            .all()
-        )
+            if self._cacheable():
+                # Detach so the rows outlive this request's session; every
+                # attribute the ranking touches is already eagerly loaded.
+                self.session.expunge_all()
+                _CANDIDATE_CACHE["rows"] = (time.monotonic(), rows)
         candidates = [
             RankingCandidate(
                 dish=dish,
@@ -91,18 +129,34 @@ class RankingRepository:
     def _with_collaborative_evidence(self, candidates, user_id):
         if user_id is None:
             return candidates
-        current = self.session.get(User, user_id)
+        cached = _COLLAB_CACHE.get("inputs") if self._cacheable() else None
+        if cached is not None and (time.monotonic() - cached[0]) < _COLLAB_CACHE_TTL_SECONDS:
+            all_users, interactions, reviews = cached[1]
+        else:
+            # Fetch every user once, including the requester, so the snapshot
+            # stays user-independent and can be shared.
+            all_users = list(
+                self.session.scalars(select(User).where(User.taste_vector.is_not(None)))
+            )
+            interactions = list(
+                self.session.scalars(select(Interaction).where(Interaction.action != "click"))
+            )
+            reviews = list(
+                self.session.scalars(select(Review).where(Review.archived_at.is_(None)))
+            )
+            if self._cacheable():
+                self.session.expunge_all()
+                _COLLAB_CACHE["inputs"] = (
+                    time.monotonic(),
+                    (all_users, interactions, reviews),
+                )
+        # The requester is inside the same snapshot, so this costs no extra
+        # query. A user with no taste vector is absent from it, which is the
+        # same "nothing to compare against" case the code returned on before.
+        current = next((user for user in all_users if user.id == user_id), None)
         if current is None or current.taste_vector is None:
             return candidates
-        users = list(
-            self.session.scalars(
-                select(User).where(User.id != user_id, User.taste_vector.is_not(None))
-            )
-        )
-        interactions = list(
-            self.session.scalars(select(Interaction).where(Interaction.action != "click"))
-        )
-        reviews = list(self.session.scalars(select(Review).where(Review.archived_at.is_(None))))
+        users = [user for user in all_users if user.id != user_id]
         action_quality = {"like": 1.0, "save": 0.85, "order": 0.75, "tried": 0.5}
         evidence: dict[object, dict[object, float]] = defaultdict(dict)
         negative = {
