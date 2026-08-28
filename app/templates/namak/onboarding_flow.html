@@ -79,7 +79,7 @@
         <p class="quiz-lede">This is your preferred regular price per dish, not a total meal bill.</p>
         {% set budget_image=context_image('budget') %}<img class="section-banner" src="{{ budget_image.src }}" alt="{{ budget_image.alt }}" width="{{ budget_image.width }}" height="{{ budget_image.height }}" loading="lazy"><div class="budget-grid">
           <label class="quiz-field" for="budget-min">Minimum per dish <span data-money-for="budget-min"></span><input id="budget-min" name="budget_min" type="number" min="0" step="50" value="{{ draft.get('budget_min',0)|int }}" required></label>
-          <label class="quiz-field" for="budget-max">Maximum per dish <span data-money-for="budget-max"></span><input id="budget-max" name="budget_max" type="number" min="1" step="50" value="{{ draft.get('budget_max',1500)|int }}" required></label>
+          <label class="quiz-field" for="budget-max">Maximum per dish <span data-money-for="budget-max"></span><input id="budget-max" name="budget_max" type="number" min="50" step="50" value="{{ draft.get('budget_max',1500)|int }}" required></label>
         </div><p class="budget-error" data-budget-error role="alert"></p>
         <div class="review-card"><h2>Your taste, in a nutshell</h2><dl>
           <div><dt>City</dt><dd>{{ draft.get('city','Not chosen') }}</dd></div><div><dt>Cuisines</dt><dd>{{ draft.get('preferred_cuisines',[])|join(', ') or 'None yet' }}</dd></div><div><dt>Favourite foods</dt><dd>{{ draft.get('favourite_dishes',[])|join(', ') or 'None yet' }}</dd></div><div><dt>Textures</dt><dd>{{ draft.get('preferred_textures',[])|join(', ') or 'Open to anything' }}</dd></div><div><dt>Halal preference</dt><dd>{{ 'Prioritised' if draft.get('require_halal') else 'No filter' }}</dd></div>
@@ -87,7 +87,7 @@
       </section>
       {% endif %}
       <footer class="quiz-actions">
-        {% if step > 1 %}<button class="btn btn-o" type="submit" name="direction" value="back">← Back</button>{% else %}<span></span>{% endif %}
+        {% if step > 1 %}<button class="btn btn-o" type="submit" name="direction" value="back" formnovalidate>← Back</button>{% else %}<span></span>{% endif %}
         <button class="btn btn-p" type="submit" data-submit-button{% if step == 2 %} data-favourite-continue aria-describedby="favourite-selection-status"{% endif %}>{% if step == 5 %}Build my taste profile{% else %}Continue →{% endif %}</button>
       </footer>
     </form>

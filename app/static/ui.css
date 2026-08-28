@@ -193,3 +193,21 @@ input[type=checkbox].ui-switch:checked::after{transform:translateX(18px);}
   .filter-scrim:not([hidden]){animation:uiFade .2s ease both;}
   @keyframes uiFade{from{opacity:0}to{opacity:1}}
 }
+
+/* ── Star rating ───────────────────────────────────────────────────────
+   The base rule only colours input:checked + label, so picking 4 lit the
+   fourth star alone instead of the first four.
+
+   Markup order is input1,label1,input2,label2,... so the stars to fill come
+   *before* the checked input and cannot be reached with a sibling combinator.
+   Instead: light every star once something is checked, then dim the ones that
+   follow a later input. For a checked 4th input, `~ input + label` matches
+   only the 5th label, leaving 1-4 lit. */
+.rating-stars:has(input:checked) label{color:var(--saffron);}
+.rating-stars input:checked ~ input + label{color:#cfc5b8;text-shadow:none;}
+
+/* Hover previews the same fill, so the control reads before committing. */
+@media (hover:hover){
+  .rating-stars:has(label:hover) label{color:var(--saffron);}
+  .rating-stars label:hover ~ input + label{color:#cfc5b8;text-shadow:none;}
+}
