@@ -784,7 +784,11 @@ def feed(
             result, twins, state = None, [], "validation"
         else:
             result = backend.get_feed(user.id, _feed_params(request))
-            twins = backend.similar_users(user.id)
+            # similar_users() is not rendered by this template — the per-dish
+            # "taste twins" already arrive inside the feed response. Calling it
+            # here cost 3-5s of wall time for a value that was thrown away.
+            # The profile page, which does render it, still fetches it.
+            twins = []
             state = "success" if result.items else "empty"
     except BackendNotFound:
         return RedirectResponse("/onboarding/1", 303)

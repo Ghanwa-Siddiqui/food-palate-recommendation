@@ -10,7 +10,11 @@ from app.core.config import get_settings
 @lru_cache
 def get_engine() -> Engine:
     settings = get_settings()
-    options: dict[str, object] = {"pool_pre_ping": True}
+    # pool_pre_ping issues a SELECT 1 before every checkout. Against the
+    # Supabase pooler that is a ~300ms network round trip added to every
+    # request. pool_recycle retires connections on age instead, which costs
+    # nothing per request and still avoids handing out a stale socket.
+    options: dict[str, object] = {"pool_recycle": 900}
     if not settings.database_url.startswith("sqlite"):
         options.update(
             pool_size=settings.database_pool_size,
