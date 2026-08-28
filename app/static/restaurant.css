@@ -1,0 +1,110 @@
+/* Restaurant page. Loaded only by namak/restaurant.html.
+
+   The compiled bundle applies `aspect-ratio:3/2` to a group that includes
+   .rest-hero, which is also given height:340px. With a definite height the
+   ratio resolved the width to 510px, so the banner occupied a third of the
+   viewport and sat flush left while the content below was a centred 1200px
+   column. Clearing the ratio here restores a full-bleed banner. */
+
+.rest-hero{
+  aspect-ratio:auto;
+  width:100%;
+  height:clamp(240px,30vw,380px);
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#8b3b1b,#e8a93a);
+}
+.rest-hero>img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* Scrim so the title stays legible over any photograph. */
+.rest-hero .over{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(20,14,10,.15) 0%,rgba(20,14,10,.35) 45%,rgba(20,14,10,.86) 100%);
+}
+.rest-hero .content{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  width:min(1200px,100%);margin-inline:auto;
+  padding:0 clamp(20px,3vw,34px) clamp(20px,2.6vw,32px);
+  color:var(--cream);
+}
+/* The shared .overline is paprika, which disappears against a dark photo. */
+.rest-hero .overline{color:var(--saffron);}
+.rest-hero h1{
+  font-family:var(--serif);font-weight:500;letter-spacing:-.03em;
+  font-size:clamp(30px,4vw,52px);line-height:1.05;margin:6px 0 0;
+  text-shadow:0 2px 18px rgba(20,14,10,.5);
+}
+.rest-hero .content>p:last-child{
+  margin:8px 0 0;font-size:13.5px;color:#e4dcd0;
+}
+
+/* ── Layout ────────────────────────────────────────────────────────── */
+.detail-layout{
+  width:min(1200px,100%);margin-inline:auto;
+  padding:clamp(20px,2.4vw,32px) clamp(20px,3vw,34px) 72px;
+  display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);
+  gap:clamp(20px,2.4vw,32px);align-items:start;
+}
+.detail-layout .section-h{
+  font-family:var(--serif);font-size:clamp(20px,2vw,26px);font-weight:500;
+  letter-spacing:-.02em;margin:14px 0 14px;
+}
+
+/* ── Menu list ─────────────────────────────────────────────────────── */
+.menu-list{display:grid;gap:12px;}
+.menu-card{
+  display:grid;grid-template-columns:clamp(96px,13vw,150px) minmax(0,1fr);
+  gap:clamp(12px,1.4vw,18px);align-items:start;
+  padding:clamp(12px,1.2vw,16px);
+  border:1px solid var(--line);border-radius:15px;background:var(--bone);
+}
+.menu-photo{
+  display:block;border-radius:11px;overflow:hidden;aspect-ratio:4/3;
+  background:linear-gradient(135deg,#92411d,#e8a93a);
+}
+.menu-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.menu-card .flex-b{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.menu-card h3{
+  font-family:var(--serif);font-size:clamp(16px,1.6vw,19px);font-weight:500;
+  letter-spacing:-.015em;margin:0;line-height:1.25;
+}
+.menu-card h3 a{color:var(--ink);}
+.menu-card h3 a:hover{color:var(--paprika);}
+.menu-card>div>strong{
+  display:block;margin-top:4px;
+  font-family:var(--serif);font-size:15px;font-weight:500;color:var(--ink);
+}
+.menu-card p{font-size:12.5px;line-height:1.55;color:var(--stone-2);margin:8px 0 0;}
+.menu-card .insight{
+  display:block;margin-top:8px;font-size:11.5px;color:var(--mint);line-height:1.5;
+}
+.menu-card .muted{margin-top:8px;font-size:11.5px;color:var(--stone);}
+.menu-card .card-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;}
+.menu-card .card-actions form{display:contents;}
+.menu-card .card-actions .btn{
+  font-size:11.5px;padding:8px 13px;border-radius:999px;white-space:nowrap;
+}
+.menu-card .match-pill{flex-shrink:0;}
+
+/* ── Sidebar ───────────────────────────────────────────────────────── */
+.detail-layout aside{position:sticky;top:88px;display:grid;gap:14px;}
+.detail-layout aside .card{
+  background:var(--bone);border:1px solid var(--line);border-radius:15px;
+  padding:16px 18px;margin:0;
+}
+.detail-layout aside .eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--stone);margin-bottom:8px;
+}
+.detail-layout aside p{font-size:13px;line-height:1.6;color:var(--stone-2);margin:0 0 3px;}
+.detail-layout aside p:last-child{margin-bottom:0;}
+.detail-layout .back{margin-bottom:2px;}
+
+@media (max-width:900px){
+  .detail-layout{grid-template-columns:minmax(0,1fr);}
+  .detail-layout aside{position:static;}
+}
+@media (max-width:520px){
+  .menu-card{grid-template-columns:minmax(0,1fr);}
+  .menu-photo{aspect-ratio:16/9;}
+}
