@@ -69,6 +69,34 @@ cd ..
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --port 8001 --reload
 ```
 
+## Production deployment
+
+Deploy the API to Railway with the service root directory set to `backend/`. The checked-in
+`backend/railway.json` uses this start command and never runs migrations or seeds:
+
+```text
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Configure Railway with `DATABASE_URL`, `APP_ENV=production`,
+`CHASKA_INTERNAL_API_KEY`, `EXPECTED_SUPABASE_PROJECT_REF`, and
+`EMBEDDING_DIMENSION=384`. Railway checks the public `/health` endpoint. All other backend
+requests require the shared internal key. Apply reviewed migrations separately as an explicit
+release operation; startup deliberately does not alter the database.
+
+Deploy the repository root to Vercel. `api/index.py` is the Python ASGI entrypoint and
+`vercel.json` bundles the existing `app/templates` and `app/static` assets, preserving the
+server-rendered Jinja application. Configure Vercel with `SUPABASE_URL`,
+`SUPABASE_PUBLISHABLE_KEY`, a random 32+ character `SESSION_SECRET`,
+`SESSION_COOKIE_SECURE=true`, the Railway public HTTPS `BACKEND_API_BASE_URL`,
+`BACKEND_API_TIMEOUT_SECONDS=30`, the same `CHASKA_INTERNAL_API_KEY`, and
+`APP_ENV=production`.
+
+Production startup fails closed when required values are absent. The UI also rejects localhost,
+loopback, and non-HTTPS backend URLs. Session cookies remain signed, HTTP-only, SameSite=Lax,
+and Secure on Vercel. Configuration errors name only missing or unsafe variable names; secret
+values are never logged.
+
 After review, apply the forward-only migration manually with `cd backend; .\.venv\Scripts\alembic.exe upgrade head`. The launcher never runs migrations or seeds.
 
 ## Validation

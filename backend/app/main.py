@@ -1,3 +1,5 @@
+import secrets
+
 from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
@@ -13,7 +15,7 @@ from app.api.routes import (
     reviews,
     users,
 )
-from app.core.config import get_settings
+from app.core.config import get_settings, validate_production_settings
 from app.services.data_core.catalog import (
     EmbeddingUnavailableError,
     InvalidRequestError,
@@ -23,7 +25,22 @@ from app.services.data_core.catalog import (
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    validate_production_settings(settings)
     application = FastAPI(title=settings.app_name, version="1.0.0")
+
+    if settings.app_env.lower() == "production":
+
+        @application.middleware("http")
+        async def require_internal_key(request: Request, call_next):
+            if request.url.path == "/health":
+                return await call_next(request)
+            provided = request.headers.get("X-Chaska-Internal-Key", "")
+            if not secrets.compare_digest(provided, settings.internal_api_key or ""):
+                return JSONResponse(
+                    status_code=401,
+                    content={"error": {"code": "unauthorized", "message": "Unauthorized"}},
+                )
+            return await call_next(request)
 
     @application.get("/health", tags=["system"])
     def health() -> dict[str, str]:
