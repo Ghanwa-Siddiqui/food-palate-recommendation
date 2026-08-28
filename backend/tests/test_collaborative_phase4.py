@@ -70,6 +70,7 @@ def setup_twins(session, *, public=True, neighbours=1):
             [
                 interaction(twin, shared, "like", f"twin-like-{index}"),
                 interaction(twin, discovery, "save", f"twin-save-{index}"),
+                interaction(twin, discovery, "tried", f"twin-tried-{index}"),
                 review(twin, discovery),
             ]
         )
@@ -84,10 +85,21 @@ def test_similar_users_promote_positive_review_with_safe_named_evidence(client, 
     assert response.status_code == 200
     payload = FeedResponse.model_validate(response.json())
     item = next(item for item in payload.items if item.dish_id == discovery.id)
+    assert (
+        next(
+            index
+            for index, feed_item in enumerate(payload.items, start=1)
+            if feed_item.dish_id == discovery.id
+        )
+        <= 10
+    )
     assert payload.collaborative_available and payload.similar_user_count == 1
     assert item.collaborative_score and item.collaborative_score > 50
     assert item.collaborative_reviewer_name == "Maham"
     assert "Excellent rich biryani" in item.collaborative_review_excerpt
+    assert item.taste_twin_review_count == 1
+    assert item.taste_twin_reviews[0].reviewer_name == "Maham"
+    assert item.taste_twin_reviews[0].similarity_percent == 100
     serialized = response.text
     assert (
         "@example.test" not in serialized and str(current.id) not in item.collaborative_explanation
@@ -101,6 +113,32 @@ def test_opted_out_reviewer_is_anonymous_and_multiple_neighbours_aggregate(clien
     assert payload["similar_user_count"] == 3
     assert item["collaborative_reviewer_name"] == "Anonymous Chaska diner"
     assert "3 diners" in item["collaborative_explanation"]
+    assert item["taste_twin_review_count"] == 3
+    assert len(item["taste_twin_reviews"]) == 2
+    assert {review["reviewer_name"] for review in item["taste_twin_reviews"]} == {
+        "Anonymous Chaska diner"
+    }
+
+
+def test_twin_review_previews_order_by_taste_similarity(client, session):
+    current, twins, _, discovery = setup_twins(session, neighbours=2)
+    twins[0].taste_vector = [0.8, 0.6] + [0.0] * 382
+    twins[1].taste_vector = VECTOR
+    session.commit()
+
+    item = next(
+        item
+        for item in client.get(f"/ranking/feed/{current.id}").json()["items"]
+        if item["dish_id"] == str(discovery.id)
+    )
+    assert [review["reviewer_name"] for review in item["taste_twin_reviews"]] == [
+        "Diner 1",
+        "Maham",
+    ]
+    assert [review["similarity_percent"] for review in item["taste_twin_reviews"]] == [
+        100,
+        80,
+    ]
 
 
 def test_one_shared_click_is_insufficient_and_cold_start_stays_content_based(client, session):
@@ -143,6 +181,35 @@ def test_negative_or_disliked_dishes_never_receive_collaborative_boost(client, s
     payload = client.get(f"/ranking/feed/{current.id}").json()
     assert str(discovery.id) not in {item["dish_id"] for item in payload["items"]}
     assert twins[0].id != current.id
+
+
+def test_review_without_tried_evidence_does_not_boost_or_render_twin_evidence(client, session):
+    current, twins, _, discovery = setup_twins(session)
+    positive_item = next(
+        item
+        for item in client.get(f"/ranking/feed/{current.id}").json()["items"]
+        if item["dish_id"] == str(discovery.id)
+    )
+    tried = session.scalar(
+        select(Interaction).where(
+            Interaction.user_id == twins[0].id,
+            Interaction.dish_id == discovery.id,
+            Interaction.action == "tried",
+        )
+    )
+    session.delete(tried)
+    session.commit()
+
+    item = next(
+        item
+        for item in client.get(f"/ranking/feed/{current.id}").json()["items"]
+        if item["dish_id"] == str(discovery.id)
+    )
+    assert item["collaborative_score"] is None
+    assert item["taste_twin_review_count"] == 0
+    assert item["taste_twin_reviews"] == []
+    assert positive_item["signals"]["food_profile"] > item["signals"]["food_profile"]
+    assert "email" not in item and "user_id" not in item and "taste_vector" not in item
 
 
 def test_hard_filters_inactive_and_stable_order_and_weights(client, session):

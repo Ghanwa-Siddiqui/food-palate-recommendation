@@ -38,6 +38,14 @@ class DishLike(Protocol):
 
 
 @dataclass(frozen=True)
+class TasteTwinReviewEvidence:
+    reviewer_name: str
+    rating: float
+    excerpt: str
+    similarity_percent: int
+
+
+@dataclass(frozen=True)
 class RankingCandidate:
     dish: DishLike
     review_average: float | None = None
@@ -50,6 +58,8 @@ class RankingCandidate:
     collaborative_reviewer_name: str | None = None
     collaborative_review_excerpt: str | None = None
     collaborative_review_rating: float | None = None
+    taste_twin_review_count: int = 0
+    taste_twin_reviews: tuple[TasteTwinReviewEvidence, ...] = ()
 
 
 def _normalized(values: list[str]) -> set[str]:
@@ -83,7 +93,7 @@ def filter_candidates(
             continue
         if preferences.search:
             needle = preferences.search.casefold()
-            searchable = f"{dish.name} {dish.cuisine} {dish.restaurant.name}".casefold()
+            searchable = f"{dish.name} {dish.cuisine}".casefold()
             if needle not in searchable:
                 continue
         if not dish.availability:

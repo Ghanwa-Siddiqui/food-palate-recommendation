@@ -15,7 +15,7 @@
     {% endfor %}
   </ol>
   <div class="quiz-layout">
-    <form method="post" class="quiz-card preference-form" data-preference-form>
+    <form method="post" class="quiz-card preference-form{% if step == 2 %} favourite-form{% endif %}" data-preference-form>
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       {% if error %}<div class="quiz-error" role="alert">{{ error }}</div>{% endif %}
 
@@ -34,16 +34,17 @@
         </fieldset>
       </section>
       {% elif step == 2 %}
-      <section aria-labelledby="step-title">
+      <section class="favourite-step" aria-labelledby="step-title">
         <p class="overline">The dishes you dream about</p><h1 id="step-title">Name your favourites</h1>
         <p class="quiz-lede">Add at least three. Type a dish and press Enter or comma.</p>
-        <div class="tag-editor" data-tag-editor data-name="favourite_dishes">
-          <label for="favourite-input">Favourite dishes</label><div class="tag-list" data-tag-list></div>
+        <div class="tag-editor favourite-entry" data-tag-editor data-name="favourite_dishes">
+          <label for="favourite-input">Favourite dishes</label>
           <input id="favourite-input" name="favourite_dishes_text" value="{{ draft.get('favourite_dishes',[])|join(', ') }}" placeholder="Try chicken karahi…" autocomplete="off" aria-describedby="favourite-help">
-          <small id="favourite-help">Your choices help shape your personal taste vector.</small>
+          <div class="favourite-entry-meta"><small id="favourite-help">Choose at least three or add your own.</small><output id="favourite-selection-status" data-favourite-count aria-live="polite">{{ draft.get('favourite_dishes',[])|length }} of 3 selected</output></div>
+          <div class="tag-list favourite-tags" data-tag-list aria-label="Selected favourite dishes"></div>
         </div>
-        <fieldset class="quiz-group"><legend>Quick picks</legend><div class="choice-row">
-          {% for item in favourites %}{% set image=dish_image(item,'') %}<label class="choice visual-choice"><input type="checkbox" name="favourite_dishes_suggestions" value="{{ item }}" {% if item in draft.get('favourite_dishes',[]) %}checked{% endif %}><span><img src="{{ image.src }}" alt="" width="{{ image.width }}" height="{{ image.height }}" loading="lazy">{{ item }} <b aria-hidden="true">✓</b></span></label>{% endfor %}
+        <fieldset class="quiz-group favourite-picks"><legend>Quick picks</legend><div class="favourite-pick-grid" data-favourite-quick-picks>
+          {% for item in favourites %}{% set image=dish_image(item.name,item.cuisine) %}<label class="quick-pick-card"><input type="checkbox" name="favourite_dishes" value="{{ item.name }}" data-favourite-suggestion="{{ item.name }}" {% if item.name in draft.get('favourite_dishes',[]) %}checked{% endif %}><span class="quick-pick-content"><img class="quick-pick-image" src="{{ image.src }}" alt="" width="{{ image.width }}" height="{{ image.height }}" loading="lazy"><span class="quick-pick-copy"><strong>{{ item.name }}</strong><small>{{ item.cuisine }}</small></span></span><span class="quick-pick-indicator" aria-hidden="true">✓</span></label>{% endfor %}
         </div></fieldset>
       </section>
       {% elif step == 3 %}
@@ -87,7 +88,7 @@
       {% endif %}
       <footer class="quiz-actions">
         {% if step > 1 %}<button class="btn btn-o" type="submit" name="direction" value="back">← Back</button>{% else %}<span></span>{% endif %}
-        <button class="btn btn-p" type="submit" data-submit-button>{% if step == 5 %}Build my taste profile{% else %}Continue →{% endif %}</button>
+        <button class="btn btn-p" type="submit" data-submit-button{% if step == 2 %} data-favourite-continue aria-describedby="favourite-selection-status"{% endif %}>{% if step == 5 %}Build my taste profile{% else %}Continue →{% endif %}</button>
       </footer>
     </form>
     {% set side_image=context_image('welcome' if step < 5 else 'completion') %}<aside class="taste-summary" aria-label="Your taste so far"><img class="summary-image" src="{{ side_image.src }}" alt="" width="{{ side_image.width }}" height="{{ side_image.height }}" loading="lazy"><span aria-hidden="true">✦</span><h2>Your taste so far</h2><p>{{ draft.get('city','Pick a city to begin') }}</p><div class="summary-chips">{% for item in draft.get('preferred_cuisines',[])[:3] %}<span>{{ item }}</span>{% endfor %}{% for item in draft.get('favourite_dishes',[])[:3] %}<span>{{ item }}</span>{% endfor %}</div><small>Each answer makes your recommendations feel more like you.</small></aside>

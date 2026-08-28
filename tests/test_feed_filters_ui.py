@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
 
+from app.backend_client import FeedResult
+
 
 def _csrf(response) -> str:
     match = re.search(r'name="csrf_token" value="([^"]+)"', response.text)
@@ -49,11 +51,11 @@ def test_every_feed_filter_reaches_ranking_and_state_is_visible(
         ("budget_max", "1800"),
         ("require_halal", "true"),
         ("dietary_restrictions", "vegetarian"),
-        ("max_distance_km", "12.5"),
-        ("user_lat", "31.5204"),
-        ("user_lng", "74.3587"),
     }
-    assert "6 active" in response.text
+    assert not {"max_distance_km", "user_lat", "user_lng"} & {
+        name for name, _ in captured
+    }
+    assert "5 active" in response.text
     assert 'value="Pakistani"' in response.text
     assert "Search: Pakistani" in response.text
 
@@ -69,15 +71,15 @@ def test_feed_filter_validation_blocks_bad_queries(
         calls += 1
 
     monkeypatch.setattr(backend_client, "get_feed", unexpected)
-    response = web_client.get(
-        "/app/feed?budget_min=2000&budget_max=500&max_distance_km=10&user_lat=91"
-    )
+    response = web_client.get("/app/feed?budget_min=2000&budget_max=500")
 
     assert response.status_code == 200 and calls == 0
     assert "Minimum budget cannot exceed maximum budget" in response.text
-    assert "Latitude and longitude must be supplied together" in response.text
-    assert "Maximum distance requires valid coordinates" in response.text
     assert "Filters need attention" in response.text
+
+    non_finite = web_client.get("/app/feed?budget_min=nan")
+    assert non_finite.status_code == 200 and calls == 0
+    assert "Minimum budget must be a finite number" in non_finite.text
 
 
 def test_feed_success_empty_error_and_complete_cards(web_client, backend_client):
@@ -105,17 +107,72 @@ def test_feed_success_empty_error_and_complete_cards(web_client, backend_client)
     assert 'value="karahi"' in failed.text
 
 
-def test_feed_drawer_geolocation_reset_and_responsive_contracts():
+def test_feed_renders_only_safe_persisted_twin_review_previews(
+    web_client, backend_client, monkeypatch
+):
+    _login(web_client, backend_client)
+    original = backend_client.get_feed
+
+    def with_twin_reviews(user_id, params):
+        payload = original(user_id, params).model_dump(mode="json")
+        payload["items"][0].update(
+            taste_twin_review_count=3,
+            taste_twin_reviews=[
+                {
+                    "reviewer_name": "Maham",
+                    "rating": 5,
+                    "excerpt": "Spicy, aromatic and not too oily.",
+                    "similarity_percent": 89,
+                },
+                {
+                    "reviewer_name": "Anonymous Chaska diner",
+                    "rating": 4,
+                    "excerpt": "Rich flavour with tender chicken.",
+                    "similarity_percent": 84,
+                },
+            ],
+        )
+        return FeedResult.model_validate(payload)
+
+    monkeypatch.setattr(backend_client, "get_feed", with_twin_reviews)
+    response = web_client.get("/app/feed")
+
+    assert "TASTE TWINS TRIED THIS" in response.text
+    assert "Best match · 89% similar" in response.text
+    assert "3 taste twins tried this" in response.text
+    assert "+1 more" in response.text
+    assert "Maham" in response.text and "Anonymous Chaska diner" in response.text
+    assert "View all twin reviews" in response.text
+    assert "@example" not in response.text and "taste_vector" not in response.text
+    card_start = response.text.index('class="feed-card"')
+    assert card_start < response.text.index("Taste match")
+    assert response.text.index("Taste match") < response.text.index("Review insight")
+    assert response.text.index("Review insight") < response.text.index(
+        "TASTE TWINS TRIED THIS"
+    )
+    assert response.text.index("TASTE TWINS TRIED THIS") < response.text.index(
+        "feed-card-actions"
+    )
+
+
+def test_feed_hides_twin_section_without_evidence(web_client, backend_client):
+    _login(web_client, backend_client)
+    response = web_client.get("/app/feed")
+
+    assert "TASTE TWINS TRIED THIS" not in response.text
+
+
+def test_feed_drawer_reset_and_responsive_contracts():
     template = Path("app/templates/namak/feed.html").read_text(encoding="utf-8")
     css = Path("app/static/namak.css").read_text(encoding="utf-8")
 
     assert 'aria-controls="feed-filters"' in template
     assert "aria-expanded','false" in template
     assert "event.key==='Escape'" in template
-    assert "Requesting your location" in template
-    assert "Coordinates ready" in template
-    assert "Location permission was denied" in template
-    assert "location is unavailable" in template
+    assert "Maximum distance" not in template
+    assert "Use my coordinates" not in template
+    assert "navigator.geolocation" not in template
+    assert "user_lat" not in template and "user_lng" not in template
     assert "window.location.assign('/app/feed')" in template
     assert "data-remove-filter" in template
     assert ".feed-shell{box-sizing:border-box;width:min(1360px,100%)" in css
