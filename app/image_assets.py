@@ -57,6 +57,13 @@ def valid_local_image(value: str | None) -> bool:
 # sour-citrus-dish is a lemon-dressed fish fillet, and
 # continental-grilled-chicken is a plate of red grilled wings.
 _DISH_KEYWORDS: tuple[tuple[tuple[str, ...], str], ...] = (
+    # Corrections found against the live menu, ahead of the cuisine fallback.
+    (("parmigiana", "schnitzel", "cutlet"), "crispy-food.webp"),
+    (("paneer", "palak", "spinach"), "daal-with-naan.webp"),
+    (("shake", "smoothie", "milkshake"), "sweet-dessert.webp"),
+    # No salad photograph exists; the neutral plate is honest, a BBQ platter
+    # is not.
+    (("salad", "greens"), "neutral-food-fallback.webp"),
     # Named South Asian dishes
     (("biryani",), "chicken-biryani.webp"),
     (("nihari",), "nihari.webp"),
@@ -79,7 +86,7 @@ _DISH_KEYWORDS: tuple[tuple[tuple[str, ...], str], ...] = (
     (("wing",), "continental-grilled-chicken.webp"),
     (
         ("manchurian", "dynamite", "honey chicken", "chilli", "chili",
-         "teriyaki", "gochu", "szechuan", "schezwan"),
+         "teriyaki", "gochu", "szechuan", "schezwan", "kung pao"),
         "crispy-food.webp",
     ),
     (("curry", "thai"), "thai-curry.webp"),
@@ -88,7 +95,7 @@ _DISH_KEYWORDS: tuple[tuple[tuple[str, ...], str], ...] = (
     (("pizza",), "italian-pizza.webp"),
     (
         ("pasta", "spaghetti", "fettuccine", "alfredo", "penne", "lasagn",
-         "bolognese", "macaroni", "mac and cheese"),
+         "bolognese", "macaroni", "mac and cheese", "risotto"),
         "creamy-pasta.webp",
     ),
     (("burger", "patty", "slider", "bun"), "burger.webp"),
