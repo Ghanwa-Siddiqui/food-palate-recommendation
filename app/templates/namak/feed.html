@@ -1,6 +1,6 @@
 {% extends "namak/base.html" %}
 {% block title %}For you — namak{% endblock %}
-{% block head %}<link rel="stylesheet" href="/static/feed.css">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ asset_url('feed.css') }}">{% endblock %}
 {% block body %}
 {% set active='feed' %}{% include "namak/_nav.html" %}
 {% set active_count=(1 if filters.get('search') else 0)+(1 if filters.get('budget_min') else 0)+(1 if filters.get('budget_max') else 0)+(1 if filters.get('require_halal')=='true' else 0)+(1 if 'vegetarian' in filters.getlist('dietary_restrictions') else 0) %}

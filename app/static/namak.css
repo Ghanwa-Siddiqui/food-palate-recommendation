@@ -66,9 +66,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,.dish:focus-visible{
   100%{opacity:0;visibility:hidden;filter:blur(10px);transform:scale(1.06);}
 }
 .namak-splash{
-  position:fixed;inset:0;z-index:9999;overflow:hidden;cursor:pointer;
+  position:fixed;inset:0;z-index:9999;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
   background:radial-gradient(circle at 50% 46%,var(--bone) 0%,var(--cream) 55%,var(--cream-2) 100%);
+  /* Never intercept input. As a full-viewport overlay this used to swallow
+     the first click of a visit, so a button press only dismissed the splash
+     and never reached the button. Clicks now fall through to the page and a
+     window-level listener dismisses the splash on the same click. */
+  pointer-events:none;
 }
 html.no-splash .namak-splash{display:none;}
 .splash-glow{

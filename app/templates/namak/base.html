@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}namak{% endblock %}</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/namak.css">
-  <link rel="stylesheet" href="/static/ui.css">
-  <script>(function(){try{if(sessionStorage.getItem('namakSplashSeen')==='1'){document.documentElement.classList.add('no-splash');}}catch(e){}})();</script>
+  <link rel="stylesheet" href="{{ asset_url('namak.css') }}">
+  <link rel="stylesheet" href="{{ asset_url('ui.css') }}">
+  {# Cookie mirrors the sessionStorage flag: where site data is blocked the
+     flag never persisted, so the splash replayed on every navigation and ate
+     the first click each time. Either marker is enough to skip it. #}
+  <script>(function(){var s=false;try{s=sessionStorage.getItem('namakSplashSeen')==='1';}catch(e){}if(!s){s=/(?:^|;\s*)namakSplashSeen=1(?:;|$)/.test(document.cookie);}if(s){document.documentElement.classList.add('no-splash');}})();</script>
   {% block head %}{% endblock %}
 </head>
 <body>
@@ -33,11 +36,22 @@
 (function(){
   var el = document.getElementById('namak-splash');
   if(!el || document.documentElement.classList.contains('no-splash')) return;
+  var finished = false;
   function done(){
+    if(finished) return;
+    finished = true;
     try{ sessionStorage.setItem('namakSplashSeen','1'); }catch(e){}
+    // Session cookie fallback for when storage is unavailable, so the splash
+    // does not replay on every page of the visit.
+    try{ document.cookie = 'namakSplashSeen=1; path=/; SameSite=Lax'; }catch(e){}
     el.style.display='none';
+    window.removeEventListener('pointerdown', done, true);
+    window.removeEventListener('keydown', done, true);
   }
-  el.addEventListener('click', done);
+  // Listen at the window, not on the overlay: the overlay is pointer-events:none
+  // so the click still reaches whatever button is underneath it.
+  window.addEventListener('pointerdown', done, true);
+  window.addEventListener('keydown', done, true);
   el.addEventListener('animationend', function(ev){ if(ev.animationName==='namakSplashOut') done(); });
   window.setTimeout(done, 3000);
 })();

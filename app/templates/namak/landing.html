@@ -1,6 +1,6 @@
 {% extends "namak/base.html" %}
 {% block title %}namak — restaurants that fit your taste{% endblock %}
-{% block head %}<link rel="stylesheet" href="/static/landing.css">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ asset_url('landing.css') }}">{% endblock %}
 {% block body %}
 {# Real dishes drawn from the local image manifest — every name here resolves
    to an actual photograph, so nothing on this page is a placeholder block. #}

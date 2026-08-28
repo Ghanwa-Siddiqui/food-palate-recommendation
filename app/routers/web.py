@@ -43,7 +43,24 @@ templates = Jinja2Templates(
 )
 
 
+def asset_url(filename: str) -> str:
+    """/static/<file> stamped with its mtime.
+
+    Without this the browser keeps serving a cached stylesheet after an edit,
+    which is how a fixed overlay bug can appear unfixed on a hard-to-reproduce
+    page. The stamp changes whenever the file does, so a reload always picks
+    up the current CSS.
+    """
+    path = Path(__file__).resolve().parent.parent / "static" / filename
+    try:
+        stamp = int(path.stat().st_mtime)
+    except OSError:
+        return f"/static/{filename}"
+    return f"/static/{filename}?v={stamp}"
+
+
 templates.env.globals.update(
+    asset_url=asset_url,
     cuisine_image=cuisine_image,
     dish_image=dish_image,
     feed_images=feed_images,
