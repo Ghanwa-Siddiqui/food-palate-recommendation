@@ -11,6 +11,7 @@ VECTOR_DIM = int(
     os.getenv("VECTOR_DIM", "384")
 )  # matches Ganva's contracts/v1 dish-vector.schema.json
 EMA_ALPHA = float(os.getenv("EMA_ALPHA", "0.15"))
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 BACKEND_API_BASE_URL = os.getenv(
     "BACKEND_API_BASE_URL", "http://127.0.0.1:8000"
 ).rstrip("/")
