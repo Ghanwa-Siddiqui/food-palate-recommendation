@@ -260,28 +260,51 @@ def _credentials(users: list[dict]) -> list[dict]:
     return rows
 
 
-def _auth_user(url: str, key: str, row: dict) -> uuid.UUID:
+# Total budget if every attempt for one user is 429'd: sum(_BACKOFFS) seconds
+# of waiting before giving up on that single user. Bounded so a stuck run
+# fails loudly within a few minutes rather than hanging silently for hours.
+_BACKOFFS = [5, 15, 30, 60, 120]
+
+
+def _signup_or_login(url: str, key: str, row: dict) -> httpx.Response:
     headers = {"apikey": key, "Authorization": f"Bearer {key}"}
-    try:
+    response = httpx.post(
+        f"{url.rstrip('/')}/auth/v1/signup",
+        headers=headers,
+        json={
+            "email": row["email"],
+            "password": row["password"],
+            "data": {"name": row["display_name"], "role": "customer"},
+        },
+        timeout=45,
+    )
+    if response.status_code in {400, 409, 422}:
         response = httpx.post(
-            f"{url.rstrip('/')}/auth/v1/signup",
+            f"{url.rstrip('/')}/auth/v1/token?grant_type=password",
             headers=headers,
-            json={
-                "email": row["email"],
-                "password": row["password"],
-                "data": {"name": row["display_name"], "role": "customer"},
-            },
+            json={"email": row["email"], "password": row["password"]},
             timeout=45,
         )
-        if response.status_code in {400, 409, 422}:
-            response = httpx.post(
-                f"{url.rstrip('/')}/auth/v1/token?grant_type=password",
-                headers=headers,
-                json={"email": row["email"], "password": row["password"]},
-                timeout=45,
-            )
-    except httpx.HTTPError as exc:
-        raise SeedError(f"Auth stopped on {exc.__class__.__name__}; rerun to resume") from exc
+    return response
+
+
+def _auth_user(url: str, key: str, row: dict, *, on_retry=None) -> uuid.UUID:
+    response = None
+    for wait in [0, *_BACKOFFS]:
+        if wait:
+            if on_retry:
+                on_retry(row["email"], wait)
+            time.sleep(wait)
+        try:
+            response = _signup_or_login(url, key, row)
+        except httpx.HTTPError as exc:
+            raise SeedError(f"Auth stopped on {exc.__class__.__name__}; rerun to resume") from exc
+        if response.status_code != 429:
+            break
+    if response is None or response.status_code == 429:
+        raise SeedError(
+            f"Auth rate-limited repeatedly for {row['email']}; rerun to resume later"
+        )
     if response.status_code >= 400:
         raise SeedError(f"Auth stopped with HTTP {response.status_code}")
     try:
@@ -564,14 +587,22 @@ def main() -> None:
                 select(User).where(User.email.in_([row["email"] for row in credentials]))
             )
         }
+    def on_retry(email: str, wait: float) -> None:
+        print(f"  rate-limited on {email}, backing off {wait:.0f}s...", flush=True)
+
     auth_ids = []
     try:
-        for row in credentials:
+        for i, row in enumerate(credentials):
             if row["email"] in existing_by_email:
                 auth_ids.append(existing_by_email[row["email"]])
                 continue
-            auth_ids.append(_auth_user(url, key, row))
-            time.sleep(1.5)
+            auth_ids.append(_auth_user(url, key, row, on_retry=on_retry))
+            print(f"  signed up {i + 1}/{len(credentials)}: {row['email']}", flush=True)
+            # 3s, not the original script's 1.5s: the first wave-2 attempt at
+            # 1.5s hit Supabase's Auth rate limit (HTTP 429) with zero users
+            # applied. A slower pace trades a longer run for not tripping it
+            # again.
+            time.sleep(3.0)
     except SeedError as exc:
         raise SystemExit(str(exc)) from None
     try:
