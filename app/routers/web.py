@@ -797,6 +797,7 @@ def feed(
             state=state,
             filter_errors=filter_errors,
             filters=request.query_params,
+            dietary=DIETARY,
             event_id=secrets.token_urlsafe(16),
             welcome=request.query_params.get("welcome"),
         ),
