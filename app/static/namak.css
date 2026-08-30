@@ -6,6 +6,7 @@
   --line:#E0D8C6; --line-2:#D8D0C0;
   --saffron:#E8A93A; --saffron-d:#B87A1F;
   --paprika:#A63A1E; --mint:#4A7C59;
+  --bottle:#0B3D2E; --bottle-l:#15583F;
   --sans:'Inter',system-ui,sans-serif;
   --serif:'Fraunces',Georgia,serif;
   --mono:'IBM Plex Mono',monospace;
@@ -207,7 +208,7 @@ html.no-splash .namak-splash{display:none;}
 .btn-t{background:transparent;color:var(--cream);border:0.5px solid var(--cream);}
 
 .card{background:var(--bone);border:0.5px solid var(--line);border-radius:11px;padding:14px 16px;}
-.card.dark{background:linear-gradient(165deg,var(--ink) 0%,var(--ink-2) 100%);color:var(--cream);border:none;box-shadow:0 12px 32px -12px rgba(28,25,23,.35);}
+.card.dark{background:linear-gradient(165deg,var(--ink) 0%,var(--ink-2) 45%,var(--bottle) 100%);color:var(--cream);border:none;box-shadow:0 12px 32px -12px rgba(11,61,46,.4);}
 .card.dark .eyebrow{color:var(--stone);}
 .card.dark.taste-card{padding:20px 22px;}
 .card.dark.taste-card .eyebrow::before{content:'●';color:var(--saffron);margin-right:6px;font-size:8px;vertical-align:2px;animation:namakPulse 1.8s ease-in-out infinite;}
