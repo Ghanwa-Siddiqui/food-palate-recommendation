@@ -751,6 +751,21 @@ def _feed_params(request: Request) -> list[tuple[str, str]]:
     return params
 
 
+def _top_restaurants(items, limit: int = 6):
+    """Distinct restaurants from an already-ranked feed, in rank order.
+
+    `items` is pre-sorted best-match-first by the ranking service, so keeping
+    the first occurrence of each restaurant_id is that restaurant's
+    best-scoring dish - no separate query or popularity signal needed.
+    """
+    seen, order = {}, []
+    for item in items:
+        if item.restaurant_id not in seen:
+            seen[item.restaurant_id] = item
+            order.append(item.restaurant_id)
+    return [seen[rid] for rid in order[:limit]]
+
+
 def _feed_filter_errors(request: Request) -> list[str]:
     errors: list[str] = []
 
@@ -820,6 +835,7 @@ def feed(
             filter_errors=filter_errors,
             filters=request.query_params,
             dietary=DIETARY,
+            top_restaurants=_top_restaurants(result.items) if result else [],
             event_id=secrets.token_urlsafe(16),
             welcome=request.query_params.get("welcome"),
         ),

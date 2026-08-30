@@ -22,8 +22,7 @@
 
   <main class="feed-results" id="feed-results">
     <header class="feed-heading">
-      <div><p class="overline">Personalized for {{ user.name }}</p><h1>Your ranked feed</h1>
-        <p class="fx-sub">Ordered by how each dish scores against your taste profile, budget and dietary needs.</p></div>
+      <div><p class="overline">Personalized for {{ user.name }}</p><h1>Your ranked feed</h1></div>
       {% if feed %}<p><b>{{ feed.total_candidates }}</b> result{{ '' if feed.total_candidates==1 else 's' }}</p>{% endif %}
     </header>
     {% if welcome %}<div class="notice">Your taste profile is ready. These recommendations use it now.</div>{% endif %}
@@ -49,6 +48,28 @@
     {# Resolved for the whole page at once so repeated dishes walk through
        their alternative photographs instead of colliding by chance. #}
     {% set page_images = feed_images(feed.items) %}
+    {% if feed.items %}
+    <section class="fx-hero" aria-label="Top picks for you">
+      <div class="fx-hero-head"><h2>Top picks for you</h2><div class="fx-hero-nav"><button type="button" class="fx-hero-arrow" data-scroll="-1" aria-label="Scroll top picks left">‹</button><button type="button" class="fx-hero-arrow" data-scroll="1" aria-label="Scroll top picks right">›</button></div></div>
+      <div class="fx-hero-track">{% for item in feed.items[:8] %}
+        <a class="fx-hero-card" href="/app/dishes/{{ item.dish_id }}">
+          <span class="fx-hero-image"><img src="{{ page_images[loop.index0].src }}" alt="{{ page_images[loop.index0].alt }}" width="{{ page_images[loop.index0].width }}" height="{{ page_images[loop.index0].height }}" loading="lazy" onerror="this.onerror=null;this.src='{{ fallback_image().src }}'"><span class="fx-hero-pct">{{ item.match_percentage }}% match</span></span>
+          <span class="fx-hero-info"><b>{{ item.dish_name }}</b><small>{{ item.restaurant_name }} · PKR {{ '%.0f'|format(item.price) }}</small></span>
+        </a>
+      {% endfor %}</div>
+    </section>
+    {% endif %}
+    {% if top_restaurants %}
+    <section class="fx-hero" aria-label="Top restaurants for you">
+      <div class="fx-hero-head"><h2>Top restaurants for you</h2><div class="fx-hero-nav"><button type="button" class="fx-hero-arrow" data-scroll="-1" aria-label="Scroll top restaurants left">‹</button><button type="button" class="fx-hero-arrow" data-scroll="1" aria-label="Scroll top restaurants right">›</button></div></div>
+      <div class="fx-hero-track">{% for r in top_restaurants %}
+        <a class="fx-rest-card" href="/app/restaurants/{{ r.restaurant_id }}">
+          <span class="fx-mono fx-mono-{{ r.restaurant_name|length % 6 }}" aria-hidden="true">{{ r.restaurant_name[0]|upper }}</span>
+          <span><b>{{ r.restaurant_name }}</b><small>{{ r.cuisine }} · {{ r.match_percentage }}% match</small></span>
+        </a>
+      {% endfor %}</div>
+    </section>
+    {% endif %}
     <div class="feed-card-grid">{% for item in feed.items %}
       {% set image=page_images[loop.index0] %}
       {% set pct=item.match_percentage %}
@@ -171,11 +192,16 @@ function onRemoveFilter(){
   swap(url.toString(),true);
 }
 function onReset(){this.disabled=true;swap('/app/feed',true)}
+function onHeroScroll(){
+  const track=this.closest('.fx-hero').querySelector('.fx-hero-track');
+  track.scrollBy({left:Number(this.dataset.scroll)*280,behavior:'smooth'});
+}
 
 const bindResultsInteractions=()=>{
   results.querySelectorAll('.fx-tab').forEach(a=>a.addEventListener('click',onTabClick));
   results.querySelectorAll('[data-remove-filter]').forEach(button=>button.addEventListener('click',onRemoveFilter));
   results.querySelectorAll('.reset-filters').forEach(button=>button.addEventListener('click',onReset));
+  results.querySelectorAll('.fx-hero-arrow').forEach(button=>button.addEventListener('click',onHeroScroll));
 };
 
 async function swap(url,push){

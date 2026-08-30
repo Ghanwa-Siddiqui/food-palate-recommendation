@@ -8,7 +8,7 @@
 /* ── Shell ─────────────────────────────────────────────────────────── */
 .feed-shell{
   max-width:1500px;margin:auto;
-  padding:clamp(18px,2.4vw,32px) clamp(16px,3vw,38px) 72px;
+  padding:14px clamp(16px,3vw,38px) 72px;
 }
 
 /* ── Filter rail ───────────────────────────────────────────────────────
@@ -16,7 +16,7 @@
    sidebar — most visits don't touch them, so results get the full page
    width by default and the panel opens only when someone asks for it. */
 .filter-toggle{
-  display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;
+  display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;
 }
 .filter-toggle b{
   display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;
@@ -76,13 +76,12 @@
 /* ── Results header ────────────────────────────────────────────────── */
 .feed-heading{
   display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
-  gap:12px;margin-bottom:18px;
+  gap:12px;margin-bottom:14px;
 }
 .feed-heading h1{
   font-family:var(--serif);font-weight:500;letter-spacing:-.032em;
-  font-size:clamp(30px,3.4vw,46px);line-height:1.05;margin:6px 0 0;
+  font-size:clamp(24px,2.6vw,36px);line-height:1.05;margin:4px 0 0;
 }
-.fx-sub{font-size:13.5px;line-height:1.6;color:var(--stone-2);margin:9px 0 0;max-width:46em;}
 .feed-heading>p:last-child{font-size:13px;color:var(--stone-2);white-space:nowrap;}
 .feed-heading>p:last-child b{font-family:var(--serif);font-size:24px;color:var(--ink);}
 
@@ -111,6 +110,56 @@
 .fx-tab:hover{border-color:var(--saffron-d);color:var(--ink);}
 .fx-tab.is-on{
   background:var(--ink);border-color:var(--ink);color:var(--cream);font-weight:600;
+}
+
+/* ── Hero rows: top picks / top restaurants ───────────────────────────
+   Horizontally scrollable highlights lead-in, above the full grid. Both
+   are derived from the same already-ranked feed response - no extra data,
+   just the first few items shown a different way. Scroll-snap gives native
+   drag scrolling on touch/trackpad; the arrow buttons are a pointer-friendly
+   alternative for mouse users. */
+.fx-hero{margin:0 0 26px;}
+.fx-hero-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.fx-hero-head h2{font-family:var(--serif);font-size:19px;font-weight:500;letter-spacing:-.01em;margin:0;}
+.fx-hero-nav{display:flex;gap:6px;}
+.fx-hero-arrow{
+  display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--line-2);background:var(--bone);color:var(--stone-2);
+  font-size:15px;line-height:1;cursor:pointer;
+  transition:border-color .18s ease,color .18s ease,background .18s ease;
+}
+.fx-hero-arrow:hover{border-color:var(--saffron-d);color:var(--ink);background:var(--cream-2);}
+.fx-hero-track{
+  display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;
+  scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch;
+}
+.fx-hero-track::-webkit-scrollbar{display:none;}
+.fx-hero-card{
+  flex:0 0 190px;scroll-snap-align:start;
+  border-radius:14px;overflow:hidden;background:var(--bone);border:1px solid var(--line);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.fx-hero-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 16px 34px -18px rgba(60,32,14,.4);}
+.fx-hero-image{position:relative;display:block;height:120px;}
+.fx-hero-image img{width:100%;height:100%;object-fit:cover;display:block;}
+.fx-hero-pct{
+  position:absolute;bottom:8px;right:8px;background:rgba(28,25,23,.78);color:#fff;
+  font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap;
+}
+.fx-hero-info{display:block;padding:10px 12px;}
+.fx-hero-info b{display:block;font-family:var(--serif);font-size:13.5px;font-weight:500;margin-bottom:2px;color:var(--ink);}
+.fx-hero-info small{display:block;font-size:10.5px;color:var(--stone-2);}
+.fx-rest-card{
+  flex:0 0 200px;scroll-snap-align:start;display:flex;align-items:center;gap:10px;
+  padding:12px;border-radius:14px;background:var(--bone);border:1px solid var(--line);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.fx-rest-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 16px 34px -18px rgba(60,32,14,.4);}
+.fx-rest-card .fx-mono{width:36px;height:36px;font-size:14px;flex-shrink:0;}
+.fx-rest-card b{display:block;font-family:var(--serif);font-size:13px;font-weight:500;margin-bottom:2px;color:var(--ink);}
+.fx-rest-card small{display:block;font-size:10.5px;color:var(--stone-2);}
+@media (prefers-reduced-motion:no-preference){
+  .fx-hero-track{scroll-behavior:smooth;}
 }
 
 .feed-card-grid{
