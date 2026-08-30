@@ -16,13 +16,36 @@ import httpx
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.db.session import get_engine
 from app.models.dish import Dish
 from app.models.restaurant import Restaurant
 from app.models.user import User
 from app.repositories.ranking import RankingRepository
 from app.schemas.dish import PartnerDishCreate
-from app.services.data_core.dish_profiles import DeterministicDishEmbeddingService
+from app.services.data_core.embeddings import (
+    SentenceTransformerEmbeddingProvider,
+    build_dish_embedding_text,
+)
+
+_EMBEDDING_TEXT_FIELDS = (
+    "name",
+    "description",
+    "cuisine",
+    "ingredients",
+    "spice_level",
+    "oiliness",
+    "sweetness",
+    "sourness",
+    "saltiness",
+    "smokiness",
+    "richness",
+    "texture_tags",
+    "dietary_tags",
+    "allergens",
+    "preparation_style",
+    "availability",
+)
 
 BATCH = "partner-marketplace-demo-v1"
 ROOT = Path(__file__).resolve().parents[2]
@@ -359,12 +382,13 @@ def apply(
             )
         )
     session.flush()
-    embedder = DeterministicDishEmbeddingService()
+    provider = SentenceTransformerEmbeddingProvider(get_settings().embedding_model)
     for row in dishes:
         if session.get(Dish, row["id"]):
             continue
         profile = _dish_profile(row)
-        vector = embedder.generate(profile)
+        profile_values = profile.model_dump(include=set(_EMBEDDING_TEXT_FIELDS))
+        vector = provider.embed(build_dish_embedding_text(**profile_values))
         session.add(
             Dish(
                 id=row["id"],
