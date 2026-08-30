@@ -59,8 +59,30 @@ def asset_url(filename: str) -> str:
     return f"/static/{filename}?v={stamp}"
 
 
+def signal_label(explanation: str) -> str:
+    """Compact form of the ranking service's full-sentence match explanation
+    for card-grid display, e.g. "Strongest available match: food profile."
+    becomes "Food profile match". Falls back to a neutral label when the
+    sentence has no ": <signal>" tail (every signal was neutral for that dish).
+    """
+    if ": " not in explanation:
+        return "Balanced match"
+    signal = explanation.rsplit(": ", 1)[-1].strip().rstrip(".")
+    return f"{signal.capitalize()} match"
+
+
+def review_label(insight: str | None) -> str | None:
+    """Drop the "Average " prefix and trailing period from the ranking
+    service's review-insight sentence for compact card-grid display."""
+    if not insight:
+        return None
+    return insight.replace("Average ", "").rstrip(".")
+
+
 templates.env.globals.update(
     asset_url=asset_url,
+    signal_label=signal_label,
+    review_label=review_label,
     cuisine_image=cuisine_image,
     dish_image=dish_image,
     feed_images=feed_images,

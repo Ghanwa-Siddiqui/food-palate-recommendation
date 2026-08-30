@@ -90,13 +90,13 @@ def test_feed_success_empty_error_and_complete_cards(web_client, backend_client)
         "Real Restaurant",
         "PKR 1250",
         "92% match",
-        "Taste match",
-        "Review insight",
+        "Food profile match",
         "Save dish",
         "Open dish",
         "Order interest",
     ):
         assert text in success.text
+    assert "fx-signal-review" not in success.text
 
     backend_client.empty = True
     assert "No dishes match these filters" in web_client.get("/app/feed").text
@@ -137,20 +137,18 @@ def test_feed_renders_only_safe_persisted_twin_review_previews(
     monkeypatch.setattr(backend_client, "get_feed", with_twin_reviews)
     response = web_client.get("/app/feed")
 
-    assert "TASTE TWINS TRIED THIS" in response.text
-    assert "Best match · 89% similar" in response.text
+    assert "89% taste twin match" in response.text
     assert "3 taste twins tried this" in response.text
     assert "+1 more" in response.text
     assert "Maham" in response.text and "Anonymous Chaska diner" in response.text
     assert "View all twin reviews" in response.text
     assert "@example" not in response.text and "taste_vector" not in response.text
     card_start = response.text.index('class="feed-card"')
-    assert card_start < response.text.index("Taste match")
-    assert response.text.index("Taste match") < response.text.index("Review insight")
-    assert response.text.index("Review insight") < response.text.index(
-        "TASTE TWINS TRIED THIS"
+    assert card_start < response.text.index("Food profile match")
+    assert response.text.index("Food profile match") < response.text.index(
+        "89% taste twin match"
     )
-    assert response.text.index("TASTE TWINS TRIED THIS") < response.text.index(
+    assert response.text.index("89% taste twin match") < response.text.index(
         "feed-card-actions"
     )
 
@@ -159,12 +157,13 @@ def test_feed_hides_twin_section_without_evidence(web_client, backend_client):
     _login(web_client, backend_client)
     response = web_client.get("/app/feed")
 
-    assert "TASTE TWINS TRIED THIS" not in response.text
+    assert "fx-signal-twin" not in response.text
+    assert "taste twin match" not in response.text
 
 
 def test_feed_drawer_reset_and_responsive_contracts():
     template = Path("app/templates/namak/feed.html").read_text(encoding="utf-8")
-    css = Path("app/static/namak.css").read_text(encoding="utf-8")
+    css = Path("app/static/feed.css").read_text(encoding="utf-8")
 
     assert 'aria-controls="feed-filters"' in template
     assert "aria-expanded','false" in template
@@ -173,10 +172,12 @@ def test_feed_drawer_reset_and_responsive_contracts():
     assert "Use my coordinates" not in template
     assert "navigator.geolocation" not in template
     assert "user_lat" not in template and "user_lng" not in template
-    assert "window.location.assign('/app/feed')" in template
+    assert "swap('/app/feed',true)" in template
     assert "data-remove-filter" in template
-    assert ".feed-shell{box-sizing:border-box;width:min(1360px,100%)" in css
-    assert "grid-template-columns:280px minmax(0,1fr)" in css
-    assert "@media(max-width:980px)" in css
-    assert "@media(max-width:700px)" in css
-    assert ".feed-card-grid{grid-template-columns:1fr}" in css
+    # Filters are an on-demand panel at every width now, not a sidebar that's
+    # permanently docked open past some desktop breakpoint.
+    assert "@media (min-width:981px)" not in css
+    assert "position:fixed;z-index:51;top:0;bottom:0;left:0;" in css
+    assert "grid-template-columns:288px" not in css
+    assert "@media (max-width:560px)" in css
+    assert ".feed-card-grid{grid-template-columns:minmax(0,1fr);}" in css

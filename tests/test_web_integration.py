@@ -176,7 +176,8 @@ def test_feed_success_empty_error_filters_and_images(web_client, backend_client)
     assert "92%" in success.text
     assert "/static/images/chicken-karahi.webp" in success.text
     assert 'loading="lazy"' in success.text
-    assert "No review insight yet" in success.text
+    assert "Food profile match" in success.text
+    assert "fx-signal-review" not in success.text
 
     backend_client.empty = True
     empty = web_client.get("/app/feed")

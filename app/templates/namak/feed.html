@@ -20,7 +20,7 @@
     <a class="edit-preferences" href="/app/preferences">⚙ Edit taste preferences</a>
   </aside>
 
-  <main class="feed-results">
+  <main class="feed-results" id="feed-results">
     <header class="feed-heading">
       <div><p class="overline">Personalized for {{ user.name }}</p><h1>Your ranked feed</h1>
         <p class="fx-sub">Ordered by how each dish scores against your taste profile, budget and dietary needs.</p></div>
@@ -41,7 +41,7 @@
       <a class="fx-tab{{ ' is-on' if current == c|lower }}" href="/app/feed?{{ base ~ '&' if base }}search={{ c|urlencode }}"{{ ' aria-current=page'|safe if current == c|lower }}>{{ c }}</a>
       {% endfor %}
     </nav>
-    <div id="feed-loading" class="feed-state" hidden role="status" aria-live="polite">Updating your recommendations…</div>
+    <div id="feed-loading" class="sr-only" hidden role="status" aria-live="polite">Updating your recommendations…</div>
     {% if state=='validation' %}<section class="feed-state"><h2>Filters need attention.</h2><p>Correct the highlighted values and apply them again.</p></section>
     {% elif state=='error' %}{% set state_img=context_image('unavailable') %}<section class="feed-state state-with-image" role="alert"><img src="{{ state_img.src }}" alt="" width="{{ state_img.width }}" height="{{ state_img.height }}"><div><h2>Recommendations are unavailable.</h2><p>The ranking service did not respond. Your filters are still here.</p><a class="btn btn-p" href="{{ request.url.path }}?{{ request.url.query }}">Try again</a></div></section>
     {% elif state=='empty' %}{% set state_img=context_image('empty') %}<section class="feed-state state-with-image"><img src="{{ state_img.src }}" alt="" width="{{ state_img.width }}" height="{{ state_img.height }}"><div><h2>No dishes match these filters.</h2><p>Remove a filter or widen your budget.</p><button class="btn btn-o reset-filters" type="button">Clear all filters</button></div></section>
@@ -93,19 +93,16 @@
           </div>
           <div class="chip-row"><span class="chip">{{ item.cuisine }}</span>{% for tag in item.dietary_tags[:2] %}<span class="chip veg">{{ tag }}</span>{% endfor %}{% if item.halal_status in ['verified','claimed'] %}<span class="chip veg">Halal {{ item.halal_status }}</span>{% endif %}</div>
           <section class="feed-evidence">
-            <p class="fx-ev fx-ev-taste"><b>Taste match</b>{{ item.taste_explanation }}</p>
-            <p class="fx-ev fx-ev-review{{ '' if item.review_insight else ' fx-ev-none' }}"><b>Review insight</b>{{ item.review_insight or 'No review insight yet.' }}</p>
-            {% if item.taste_twin_reviews %}
-            {# Collapsed by default so a card with twins stays the same height
-               as its neighbours. <details> keeps it working without JS and
-               gives keyboard and screen-reader behaviour for free. #}
-            <details class="fx-ev fx-ev-similar fx-twins">
-              <summary class="fx-twins-summary">
-                <b>TASTE TWINS TRIED THIS</b>
-                <span class="fx-twin-badge">Best match · {{ item.taste_twin_reviews[0].similarity_percent }}% similar</span>
-                <span class="fx-twins-chevron" aria-hidden="true"></span>
-              </summary>
-              <div class="fx-twins-body">
+            <div class="fx-signals">
+              <span class="fx-signal" title="{{ item.taste_explanation }}"><i aria-hidden="true">🎯</i>{{ signal_label(item.taste_explanation) }}</span>
+              {% if item.review_insight %}<span class="fx-signal fx-signal-review" title="{{ item.review_insight }}"><i aria-hidden="true">⭐</i>{{ review_label(item.review_insight) }}</span>{% endif %}
+              {% if item.taste_twin_reviews %}
+              {# Collapsed by default so a card with twins stays the same height
+                 as its neighbours. <details> keeps it working without JS and
+                 gives keyboard and screen-reader behaviour for free. #}
+              <details class="fx-twins">
+                <summary class="fx-signal fx-signal-twin"><i aria-hidden="true">👥</i>{{ item.taste_twin_reviews[0].similarity_percent }}% taste twin match<span class="fx-twins-chevron" aria-hidden="true"></span></summary>
+                <div class="fx-twins-body">
                 {% if item.taste_twin_review_count > 1 %}<p class="fx-twin-count">{{ item.taste_twin_review_count }} taste twins tried this</p>{% endif %}
                 {% for review in item.taste_twin_reviews[:2] %}
                 <article class="fx-twin">
@@ -117,8 +114,9 @@
                 {% set remaining = item.taste_twin_review_count - (item.taste_twin_reviews|length) %}
                 <p class="fx-twin-foot">{% if remaining > 0 %}<span class="fx-twin-extra">+{{ remaining }} more</span>{% endif %}<a class="fx-twin-more" href="/app/dishes/{{ item.dish_id }}">View all twin reviews</a></p>
               </div>
-            </details>
-            {% endif %}
+              </details>
+              {% endif %}
+            </div>
           </section>
           <div class="feed-card-actions">
             <a class="btn btn-p fx-open" href="/app/dishes/{{ item.dish_id }}">Open dish <span aria-hidden="true">→</span></a>
@@ -142,10 +140,75 @@
   </main>
 </div>
 <script>
-(()=>{const form=document.querySelector('#feed-controls'),panel=document.querySelector('#feed-filters'),toggle=document.querySelector('.filter-toggle'),scrim=document.querySelector('.filter-scrim'),error=form.querySelector('.filter-error:not(.server-filter-error)');
-const close=()=>{panel.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');scrim.hidden=true;toggle.focus()};const open=()=>{panel.classList.add('is-open');toggle.setAttribute('aria-expanded','true');scrim.hidden=false;panel.querySelector('input').focus()};toggle.addEventListener('click',()=>panel.classList.contains('is-open')?close():open());document.querySelectorAll('[data-filter-close]').forEach(el=>el.addEventListener('click',close));document.addEventListener('keydown',event=>{if(event.key==='Escape'&&panel.classList.contains('is-open'))close()});
+(()=>{
+const form=document.querySelector('#feed-controls'),panel=document.querySelector('#feed-filters'),toggle=document.querySelector('.filter-toggle'),scrim=document.querySelector('.filter-scrim'),error=form.querySelector('.filter-error:not(.server-filter-error)'),results=document.querySelector('#feed-results'),announce=document.querySelector('#feed-loading');
+
+const close=()=>{panel.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');scrim.hidden=true;toggle.focus()};
+const open=()=>{panel.classList.add('is-open');toggle.setAttribute('aria-expanded','true');scrim.hidden=false;panel.querySelector('input').focus()};
+toggle.addEventListener('click',()=>panel.classList.contains('is-open')?close():open());
+document.querySelectorAll('[data-filter-close]').forEach(el=>el.addEventListener('click',close));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&panel.classList.contains('is-open'))close()});
+
 const validate=()=>{const messages=[],min=Number(form.elements.budget_min.value),max=Number(form.elements.budget_max.value),hasMin=form.elements.budget_min.value!=='',hasMax=form.elements.budget_max.value!=='';if(hasMin&&(!Number.isFinite(min)||min<0))messages.push('Minimum budget must be zero or more.');if(hasMax&&(!Number.isFinite(max)||max<=0))messages.push('Maximum budget must be greater than zero.');if(hasMin&&hasMax&&min>max)messages.push('Minimum budget cannot exceed maximum budget.');error.hidden=!messages.length;error.textContent=messages.join(' ');return !messages.length};
-form.addEventListener('submit',event=>{if(!validate()){event.preventDefault();return}document.querySelector('#feed-loading').hidden=false;form.querySelector('button[type=submit]').disabled=true;panel.classList.remove('is-open');scrim.hidden=true});
-document.querySelectorAll('.reset-filters').forEach(button=>button.addEventListener('click',()=>{button.disabled=true;window.location.assign('/app/feed')}));document.querySelectorAll('[data-remove-filter]').forEach(button=>button.addEventListener('click',()=>{const url=new URL(window.location.href),name=button.dataset.removeFilter,val=button.dataset.removeValue;if(val){const remaining=url.searchParams.getAll(name).filter(v=>v!==val);url.searchParams.delete(name);remaining.forEach(v=>url.searchParams.append(name,v))}else{url.searchParams.delete(name)}url.searchParams.delete('offset');window.location.assign(url)}));})();
+
+// ---- Skeleton + fetch-based partial update: filter/tab changes swap just
+// the results region instead of reloading the whole page. Progressive
+// enhancement — any failure here falls back to a real navigation. ----
+const skeletonCard=()=>'<article class="feed-card feed-skeleton" aria-hidden="true"><div class="fx-skel fx-skel-image"></div><div class="feed-card-body"><div class="fx-skel fx-skel-title"></div><div class="fx-skel fx-skel-line"></div><div class="fx-skel fx-skel-chip"></div><div class="fx-skel fx-skel-line short"></div></div></article>';
+const showSkeleton=()=>{
+  const grid=results.querySelector('.feed-card-grid'),count=grid?grid.children.length:6,target=grid||results.querySelector('.feed-state');
+  if(target){target.className='feed-card-grid';target.innerHTML=Array.from({length:Math.max(3,Math.min(count,9))},skeletonCard).join('')}
+  results.setAttribute('aria-busy','true');
+  if(announce)announce.hidden=false;
+};
+
+function onTabClick(event){event.preventDefault();swap(event.currentTarget.href,true)}
+function onRemoveFilter(){
+  const url=new URL(window.location.href),name=this.dataset.removeFilter,val=this.dataset.removeValue;
+  if(val){const remaining=url.searchParams.getAll(name).filter(v=>v!==val);url.searchParams.delete(name);remaining.forEach(v=>url.searchParams.append(name,v))}
+  else{url.searchParams.delete(name)}
+  url.searchParams.delete('offset');
+  swap(url.toString(),true);
+}
+function onReset(){this.disabled=true;swap('/app/feed',true)}
+
+const bindResultsInteractions=()=>{
+  results.querySelectorAll('.fx-tab').forEach(a=>a.addEventListener('click',onTabClick));
+  results.querySelectorAll('[data-remove-filter]').forEach(button=>button.addEventListener('click',onRemoveFilter));
+  results.querySelectorAll('.reset-filters').forEach(button=>button.addEventListener('click',onReset));
+};
+
+async function swap(url,push){
+  showSkeleton();
+  try{
+    const response=await fetch(url,{headers:{'X-Requested-With':'fetch'}});
+    if(!response.ok)throw new Error('bad status');
+    const html=await response.text(),next=new DOMParser().parseFromString(html,'text/html').getElementById('feed-results');
+    if(!next)throw new Error('missing results');
+    results.innerHTML=next.innerHTML;
+    results.removeAttribute('aria-busy');
+    if(announce)announce.hidden=true;
+    if(push)history.pushState({feedUrl:url},'',url);
+    bindResultsInteractions();
+  }catch(err){
+    window.location.assign(url);
+  }
+}
+
+form.addEventListener('submit',async event=>{
+  event.preventDefault();
+  if(!validate())return;
+  const url=new URL(form.action,window.location.href);
+  new FormData(form).forEach((value,key)=>{if(value)url.searchParams.append(key,value)});
+  const submitButton=form.querySelector('button[type=submit]');
+  submitButton.disabled=true;
+  close();
+  await swap(url.toString(),true);
+  submitButton.disabled=false;
+});
+document.querySelectorAll('.reset-filters').forEach(button=>{if(!results.contains(button))button.addEventListener('click',onReset)});
+window.addEventListener('popstate',()=>swap(window.location.href,false));
+bindResultsInteractions();
+})();
 </script>
 {% endblock %}
