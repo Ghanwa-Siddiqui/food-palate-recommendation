@@ -3,7 +3,7 @@
 {% block head %}<link rel="stylesheet" href="{{ asset_url('feed.css') }}">{% endblock %}
 {% block body %}
 {% set active='feed' %}{% include "namak/_nav.html" %}
-{% set active_count=(1 if filters.get('search') else 0)+(1 if filters.get('budget_min') else 0)+(1 if filters.get('budget_max') else 0)+(1 if filters.get('require_halal')=='true' else 0)+(filters.getlist('dietary_restrictions')|length) %}
+{% set active_count=(1 if filters.get('search') else 0)+(1 if filters.get('budget_min') else 0)+(1 if filters.get('budget_max') else 0)+(1 if filters.get('require_halal')=='true' else 0)+(filters.getlist('dietary_restrictions')|length)+(1 if filters.get('max_distance_km') else 0) %}
 <div class="feed-shell">
   <div class="filter-scrim" data-filter-close hidden></div>
   <aside class="feed-filters" id="feed-filters" aria-label="Feed filters">
@@ -11,6 +11,17 @@
     <form id="feed-controls" method="get" action="/app/feed" novalidate>
       <label class="filter-field">Search by dish or cuisine<input name="search" value="{{ filters.get('search','') }}" maxlength="100" placeholder="Biryani, Italian…"></label>
       <div class="filter-pair"><label class="filter-field">Budget minimum<input name="budget_min" type="number" min="0" step="1" value="{{ filters.get('budget_min','') }}" placeholder="PKR"></label><label class="filter-field">Budget maximum<input name="budget_max" type="number" min="1" step="1" value="{{ filters.get('budget_max','') }}" placeholder="PKR"></label></div>
+      <div class="coordinate-fields">
+        <div><span>Distance</span><button type="button" class="btn btn-g geo-button" data-use-location>Use my location</button></div>
+        <input type="hidden" name="user_lat" value="{{ filters.get('user_lat','') }}" data-geo-lat>
+        <input type="hidden" name="user_lng" value="{{ filters.get('user_lng','') }}" data-geo-lng>
+        <label class="filter-field" data-distance-field{% if not filters.get('user_lat') %} hidden{% endif %}>Maximum distance
+          <select name="max_distance_km" {% if not filters.get('user_lat') %}disabled{% endif %}>
+            {% for km in [2, 5, 10, 20, 50] %}<option value="{{ km }}" {% if filters.get('max_distance_km')==km|string %}selected{% endif %}>Within {{ km }} km</option>{% endfor %}
+          </select>
+        </label>
+        <p class="geo-status" data-geo-status role="status" aria-live="polite">{{ 'Using your current location.' if filters.get('user_lat') else '' }}</p>
+      </div>
       <fieldset class="filter-options"><legend>Dietary needs</legend><label><input type="checkbox" name="require_halal" value="true" {% if filters.get('require_halal')=='true' %}checked{% endif %}><span>Halal only</span></label>{% for item in dietary %}<label><input type="checkbox" name="dietary_restrictions" value="{{ item }}" {% if item in filters.getlist('dietary_restrictions') %}checked{% endif %}><span>{{ item|replace('-',' ')|title }}</span></label>{% endfor %}</fieldset>
       <div class="filter-error" role="alert" hidden></div>
       {% if filter_errors %}<div class="filter-error server-filter-error" role="alert"><b>Check your filters</b><ul>{% for error in filter_errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
@@ -28,7 +39,7 @@
       </div>
     </header>
     {% if welcome %}<div class="notice">Your taste profile is ready. These recommendations use it now.</div>{% endif %}
-    {% if active_count %}<div class="active-filters" aria-label="Active filters"><span>{{ active_count }} active</span>{% if filters.get('search') %}<button data-remove-filter="search">Search: {{ filters.get('search') }} ×</button>{% endif %}{% if filters.get('budget_min') %}<button data-remove-filter="budget_min">Min PKR {{ filters.get('budget_min') }} ×</button>{% endif %}{% if filters.get('budget_max') %}<button data-remove-filter="budget_max">Max PKR {{ filters.get('budget_max') }} ×</button>{% endif %}{% if filters.get('require_halal')=='true' %}<button data-remove-filter="require_halal">Halal ×</button>{% endif %}{% for item in filters.getlist('dietary_restrictions') %}<button data-remove-filter="dietary_restrictions" data-remove-value="{{ item }}">{{ item|replace('-',' ')|title }} ×</button>{% endfor %}</div>{% endif %}
+    {% if active_count %}<div class="active-filters" aria-label="Active filters"><span>{{ active_count }} active</span>{% if filters.get('search') %}<button data-remove-filter="search">Search: {{ filters.get('search') }} ×</button>{% endif %}{% if filters.get('budget_min') %}<button data-remove-filter="budget_min">Min PKR {{ filters.get('budget_min') }} ×</button>{% endif %}{% if filters.get('budget_max') %}<button data-remove-filter="budget_max">Max PKR {{ filters.get('budget_max') }} ×</button>{% endif %}{% if filters.get('require_halal')=='true' %}<button data-remove-filter="require_halal">Halal ×</button>{% endif %}{% for item in filters.getlist('dietary_restrictions') %}<button data-remove-filter="dietary_restrictions" data-remove-value="{{ item }}">{{ item|replace('-',' ')|title }} ×</button>{% endfor %}{% if filters.get('max_distance_km') %}<button data-remove-filter="max_distance_km" data-remove-also="user_lat,user_lng">Within {{ filters.get('max_distance_km') }} km ×</button>{% endif %}</div>{% endif %}
     {# Quick cuisine filters. These are real links into the existing `search`
        filter, carrying every other active filter along so a tab never silently
        drops the user's budget or dietary settings. #}
@@ -178,6 +189,27 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&panel.class
 
 const validate=()=>{const messages=[],min=Number(form.elements.budget_min.value),max=Number(form.elements.budget_max.value),hasMin=form.elements.budget_min.value!=='',hasMax=form.elements.budget_max.value!=='';if(hasMin&&(!Number.isFinite(min)||min<0))messages.push('Minimum budget must be zero or more.');if(hasMax&&(!Number.isFinite(max)||max<=0))messages.push('Maximum budget must be greater than zero.');if(hasMin&&hasMax&&min>max)messages.push('Minimum budget cannot exceed maximum budget.');error.hidden=!messages.length;error.textContent=messages.join(' ');return !messages.length};
 
+// ---- Location: opt-in only, never requested automatically. The filter
+// form lives outside #feed-results so this binds once, no swap rebind needed. ----
+const geoButton=form.querySelector('[data-use-location]');
+if(geoButton){
+  const geoStatus=form.querySelector('[data-geo-status]'),distanceField=form.querySelector('[data-distance-field]'),latInput=form.querySelector('[data-geo-lat]'),lngInput=form.querySelector('[data-geo-lng]');
+  geoButton.addEventListener('click',()=>{
+    if(!navigator.geolocation){geoStatus.textContent='Location is not available in this browser.';return}
+    geoButton.disabled=true;geoButton.textContent='Locating…';
+    navigator.geolocation.getCurrentPosition(
+      position=>{
+        latInput.value=position.coords.latitude;lngInput.value=position.coords.longitude;
+        distanceField.hidden=false;distanceField.querySelector('select').disabled=false;
+        geoStatus.textContent='Using your current location.';
+        geoButton.disabled=false;geoButton.textContent='Use my location';
+      },
+      ()=>{geoStatus.textContent='Location access was denied or unavailable.';geoButton.disabled=false;geoButton.textContent='Use my location'},
+      {timeout:10000}
+    );
+  });
+}
+
 // ---- Skeleton + fetch-based partial update: filter/tab changes swap just
 // the results region instead of reloading the whole page. Progressive
 // enhancement — any failure here falls back to a real navigation. ----
@@ -191,9 +223,10 @@ const showSkeleton=()=>{
 
 function onTabClick(event){event.preventDefault();swap(event.currentTarget.href,true)}
 function onRemoveFilter(){
-  const url=new URL(window.location.href),name=this.dataset.removeFilter,val=this.dataset.removeValue;
+  const url=new URL(window.location.href),name=this.dataset.removeFilter,val=this.dataset.removeValue,also=this.dataset.removeAlso;
   if(val){const remaining=url.searchParams.getAll(name).filter(v=>v!==val);url.searchParams.delete(name);remaining.forEach(v=>url.searchParams.append(name,v))}
   else{url.searchParams.delete(name)}
+  if(also)also.split(',').forEach(extra=>url.searchParams.delete(extra));
   url.searchParams.delete('offset');
   swap(url.toString(),true);
 }

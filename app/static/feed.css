@@ -49,6 +49,14 @@
 }
 .feed-filters input:focus{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(232,169,58,.22);outline:none;}
 .filter-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;}
+.coordinate-fields{
+  display:grid;gap:9px;padding:12px;margin:0 0 14px;
+  border:1px solid var(--line);border-radius:11px;background:#fff8e8;
+}
+.coordinate-fields>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;font-weight:700;color:var(--stone-2);}
+.geo-button{padding:7px 9px;font-size:10px;}
+.coordinate-fields .filter-field{margin-bottom:0;}
+.geo-status{margin:0;color:var(--stone-2);font-size:10px;line-height:1.4;min-height:12px;}
 .filter-options{border:0;padding:0;margin:0 0 14px;}
 .filter-options legend{font-size:12px;font-weight:600;color:var(--stone-2);padding:0;margin-bottom:7px;}
 .filter-options label{

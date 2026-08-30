@@ -736,6 +736,9 @@ def _feed_params(request: Request) -> list[tuple[str, str]]:
         "search",
         "budget_min",
         "budget_max",
+        "user_lat",
+        "user_lng",
+        "max_distance_km",
         "offset",
     )
     params = [
@@ -791,6 +794,20 @@ def _feed_filter_errors(request: Request) -> list[str]:
         errors.append("Minimum budget cannot exceed maximum budget.")
     if len(request.query_params.get("search", "")) > 100:
         errors.append("Search must be 100 characters or fewer.")
+
+    lat_raw = request.query_params.get("user_lat", "").strip()
+    lng_raw = request.query_params.get("user_lng", "").strip()
+    if bool(lat_raw) != bool(lng_raw):
+        errors.append("Location needs both latitude and longitude.")
+    lat = number("user_lat", "Latitude", minimum=-90)
+    if lat is not None and lat > 90:
+        errors.append("Latitude must be between -90 and 90.")
+    lng = number("user_lng", "Longitude", minimum=-180)
+    if lng is not None and lng > 180:
+        errors.append("Longitude must be between -180 and 180.")
+    distance = number("max_distance_km", "Maximum distance", minimum=0.1)
+    if distance is not None and lat_raw == "" and lng_raw == "":
+        errors.append("Maximum distance needs your location first.")
     return errors
 
 

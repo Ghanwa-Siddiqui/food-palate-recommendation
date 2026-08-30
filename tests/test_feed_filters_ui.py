@@ -51,11 +51,11 @@ def test_every_feed_filter_reaches_ranking_and_state_is_visible(
         ("budget_max", "1800"),
         ("require_halal", "true"),
         ("dietary_restrictions", "vegetarian"),
+        ("max_distance_km", "12.5"),
+        ("user_lat", "31.5204"),
+        ("user_lng", "74.3587"),
     }
-    assert not {"max_distance_km", "user_lat", "user_lng"} & {
-        name for name, _ in captured
-    }
-    assert "5 active" in response.text
+    assert "6 active" in response.text
     assert 'value="Pakistani"' in response.text
     assert "Search: Pakistani" in response.text
 
@@ -168,10 +168,20 @@ def test_feed_drawer_reset_and_responsive_contracts():
     assert 'aria-controls="feed-filters"' in template
     assert "aria-expanded','false" in template
     assert "event.key==='Escape'" in template
-    assert "Maximum distance" not in template
-    assert "Use my coordinates" not in template
-    assert "navigator.geolocation" not in template
-    assert "user_lat" not in template and "user_lng" not in template
+    # Context/location filtering: opt-in only (a button, never an automatic
+    # geolocation prompt on page load), backed by fields the ranking service
+    # has supported all along (backend/app/schemas/ranking.py) but the app
+    # layer previously never collected.
+    assert "Maximum distance" in template
+    assert "Use my location" in template
+    assert "navigator.geolocation" in template
+    assert "user_lat" in template and "user_lng" in template
+    assert 'name="user_lat"' in template and 'name="user_lng"' in template
+    # Never request location automatically on page load - getCurrentPosition
+    # must be reachable only from inside the button's click handler.
+    assert template.index("geoButton.addEventListener('click'") < template.index(
+        "getCurrentPosition"
+    )
     assert "swap('/app/feed',true)" in template
     assert "data-remove-filter" in template
     # Filters are an on-demand panel at every width now, not a sidebar that's
