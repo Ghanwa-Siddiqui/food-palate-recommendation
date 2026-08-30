@@ -8,25 +8,37 @@
 /* ── Shell ─────────────────────────────────────────────────────────── */
 .feed-shell{
   max-width:1500px;margin:auto;
-  display:grid;grid-template-columns:288px minmax(0,1fr);
-  gap:clamp(18px,2.2vw,34px);
-  padding:clamp(18px,2.4vw,32px) clamp(16px,3vw,38px) 72px;
-  align-items:start;
+  padding:14px clamp(16px,3vw,38px) 72px;
 }
 
-/* ── Filter rail ───────────────────────────────────────────────────── */
-/* Only restyle the docked rail. Below 980px the base stylesheet turns this
-   panel into a fixed off-canvas drawer driven by the Filters toggle, so
-   position/size/radius must be left alone there — overriding them makes the
-   hidden drawer occupy flow space and shoves the results down the page. */
-@media (min-width:981px){
-  .feed-filters{
-    position:sticky;top:80px;border-radius:16px;
-    max-height:calc(100vh - 100px);overflow:auto;overscroll-behavior:contain;
-    box-shadow:0 12px 30px -20px rgba(60,32,14,.34);
-  }
+/* ── Filter rail ───────────────────────────────────────────────────────
+   Filters are an on-demand panel at every width, not a permanently docked
+   sidebar — most visits don't touch them, so results get the full page
+   width by default and the panel opens only when someone asks for it. */
+.filter-toggle{
+  display:inline-flex;align-items:center;gap:8px;flex-shrink:0;
 }
-.feed-filters{background:var(--bone);border:1px solid var(--line);padding:20px;}
+.filter-toggle b{
+  display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;
+  border-radius:999px;background:var(--paprika);color:#fff;font-size:10px;font-weight:700;
+}
+.feed-filters{
+  position:fixed;z-index:51;top:0;bottom:0;left:0;
+  width:min(340px,88vw);border-radius:0 18px 18px 0;
+  transform:translateX(-105%);transition:transform .22s var(--ui-ease,ease);
+  box-shadow:20px 0 60px rgba(28,25,23,.28);
+  background:var(--bone);border:1px solid var(--line);padding:20px;
+  overflow:auto;overscroll-behavior:contain;
+}
+.feed-filters.is-open{transform:translateX(0);}
+.filter-close{
+  display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;
+  background:var(--cream-2);font-size:22px;cursor:pointer;color:var(--ink);
+}
+.filter-close:hover{background:var(--line-2);}
+@media (max-width:400px){
+  .filter-pair{grid-template-columns:1fr;}
+}
 .filter-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:16px;}
 .filter-head h2{font-family:var(--serif);font-size:26px;font-weight:500;letter-spacing:-.02em;margin:4px 0 0;}
 .feed-filters .filter-field{display:grid;gap:6px;font-size:12px;font-weight:600;color:var(--stone-2);margin-bottom:14px;}
@@ -37,6 +49,14 @@
 }
 .feed-filters input:focus{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(232,169,58,.22);outline:none;}
 .filter-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;}
+.coordinate-fields{
+  display:grid;gap:9px;padding:12px;margin:0 0 14px;
+  border:1px solid var(--line);border-radius:11px;background:#fff8e8;
+}
+.coordinate-fields>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;font-weight:700;color:var(--stone-2);}
+.geo-button{padding:7px 9px;font-size:10px;}
+.coordinate-fields .filter-field{margin-bottom:0;}
+.geo-status{margin:0;color:var(--stone-2);font-size:10px;line-height:1.4;min-height:12px;}
 .filter-options{border:0;padding:0;margin:0 0 14px;}
 .filter-options legend{font-size:12px;font-weight:600;color:var(--stone-2);padding:0;margin-bottom:7px;}
 .filter-options label{
@@ -64,15 +84,15 @@
 /* ── Results header ────────────────────────────────────────────────── */
 .feed-heading{
   display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
-  gap:12px;margin-bottom:18px;
+  gap:12px;margin-bottom:14px;
 }
 .feed-heading h1{
   font-family:var(--serif);font-weight:500;letter-spacing:-.032em;
-  font-size:clamp(30px,3.4vw,46px);line-height:1.05;margin:6px 0 0;
+  font-size:clamp(24px,2.6vw,36px);line-height:1.05;margin:4px 0 0;
 }
-.fx-sub{font-size:13.5px;line-height:1.6;color:var(--stone-2);margin:9px 0 0;max-width:46em;}
-.feed-heading>p:last-child{font-size:13px;color:var(--stone-2);white-space:nowrap;}
-.feed-heading>p:last-child b{font-family:var(--serif);font-size:24px;color:var(--ink);}
+.feed-heading-side{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.feed-count{font-size:13px;color:var(--stone-2);white-space:nowrap;}
+.feed-count b{font-family:var(--serif);font-size:24px;color:var(--ink);}
 
 .active-filters{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:18px;}
 .active-filters>span{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--stone);}
@@ -101,6 +121,56 @@
   background:var(--ink);border-color:var(--ink);color:var(--cream);font-weight:600;
 }
 
+/* ── Hero rows: top picks / top restaurants ───────────────────────────
+   Horizontally scrollable highlights lead-in, above the full grid. Both
+   are derived from the same already-ranked feed response - no extra data,
+   just the first few items shown a different way. Scroll-snap gives native
+   drag scrolling on touch/trackpad; the arrow buttons are a pointer-friendly
+   alternative for mouse users. */
+.fx-hero{margin:0 0 26px;}
+.fx-hero-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.fx-hero-head h2{font-family:var(--serif);font-size:19px;font-weight:500;letter-spacing:-.01em;margin:0;}
+.fx-hero-nav{display:flex;gap:6px;}
+.fx-hero-arrow{
+  display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--line-2);background:var(--bone);color:var(--stone-2);
+  font-size:15px;line-height:1;cursor:pointer;
+  transition:border-color .18s ease,color .18s ease,background .18s ease;
+}
+.fx-hero-arrow:hover{border-color:var(--saffron-d);color:var(--ink);background:var(--cream-2);}
+.fx-hero-track{
+  display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;
+  scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch;
+}
+.fx-hero-track::-webkit-scrollbar{display:none;}
+.fx-hero-card{
+  flex:0 0 190px;scroll-snap-align:start;
+  border-radius:14px;overflow:hidden;background:var(--bone);border:1px solid var(--line);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.fx-hero-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 16px 34px -18px rgba(60,32,14,.4);}
+.fx-hero-image{position:relative;display:block;height:120px;}
+.fx-hero-image img{width:100%;height:100%;object-fit:cover;display:block;}
+.fx-hero-pct{
+  position:absolute;bottom:8px;right:8px;background:rgba(28,25,23,.78);color:#fff;
+  font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap;
+}
+.fx-hero-info{display:block;padding:10px 12px;}
+.fx-hero-info b{display:block;font-family:var(--serif);font-size:13.5px;font-weight:500;margin-bottom:2px;color:var(--ink);}
+.fx-hero-info small{display:block;font-size:10.5px;color:var(--stone-2);}
+.fx-rest-card{
+  flex:0 0 200px;scroll-snap-align:start;display:flex;align-items:center;gap:10px;
+  padding:12px;border-radius:14px;background:var(--bone);border:1px solid var(--line);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.fx-rest-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 16px 34px -18px rgba(60,32,14,.4);}
+.fx-rest-card .fx-mono{width:36px;height:36px;font-size:14px;flex-shrink:0;}
+.fx-rest-card b{display:block;font-family:var(--serif);font-size:13px;font-weight:500;margin-bottom:2px;color:var(--ink);}
+.fx-rest-card small{display:block;font-size:10.5px;color:var(--stone-2);}
+@media (prefers-reduced-motion:no-preference){
+  .fx-hero-track{scroll-behavior:smooth;}
+}
+
 .feed-card-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));
   gap:clamp(13px,1.4vw,20px);
@@ -113,6 +183,27 @@
 @media (hover:hover){
   .feed-card:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 22px 44px -22px rgba(60,32,14,.42);}
   .feed-card:hover .feed-card-image img{transform:scale(1.05);}
+}
+
+/* ── Skeleton loading ──────────────────────────────────────────────────
+   Shown in place of the real card grid while a filter/tab change is being
+   fetched (see the script at the bottom of feed.html). Sized to match a
+   real .feed-card so the grid doesn't jump when results swap in. */
+.feed-skeleton{pointer-events:none;}
+.fx-skel{
+  background:linear-gradient(90deg,var(--line) 25%,var(--line-2) 37%,var(--line) 63%);
+  background-size:400% 100%;border-radius:7px;
+  animation:fxSkeleton 1.4s ease infinite;
+}
+@keyframes fxSkeleton{0%{background-position:100% 50%;}100%{background-position:0 50%;}}
+.fx-skel-image{height:198px;border-radius:0;}
+.feed-skeleton .feed-card-body{padding:15px 16px 16px;display:grid;gap:10px;}
+.fx-skel-title{height:19px;width:70%;}
+.fx-skel-line{height:11px;width:92%;}
+.fx-skel-line.short{width:52%;}
+.fx-skel-chip{height:19px;width:38%;border-radius:999px;}
+@media (prefers-reduced-motion:reduce){
+  .fx-skel{animation:none;}
 }
 .feed-card-image{
   position:relative;display:block;height:198px;overflow:hidden;
@@ -191,33 +282,28 @@
 }
 .chip.veg{background:rgba(74,124,89,.14);color:var(--mint);}
 
-/* ── Evidence ──────────────────────────────────────────────────────── */
+/* ── Signals ───────────────────────────────────────────────────────────
+   Compact pills replace what used to be two full sentences of prose per
+   card ("Taste match: Strongest available match: food profile." etc.) —
+   a dozen cards' worth of that read as a wall of text. The full sentence
+   is still one tap away on the dish detail page; here it's a short label
+   with the full text as a tooltip. */
 .feed-evidence{
   margin:13px 0 0;padding:12px 0 0;border-top:1px solid var(--line);
-  display:grid;gap:9px;flex:1;
+  flex:1;
   /* flex:1 lets this block absorb the card's spare height so the actions stay
-     pinned to the bottom. Without align-content the grid shares that spare
-     height between the rows, and a card with fewer evidence rows than its
-     neighbours stretches them into big empty gaps. */
-  align-content:start;
+     pinned to the bottom. */
 }
-.fx-ev{
-  position:relative;padding-left:13px;font-size:12.5px;line-height:1.55;color:var(--stone-2);margin:0;
+.fx-signals{display:flex;flex-wrap:wrap;align-items:center;gap:6px;}
+.fx-signal{
+  display:inline-flex;align-items:center;gap:5px;max-width:100%;
+  padding:5px 10px;border-radius:999px;
+  background:var(--cream-2);color:var(--stone-2);
+  font-size:11px;font-weight:600;line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.fx-ev::before{
-  content:'';position:absolute;left:0;top:4px;bottom:2px;width:2.5px;border-radius:2px;
-}
-.fx-ev-taste::before{background:var(--saffron);}
-.fx-ev-review::before{background:var(--mint);}
-.fx-ev-similar::before{background:var(--paprika);}
-.fx-ev b{
-  display:block;font-size:10px;font-weight:700;letter-spacing:.075em;text-transform:uppercase;
-  color:var(--ink);margin-bottom:2px;
-}
-.fx-ev-none{opacity:.6;font-style:italic;}
-.fx-ev-none::before{background:var(--line-2);}
-.fx-ev q{display:block;margin-top:6px;font-style:italic;color:var(--ink-2);quotes:'"' '"';}
-.fx-ev small{display:block;margin-top:3px;font-size:11px;color:var(--stone);}
+.fx-signal i{font-style:normal;flex-shrink:0;}
+.fx-signal-review{background:rgba(74,124,89,.14);color:var(--mint);}
 
 /* ── Actions ───────────────────────────────────────────────────────── */
 /* Primary action spans the full width; the two secondary actions share the
@@ -254,10 +340,6 @@
 .state-with-image img{width:100%;height:auto;border-radius:12px;display:block;}
 
 /* ── Responsive ────────────────────────────────────────────────────── */
-/* Matches the base stylesheet's own drawer breakpoint so the two agree. */
-@media (max-width:980px){
-  .feed-shell{grid-template-columns:minmax(0,1fr);}
-}
 @media (max-width:560px){
   .feed-card-grid{grid-template-columns:minmax(0,1fr);}
   .state-with-image{grid-template-columns:minmax(0,1fr);text-align:center;}
@@ -268,29 +350,22 @@
    is closest to this user's. Collapsed by default so one card carrying twins
    does not tower over its row-mates; <details> handles the toggle natively. */
 .fx-twins{display:block;}
-.fx-twins-summary{
-  display:flex;flex-wrap:wrap;align-items:center;gap:7px;
+.fx-signal-twin{
+  background:rgba(166,58,30,.12);color:var(--paprika);
   cursor:pointer;list-style:none;
 }
-.fx-twins-summary::-webkit-details-marker{display:none;}
-.fx-twins-summary>b{margin-bottom:0;}
-.fx-twin-badge{
-  font-size:9.5px;font-weight:700;letter-spacing:.03em;
-  color:var(--paprika);background:rgba(166,58,30,.12);
-  padding:3px 8px;border-radius:999px;white-space:nowrap;
-}
+.fx-signal-twin::-webkit-details-marker{display:none;}
 /* Chevron doubles as the affordance: it rotates when the block opens. */
 .fx-twins-chevron{
-  margin-left:auto;width:0;height:0;flex-shrink:0;
-  border-left:4.5px solid transparent;border-right:4.5px solid transparent;
-  border-top:5px solid var(--stone);
+  width:0;height:0;flex-shrink:0;margin-left:1px;
+  border-left:4px solid transparent;border-right:4px solid transparent;
+  border-top:4.5px solid var(--paprika);
   transition:transform .2s var(--ui-ease,ease);
 }
 .fx-twins[open] .fx-twins-chevron{transform:rotate(180deg);}
-@media (hover:hover){.fx-twins-summary:hover .fx-twins-chevron{border-top-color:var(--paprika);}}
-.fx-twins-summary:focus-visible{outline:2px solid var(--saffron);outline-offset:3px;border-radius:5px;}
+.fx-signal-twin:focus-visible{outline:2px solid var(--saffron);outline-offset:3px;border-radius:999px;}
 
-.fx-twins-body{padding-top:4px;}
+.fx-twins-body{padding-top:9px;}
 .fx-twin-count{font-size:11px;color:var(--stone);margin:0 0 2px;}
 .fx-twin{margin-top:8px;}
 .fx-twin-who{font-size:12px;font-weight:600;color:var(--ink);}

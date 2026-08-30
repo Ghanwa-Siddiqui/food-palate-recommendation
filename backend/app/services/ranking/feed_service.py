@@ -8,6 +8,27 @@ from app.services.data_core.catalog import NotFoundError
 from app.services.ranking.generator import filter_candidates
 from app.services.ranking.scoring import score_candidate
 
+# Sentiment is a -1..1 model score, meaningless to a diner as a raw number
+# ("+0.52"). These bands turn it into the same kind of plain-language read a
+# person gives a restaurant themselves, e.g. "reviews are pretty split" -
+# not a score they'd have to interpret.
+_SENTIMENT_BANDS = (
+    (0.6, "Reviewers loved this"),
+    (0.2, "Positive reviews"),
+    (-0.2, "Mixed reviews"),
+    (-0.6, "Reviews trending negative"),
+)
+
+
+def _review_phrase(sentiment: float, average: float | None) -> str:
+    phrase = next(
+        (label for floor, label in _SENTIMENT_BANDS if sentiment >= floor),
+        "Reviewers disliked this",
+    )
+    if average is not None:
+        return f"{phrase} ({average:.1f}★)."
+    return f"{phrase}."
+
 
 class RankingFeedService:
     def __init__(self, repository: RankingRepository) -> None:
@@ -17,9 +38,11 @@ class RankingFeedService:
     def _effective_preferences(user: User, requested: FeedPreferences) -> FeedPreferences:
         updates = {}
         supplied = requested.model_fields_set
+        # Budget is intentionally NOT defaulted from the stored profile: it's a
+        # per-visit choice made through the feed's own sidebar filter, not an
+        # app-wide constraint like dietary/allergy/halal (those stay defaulted
+        # below since they're safety requirements, not taste preferences).
         defaults = {
-            "budget_min": float(user.budget_min),
-            "budget_max": float(user.budget_max),
             "dietary_restrictions": user.dietary_requirements,
             "allergies": user.allergies,
             "disliked_ingredients": user.disliked_ingredients,
@@ -77,7 +100,7 @@ class RankingFeedService:
             if item.candidate.collaborative_explanation:
                 explanation = f"Taste-profile match: {explanation}"
             review_insight = (
-                f"Average review sentiment {item.candidate.review_sentiment:+.2f}."
+                _review_phrase(item.candidate.review_sentiment, item.candidate.review_average)
                 if item.candidate.review_sentiment is not None
                 else (
                     f"Average reviewer rating {item.candidate.review_average:.1f}/5."

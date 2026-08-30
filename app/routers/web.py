@@ -59,8 +59,30 @@ def asset_url(filename: str) -> str:
     return f"/static/{filename}?v={stamp}"
 
 
+def signal_label(explanation: str) -> str:
+    """Compact form of the ranking service's full-sentence match explanation
+    for card-grid display, e.g. "Strongest available match: food profile."
+    becomes "Food profile match". Falls back to a neutral label when the
+    sentence has no ": <signal>" tail (every signal was neutral for that dish).
+    """
+    if ": " not in explanation:
+        return "Balanced match"
+    signal = explanation.rsplit(": ", 1)[-1].strip().rstrip(".")
+    return f"{signal.capitalize()} match"
+
+
+def review_label(insight: str | None) -> str | None:
+    """Drop the "Average " prefix and trailing period from the ranking
+    service's review-insight sentence for compact card-grid display."""
+    if not insight:
+        return None
+    return insight.replace("Average ", "").rstrip(".")
+
+
 templates.env.globals.update(
     asset_url=asset_url,
+    signal_label=signal_label,
+    review_label=review_label,
     cuisine_image=cuisine_image,
     dish_image=dish_image,
     feed_images=feed_images,
@@ -569,7 +591,7 @@ def onboarding_step(
     user = _current_user(request, auth)
     if user is None:
         return _login_redirect(request)
-    if step not in range(1, 6):
+    if step not in range(1, 5):
         return RedirectResponse("/onboarding/1", 303)
     return templates.TemplateResponse(
         request,
@@ -594,7 +616,7 @@ async def onboarding_submit(
     user = _current_user(request, auth)
     if user is None:
         return _login_redirect(request)
-    if step not in range(1, 6):
+    if step not in range(1, 5):
         return RedirectResponse("/onboarding/1", 303)
     form = await request.form()
     if not _valid_csrf(request, form.get("csrf_token")):
@@ -637,7 +659,7 @@ async def onboarding_submit(
             "favourite_dishes_text",
             "favourite_dishes_suggestions",
         )
-        if len(favourites) < 3:
+        if len(favourites) < 1:
             draft["favourite_dishes"] = favourites
             return templates.TemplateResponse(
                 request,
@@ -647,7 +669,7 @@ async def onboarding_submit(
                     user,
                     step=step,
                     draft=draft,
-                    error="Choose at least three foods.",
+                    error="Choose at least one food to get started.",
                 ),
                 status_code=422,
             )
@@ -681,13 +703,7 @@ async def onboarding_submit(
             ),
             require_halal=form.get("require_halal") == "true",
         )
-    elif step == 5:
         try:
-            budget_min = float(form.get("budget_min", 0))
-            budget_max = float(form.get("budget_max", 1500))
-            draft.update(budget_min=budget_min, budget_max=budget_max)
-            if budget_min < 0 or budget_max < budget_min:
-                raise ValueError
             answers = OnboardingAnswers.model_validate(draft)
             payload = answers.model_dump()
             payload["taste_vector"] = build_taste_vector(answers)
@@ -701,10 +717,7 @@ async def onboarding_submit(
                     user,
                     step=step,
                     draft=draft,
-                    error=(
-                        "Check that your minimum budget does not exceed your maximum, "
-                        "then try again."
-                    ),
+                    error="Something went wrong saving your answers. Please try again.",
                 ),
                 status_code=422,
             )
@@ -723,6 +736,9 @@ def _feed_params(request: Request) -> list[tuple[str, str]]:
         "search",
         "budget_min",
         "budget_max",
+        "user_lat",
+        "user_lng",
+        "max_distance_km",
         "offset",
     )
     params = [
@@ -736,6 +752,21 @@ def _feed_params(request: Request) -> list[tuple[str, str]]:
         params.append(("dietary_restrictions", value))
     params.append(("limit", "12"))
     return params
+
+
+def _top_restaurants(items, limit: int = 6):
+    """Distinct restaurants from an already-ranked feed, in rank order.
+
+    `items` is pre-sorted best-match-first by the ranking service, so keeping
+    the first occurrence of each restaurant_id is that restaurant's
+    best-scoring dish - no separate query or popularity signal needed.
+    """
+    seen, order = {}, []
+    for item in items:
+        if item.restaurant_id not in seen:
+            seen[item.restaurant_id] = item
+            order.append(item.restaurant_id)
+    return [seen[rid] for rid in order[:limit]]
 
 
 def _feed_filter_errors(request: Request) -> list[str]:
@@ -763,6 +794,20 @@ def _feed_filter_errors(request: Request) -> list[str]:
         errors.append("Minimum budget cannot exceed maximum budget.")
     if len(request.query_params.get("search", "")) > 100:
         errors.append("Search must be 100 characters or fewer.")
+
+    lat_raw = request.query_params.get("user_lat", "").strip()
+    lng_raw = request.query_params.get("user_lng", "").strip()
+    if bool(lat_raw) != bool(lng_raw):
+        errors.append("Location needs both latitude and longitude.")
+    lat = number("user_lat", "Latitude", minimum=-90)
+    if lat is not None and lat > 90:
+        errors.append("Latitude must be between -90 and 90.")
+    lng = number("user_lng", "Longitude", minimum=-180)
+    if lng is not None and lng > 180:
+        errors.append("Longitude must be between -180 and 180.")
+    distance = number("max_distance_km", "Maximum distance", minimum=0.1)
+    if distance is not None and lat_raw == "" and lng_raw == "":
+        errors.append("Maximum distance needs your location first.")
     return errors
 
 
@@ -806,6 +851,8 @@ def feed(
             state=state,
             filter_errors=filter_errors,
             filters=request.query_params,
+            dietary=DIETARY,
+            top_restaurants=_top_restaurants(result.items) if result else [],
             event_id=secrets.token_urlsafe(16),
             welcome=request.query_params.get("welcome"),
         ),

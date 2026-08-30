@@ -145,11 +145,11 @@ def test_back_continue_and_validation_preserve_cuisines_and_dishes(
         "/onboarding/2",
         data={
             "csrf_token": _csrf(second),
-            "favourite_dishes": ["Chow Mein", "Custom Noodle Bowl"],
+            "favourite_dishes_text": "",
         },
     )
     assert invalid.status_code == 422
-    assert "Chow Mein" in invalid.text and "Custom Noodle Bowl" in invalid.text
+    assert "Choose at least one food to get started." in invalid.text
     assert _rendered_picks(invalid) == PICKS["Chinese"]
 
 
@@ -167,7 +167,7 @@ def test_quick_pick_progressive_enhancement_adds_tags_without_duplicates():
     assert "Remove ${tag}" in script
     assert "matchingPick.checked = false" in script
     assert "data-favourite-count" in script
-    assert "continueButton.disabled = tags.length < 3" in script
+    assert "continueButton.disabled = tags.length < 1" in script
 
 
 def test_step_two_uses_single_border_cards_and_accessible_selection_status(
@@ -183,7 +183,7 @@ def test_step_two_uses_single_border_cards_and_accessible_selection_status(
     assert "choice visual-choice favourite" not in response.text
     assert "aria-pressed" not in response.text
     assert 'data-favourite-count aria-live="polite"' in response.text
-    assert "Choose at least three or add your own." in response.text
+    assert "Choose at least one, or add your own." in response.text
     assert "data-favourite-continue" in response.text
 
 

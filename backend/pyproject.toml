@@ -10,6 +10,10 @@ requires-python = ">=3.11"
 dependencies = [
   "alembic>=1.13,<2",
   "fastapi>=0.115,<1",
+  # Needed at runtime by scripts/seed_customer_taste_demo*.py, which dynamically
+  # import the root app.personalization module (build_taste_vector) - that module
+  # depends on numpy even though nothing else in this package does.
+  "numpy>=1.26,<3",
   "pgvector>=0.3,<1",
   "psycopg[binary]>=3.2,<4",
   "pydantic-settings>=2.6,<3",
