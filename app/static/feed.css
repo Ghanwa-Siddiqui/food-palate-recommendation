@@ -16,7 +16,7 @@
    sidebar — most visits don't touch them, so results get the full page
    width by default and the panel opens only when someone asks for it. */
 .filter-toggle{
-  display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;
+  display:inline-flex;align-items:center;gap:8px;flex-shrink:0;
 }
 .filter-toggle b{
   display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;
@@ -82,8 +82,9 @@
   font-family:var(--serif);font-weight:500;letter-spacing:-.032em;
   font-size:clamp(24px,2.6vw,36px);line-height:1.05;margin:4px 0 0;
 }
-.feed-heading>p:last-child{font-size:13px;color:var(--stone-2);white-space:nowrap;}
-.feed-heading>p:last-child b{font-family:var(--serif);font-size:24px;color:var(--ink);}
+.feed-heading-side{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.feed-count{font-size:13px;color:var(--stone-2);white-space:nowrap;}
+.feed-count b{font-family:var(--serif);font-size:24px;color:var(--ink);}
 
 .active-filters{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:18px;}
 .active-filters>span{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--stone);}

@@ -5,7 +5,6 @@
 {% set active='feed' %}{% include "namak/_nav.html" %}
 {% set active_count=(1 if filters.get('search') else 0)+(1 if filters.get('budget_min') else 0)+(1 if filters.get('budget_max') else 0)+(1 if filters.get('require_halal')=='true' else 0)+(filters.getlist('dietary_restrictions')|length) %}
 <div class="feed-shell">
-  <button class="btn btn-o filter-toggle" type="button" aria-expanded="false" aria-controls="feed-filters"><span>Filters</span>{% if active_count %}<b aria-label="{{ active_count }} active filters">{{ active_count }}</b>{% endif %}</button>
   <div class="filter-scrim" data-filter-close hidden></div>
   <aside class="feed-filters" id="feed-filters" aria-label="Feed filters">
     <div class="filter-head"><div><p class="overline">Tune your feed</p><h2>Filters</h2></div><button type="button" class="filter-close" data-filter-close aria-label="Close filters">×</button></div>
@@ -23,7 +22,10 @@
   <main class="feed-results" id="feed-results">
     <header class="feed-heading">
       <div><p class="overline">Personalized for {{ user.name }}</p><h1>Your ranked feed</h1></div>
-      {% if feed %}<p><b>{{ feed.total_candidates }}</b> result{{ '' if feed.total_candidates==1 else 's' }}</p>{% endif %}
+      <div class="feed-heading-side">
+        {% if feed %}<p class="feed-count"><b>{{ feed.total_candidates }}</b> result{{ '' if feed.total_candidates==1 else 's' }}</p>{% endif %}
+        <button class="btn btn-o filter-toggle" type="button" aria-expanded="false" aria-controls="feed-filters"><span>Filters</span>{% if active_count %}<b aria-label="{{ active_count }} active filters">{{ active_count }}</b>{% endif %}</button>
+      </div>
     </header>
     {% if welcome %}<div class="notice">Your taste profile is ready. These recommendations use it now.</div>{% endif %}
     {% if active_count %}<div class="active-filters" aria-label="Active filters"><span>{{ active_count }} active</span>{% if filters.get('search') %}<button data-remove-filter="search">Search: {{ filters.get('search') }} ×</button>{% endif %}{% if filters.get('budget_min') %}<button data-remove-filter="budget_min">Min PKR {{ filters.get('budget_min') }} ×</button>{% endif %}{% if filters.get('budget_max') %}<button data-remove-filter="budget_max">Max PKR {{ filters.get('budget_max') }} ×</button>{% endif %}{% if filters.get('require_halal')=='true' %}<button data-remove-filter="require_halal">Halal ×</button>{% endif %}{% for item in filters.getlist('dietary_restrictions') %}<button data-remove-filter="dietary_restrictions" data-remove-value="{{ item }}">{{ item|replace('-',' ')|title }} ×</button>{% endfor %}</div>{% endif %}
@@ -162,11 +164,15 @@
 </div>
 <script>
 (()=>{
-const form=document.querySelector('#feed-controls'),panel=document.querySelector('#feed-filters'),toggle=document.querySelector('.filter-toggle'),scrim=document.querySelector('.filter-scrim'),error=form.querySelector('.filter-error:not(.server-filter-error)'),results=document.querySelector('#feed-results'),announce=document.querySelector('#feed-loading');
+const form=document.querySelector('#feed-controls'),panel=document.querySelector('#feed-filters'),scrim=document.querySelector('.filter-scrim'),error=form.querySelector('.filter-error:not(.server-filter-error)'),results=document.querySelector('#feed-results'),announce=document.querySelector('#feed-loading');
+// .filter-toggle now lives inside #feed-results (same row as the heading),
+// so it gets replaced by every AJAX swap - keep it reassignable and rebind
+// in bindResultsInteractions() rather than capturing it once here.
+let toggle=document.querySelector('.filter-toggle');
 
 const close=()=>{panel.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');scrim.hidden=true;toggle.focus()};
 const open=()=>{panel.classList.add('is-open');toggle.setAttribute('aria-expanded','true');scrim.hidden=false;panel.querySelector('input').focus()};
-toggle.addEventListener('click',()=>panel.classList.contains('is-open')?close():open());
+const bindToggle=()=>{toggle=results.querySelector('.filter-toggle');if(toggle)toggle.addEventListener('click',()=>panel.classList.contains('is-open')?close():open())};
 document.querySelectorAll('[data-filter-close]').forEach(el=>el.addEventListener('click',close));
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&panel.classList.contains('is-open'))close()});
 
@@ -198,6 +204,7 @@ function onHeroScroll(){
 }
 
 const bindResultsInteractions=()=>{
+  bindToggle();
   results.querySelectorAll('.fx-tab').forEach(a=>a.addEventListener('click',onTabClick));
   results.querySelectorAll('[data-remove-filter]').forEach(button=>button.addEventListener('click',onRemoveFilter));
   results.querySelectorAll('.reset-filters').forEach(button=>button.addEventListener('click',onReset));
