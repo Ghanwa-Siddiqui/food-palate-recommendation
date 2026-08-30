@@ -1,6 +1,6 @@
 """Rewrite every seeded review's text with a real local LLM, in development
-data, then reprocess it through the exact same pipeline a genuine review
-submission uses.
+data, then score and embed it through the same real signals a genuine
+review submission gets.
 
 Both customer-taste-demo seed batches build review text by concatenating a
 canned opening ("I tried the {dish}.") with one of a small pool of fixed
@@ -10,27 +10,36 @@ word-for-word identical. It also means the seeded reviews' sentiment/
 spice/oiliness/embedding were computed by the seed script's rule-based
 extractor and a deterministic fake embedder, not the real pipeline.
 
-This script fixes both at once: it asks a local Ollama model
-(`review_intelligence`'s existing OLLAMA_MODEL, default llama3.2) to write
-one short, natural review per seeded review, grounded in that review's own
-dish name/cuisine/rating so it stays specific rather than generic - then
-runs the result through `LiveReviewProcessor`, the same
-Ollama-extraction-plus-Sentence-Transformers-embedding pipeline the app's
-own `/reviews` endpoint uses for a real submission. So a seeded review ends
-up indistinguishable from a genuine one: real text, real sentiment
-extraction, real embedding.
+This machine runs Ollama on CPU only (no usable GPU), and a single
+generation call was measured at ~50s - the app's real pipeline
+(LiveReviewProcessor) does two Ollama round trips per review (extract,
+then... no, one - but this script originally wrote text with one call and
+extracted with a second), which would put ~800 reviews at 18-20 hours.
+Instead of two calls, this asks Ollama to write the review AND self-score
+it (sentiment/spice/oiliness/tags) in one JSON call, then runs the exact
+same deterministic refinement pass `ReviewExtractor` itself applies
+(`_apply_review_context`: rule-based spice/oiliness/sentiment adjustment
+from the actual text, tag normalisation) before embedding the text with
+the real local Sentence Transformers model. So the only thing skipped is
+a second LLM round trip for something the first call already produced -
+the text is still real, the scores are still real (LLM + the same
+rule-based safeguards the live endpoint uses), the embedding is still
+real.
 
 Not idempotent by design - re-running regenerates fresh text each time
 (LLM output isn't deterministic), which is fine since the point is
-variety, not reproducibility. Long-running: expect roughly two Ollama
-calls (write, then extract) per review.
+variety, not reproducibility. Committed in small batches rather than one
+transaction, since even at one call per review this is a long-running job
+against a cloud database.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import secrets
 import sys
+import time
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -39,7 +48,7 @@ import requests
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from app.api.routes.reviews import _process, _recompute
+from app.api.routes.reviews import _recompute
 from app.core.config import get_settings
 from app.db.session import get_engine
 from app.models.dish import Dish
@@ -52,19 +61,57 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from review_intelligence.src import config as review_intelligence_config  # noqa: E402
-from app.services.data_core.review_processing import LiveReviewProcessor  # noqa: E402
+from review_intelligence.src.embeddings import ReviewEmbedder  # noqa: E402
+from review_intelligence.src.extractor import _apply_review_context  # noqa: E402
+from review_intelligence.src.models import ReviewFeatures, ValidationError  # noqa: E402
 
 CORRECTION_CONFIRMATION = "REGENERATE_CHASKA_SEEDED_REVIEW_TEXT"
 
 SEED_BATCH_PREFIXES = (f"{WAVE1_BATCH}:review:", f"{WAVE2_BATCH}:review:")
 
-_WRITE_PROMPT = """Write ONE short, natural restaurant review as if you were a real
-customer. First person, 1 to 2 sentences, plain conversational language - not a
-marketing blurb. Return ONLY the review text: no quotes, no preamble, no labels.
+# The two seed scripts only ever produce openings shaped like these (see
+# seed_customer_taste_demo.py / seed_customer_taste_demo_wave2.py _OPENINGS).
+# A review still starting with one of these is un-regenerated - LLM output
+# essentially never reproduces one verbatim - so this doubles as a resume
+# marker: on a rerun (this machine is slow enough that a multi-hour job can
+# get interrupted), already-regenerated reviews are skipped instead of
+# redone from scratch.
+_ORIGINAL_TEMPLATE_PREFIXES = (
+    "I tried the ",
+    "Ordered the ",
+    "Finally got to taste the ",
+    "Picked up the ",
+    "Gave the ",
+)
+
+# CPU-only local inference on this host has been observed anywhere from
+# ~50s to a full timeout for one call, so retries need generous headroom
+# and backoff rather than assuming a fixed, fast response time.
+_TIMEOUT_BACKOFFS = [30, 90, 240]
+
+_WRITE_AND_SCORE_PROMPT = """You are a real customer. Write a short, natural restaurant
+review, then score your own review. Return ONLY one valid JSON object, no markdown, no
+prose, no extra keys:
+{{"review": string, "sentiment": number, "spice_level": number, "oiliness": number, "flavor_tags": [string]}}
+
+"review": first person, 1 to 2 sentences, plain conversational language - not a marketing
+blurb - for the dish and star rating below.
+
+Score your own "review" text using these rules:
+- sentiment: 0.0 very negative, 0.5 genuinely mixed/neutral, 1.0 very positive. A star
+  rating of 1 is strongly negative, 2 negative, 3 neutral, 4 positive, 5 strongly positive -
+  match that.
+- spice_level: 0.0 if not spicy or spice isn't mentioned; 0.5 if moderately spicy; 1.0 if
+  very spicy.
+- oiliness: 0.0 if not oily or oil isn't mentioned; 0.5 if moderately oily; 1.0 if very oily.
+- flavor_tags: lowercase canonical tags only, from: spicy, mild, sweet, salty, sour, smoky,
+  creamy, rich, rich gravy, tender, juicy, crispy, dry, oily, greasy, aromatic, savory,
+  flavorful, bland, cold, tough, smooth, fluffy, fresh, delicious. Only tags your review
+  text actually supports.
 
 Dish: {dish_name}
 Cuisine: {cuisine}
-Star rating you gave it: {rating}/5 (1 = very disappointing, 5 = excellent)
+Star rating: {rating}/5
 """
 
 
@@ -77,32 +124,64 @@ class OllamaReviewWriter:
         self,
         host: str = review_intelligence_config.OLLAMA_HOST,
         model: str = review_intelligence_config.OLLAMA_MODEL,
-        timeout: float = review_intelligence_config.OLLAMA_TIMEOUT_SECONDS,
+        timeout: float = 240.0,
+        on_retry=None,
     ) -> None:
         self.host, self.model, self.timeout = host.rstrip("/"), model, timeout
+        self.on_retry = on_retry
 
-    def write(self, *, dish_name: str, cuisine: str, rating: int) -> str:
-        prompt = _WRITE_PROMPT.format(dish_name=dish_name, cuisine=cuisine, rating=rating)
+    def write_and_score(self, *, dish_name: str, cuisine: str, rating: int) -> tuple[str, ReviewFeatures]:
+        last_error: Exception | None = None
+        for wait in [0, *_TIMEOUT_BACKOFFS]:
+            if wait:
+                if self.on_retry:
+                    self.on_retry(wait)
+                time.sleep(wait)
+            try:
+                return self._attempt(dish_name=dish_name, cuisine=cuisine, rating=rating)
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+                last_error = exc
+        raise ReviewWriteError(
+            f"Ollama at {self.host} did not respond after {len(_TIMEOUT_BACKOFFS) + 1} attempts "
+            f"(CPU-only generation on this host is slow and sometimes unreliable)."
+        ) from last_error
+
+    def _attempt(self, *, dish_name: str, cuisine: str, rating: int) -> tuple[str, ReviewFeatures]:
+        prompt = _WRITE_AND_SCORE_PROMPT.format(
+            dish_name=dish_name, cuisine=cuisine, rating=rating
+        )
         try:
             response = requests.post(
                 f"{self.host}/api/generate",
-                json={"model": self.model, "prompt": prompt, "stream": False},
+                json={"model": self.model, "prompt": prompt, "format": "json", "stream": False},
                 timeout=self.timeout,
             )
-        except requests.RequestException as exc:
-            raise ReviewWriteError(
-                f"Cannot reach Ollama at {self.host}. Start it with `ollama serve` and pull "
-                f"the configured model using `ollama pull {self.model}`."
-            ) from exc
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            raise  # let the retry loop in write_and_score handle these
+        except requests.exceptions.RequestException as exc:
+            raise ReviewWriteError(f"Ollama request failed: {exc}") from exc
         if response.status_code >= 400:
             raise ReviewWriteError(f"Ollama returned HTTP {response.status_code}: {response.text}")
         try:
-            text = response.json()["response"].strip().strip('"')
+            raw = response.json()["response"]
         except (ValueError, KeyError, TypeError) as exc:
             raise ReviewWriteError("Ollama returned a response without generated text") from exc
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise ReviewWriteError(f"Ollama returned malformed JSON: {exc.msg}") from exc
+        if not isinstance(parsed, dict) or not isinstance(parsed.get("review"), str):
+            raise ReviewWriteError("Ollama JSON is missing a 'review' string")
+        text = parsed["review"].strip().strip('"')
         if not text:
             raise ReviewWriteError("Ollama returned empty review text")
-        return text
+        try:
+            features = ReviewFeatures.from_mapping(
+                _apply_review_context(parsed, text, rating)
+            )
+        except ValidationError as exc:
+            raise ReviewWriteError(f"Ollama JSON failed schema validation: {exc}") from exc
+        return text, features
 
 
 def authorize_correction(
@@ -131,14 +210,22 @@ def regenerate_seeded_review_text(
     session: Session,
     *,
     writer: OllamaReviewWriter,
-    processor: LiveReviewProcessor,
+    embedder: ReviewEmbedder,
     on_progress=None,
+    on_skip=None,
 ) -> int:
-    reviews = list(
+    all_reviews = list(
         session.scalars(select(Review).where(_seed_review_filter()).order_by(Review.id))
     )
-    if not reviews:
+    if not all_reviews:
         raise SeedSafetyError("no seeded reviews found to regenerate")
+    reviews = [
+        review
+        for review in all_reviews
+        if (review.text or "").startswith(_ORIGINAL_TEMPLATE_PREFIXES)
+    ]
+    if not reviews:
+        return 0
 
     dishes = {
         dish.id: dish
@@ -147,18 +234,40 @@ def regenerate_seeded_review_text(
         )
     }
     touched_dish_ids: set = set()
+    now = datetime.now(UTC)
     # Committed in small batches, not one transaction for the whole run: this
-    # does roughly two Ollama calls per review, so the full job can take a
-    # long time against a cloud database - a single multi-hour transaction
-    # risks a connection/pool timeout that would roll back everything
-    # already done. Partial progress persisting on interruption is the
-    # right tradeoff for one-off dev-data cleanup like this.
+    # is a long-running job (one Ollama call per review, ~50s-plus on this
+    # CPU-only host) against a cloud database - a single multi-hour
+    # transaction risks a connection/pool timeout that would roll back
+    # everything already done. Partial progress persisting on interruption
+    # is the right tradeoff for one-off dev-data cleanup like this.
+    regenerated = 0
     for index, review in enumerate(reviews):
         dish = dishes[review.dish_id]
-        review.text = writer.write(dish_name=dish.name, cuisine=dish.cuisine, rating=review.rating)
-        _process(review, processor)
+        try:
+            text, features = writer.write_and_score(
+                dish_name=dish.name, cuisine=dish.cuisine, rating=review.rating
+            )
+        except ReviewWriteError as exc:
+            # Leave this one's original templated text in place - it still
+            # matches _ORIGINAL_TEMPLATE_PREFIXES, so a rerun will retry it -
+            # and keep going rather than losing hours of progress on the
+            # rest over one stubborn review.
+            if on_skip:
+                on_skip(index + 1, len(reviews), str(exc))
+            continue
+        review.text = text
+        review.sentiment = features.sentiment
+        review.spice_score = features.spice_level
+        review.oiliness_score = features.oiliness
+        review.flavor_tags = features.flavor_tags
+        review.review_embedding = embedder.embed(text)
+        review.processing_status = "complete"
+        review.processing_error_code = None
+        review.updated_at = now
         touched_dish_ids.add(dish.id)
-        if (index + 1) % 10 == 0:
+        regenerated += 1
+        if regenerated % 10 == 0:
             session.commit()
         if on_progress:
             on_progress(index + 1, len(reviews))
@@ -173,7 +282,7 @@ def regenerate_seeded_review_text(
         _recompute(dishes[dish_id], reviews_by_dish[dish_id])
     session.commit()
 
-    return len(reviews)
+    return regenerated
 
 
 def main() -> None:
@@ -183,8 +292,13 @@ def main() -> None:
     settings = get_settings()
 
     def on_progress(done: int, total: int) -> None:
-        if done % 10 == 0 or done == total:
-            print(f"  regenerated {done}/{total}", flush=True)
+        print(f"  regenerated {done}/{total}", flush=True)
+
+    def on_skip(done: int, total: int, reason: str) -> None:
+        print(f"  skipped {done}/{total} (will retry on next run): {reason}", flush=True)
+
+    def on_retry(wait: float) -> None:
+        print(f"  slow/no response, retrying in {wait:.0f}s...", flush=True)
 
     try:
         authorize_correction(
@@ -198,9 +312,10 @@ def main() -> None:
                 verify_seed_preconditions(session, require_empty_catalog=False)
             count = regenerate_seeded_review_text(
                 session,
-                writer=OllamaReviewWriter(),
-                processor=LiveReviewProcessor(),
+                writer=OllamaReviewWriter(on_retry=on_retry),
+                embedder=ReviewEmbedder(),
                 on_progress=on_progress,
+                on_skip=on_skip,
             )
     except SeedSafetyError as error:
         raise SystemExit(str(error)) from error
