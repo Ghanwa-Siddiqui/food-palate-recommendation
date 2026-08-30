@@ -10,7 +10,7 @@
   <ol class="quiz-progress" aria-label="Onboarding progress">
     {% for label in ['Place','Foods','Flavour','Needs','Review'] %}
     <li class="{% if loop.index < step %}is-complete{% elif loop.index == step %}is-current{% endif %}" {% if loop.index == step %}aria-current="step"{% endif %}>
-      <span>{{ loop.index }}</span><small>{{ label }}</small>
+      <span>{{ loop.index }}</span><small>{{ label }}{% if loop.index in (3,4) %} <i class="step-optional">optional</i>{% endif %}</small>
     </li>
     {% endfor %}
   </ol>
@@ -36,11 +36,11 @@
       {% elif step == 2 %}
       <section class="favourite-step" aria-labelledby="step-title">
         <p class="overline">The dishes you dream about</p><h1 id="step-title">Name your favourites</h1>
-        <p class="quiz-lede">Add at least three. Type a dish and press Enter or comma.</p>
+        <p class="quiz-lede">Add one you love. Type a dish and press Enter or comma, or just tap a quick pick below.</p>
         <div class="tag-editor favourite-entry" data-tag-editor data-name="favourite_dishes">
           <label for="favourite-input">Favourite dishes</label>
           <input id="favourite-input" name="favourite_dishes_text" value="{{ draft.get('favourite_dishes',[])|join(', ') }}" placeholder="Try chicken karahi…" autocomplete="off" aria-describedby="favourite-help">
-          <div class="favourite-entry-meta"><small id="favourite-help">Choose at least three or add your own.</small><output id="favourite-selection-status" data-favourite-count aria-live="polite">{{ draft.get('favourite_dishes',[])|length }} of 3 selected</output></div>
+          <div class="favourite-entry-meta"><small id="favourite-help">Choose at least one, or add your own.</small><output id="favourite-selection-status" data-favourite-count aria-live="polite">{{ draft.get('favourite_dishes',[])|length }} selected</output></div>
           <div class="tag-list favourite-tags" data-tag-list aria-label="Selected favourite dishes"></div>
         </div>
         <fieldset class="quiz-group favourite-picks"><legend>Quick picks</legend><div class="favourite-pick-grid" data-favourite-quick-picks>
@@ -49,8 +49,8 @@
       </section>
       {% elif step == 3 %}
       <section aria-labelledby="step-title">
-        <p class="overline">Turn up the flavour</p><h1 id="step-title">Meet your taste personality</h1>
-        <p class="quiz-lede">There are no wrong answers—set each flavour from 0 to 5.</p>
+        <p class="overline">Turn up the flavour · optional</p><h1 id="step-title">Meet your taste personality</h1>
+        <p class="quiz-lede">There are no wrong answers—set each flavour from 0 to 5. Or skip it: your taste sharpens automatically every time you save or order a dish, and you can always fine-tune later from Profile.</p>
         <div class="taste-grid">
         {% for name,label,icon in [('spice_preference','Spice','♨'),('sweetness_preference','Sweetness','◇'),('sourness_preference','Sourness','◒'),('saltiness_preference','Saltiness','◈'),('oiliness_preference','Oiliness','●'),('richness_preference','Richness','✦')] %}
           {% set value = draft.get(name,2) %}{% set image=context_image(name|replace('_preference','')) %}<label class="taste-card" for="{{ name }}"><img class="taste-thumb" src="{{ image.src }}" alt="" width="{{ image.width }}" height="{{ image.height }}" loading="lazy"><span class="taste-title"><i aria-hidden="true">{{ icon }}</i>{{ label }}<output for="{{ name }}" data-range-output>{{ value }}</output></span><input id="{{ name }}" name="{{ name }}" type="range" min="0" max="5" step="1" value="{{ value }}" data-taste-range data-kind="{{ 'spice' if name == 'spice_preference' else 'taste' }}"><small data-range-copy>Balanced</small></label>
@@ -60,8 +60,8 @@
       {% elif step == 4 %}
       <section aria-labelledby="step-title">
         <p class="overline">Comfort, crunch & care</p><h1 id="step-title">How should food feel?</h1>
-        <p class="quiz-lede">Pick textures you love and tell us what your meals need to respect.</p>
-        <fieldset class="quiz-group context-group"><legend><img src="/static/images/texture-context.svg" alt=""> Favourite textures</legend><div class="choice-row">
+        <p class="quiz-lede">Textures are optional and easy to pick up from what you save later. Halal and allergies matter more — those we can't guess, so please set them here.</p>
+        <fieldset class="quiz-group context-group"><legend><img src="/static/images/texture-context.svg" alt=""> Favourite textures <i class="step-optional">optional</i></legend><div class="choice-row">
           {% for item in textures %}{% set image=context_image(item) %}<label class="choice visual-choice compact-visual"><input type="checkbox" name="preferred_textures" value="{{ item }}" {% if item in draft.get('preferred_textures',[]) %}checked{% endif %}><span><img src="{{ image.src }}" alt="" width="{{ image.width }}" height="{{ image.height }}" loading="lazy">{{ item|title }} <b aria-hidden="true">✓</b></span></label>{% endfor %}
         </div></fieldset>
         <fieldset class="quiz-group context-group"><legend><img src="/static/images/dietary-context.svg" alt=""> Dietary needs</legend><div class="choice-row dietary-choices">
@@ -88,7 +88,10 @@
       {% endif %}
       <footer class="quiz-actions">
         {% if step > 1 %}<button class="btn btn-o" type="submit" name="direction" value="back" formnovalidate>← Back</button>{% else %}<span></span>{% endif %}
+        <span class="quiz-actions-forward">
+        {% if step in (3,4) %}<button class="btn btn-o" type="submit" formnovalidate>Skip — I'll rate dishes as I go →</button>{% endif %}
         <button class="btn btn-p" type="submit" data-submit-button{% if step == 2 %} data-favourite-continue aria-describedby="favourite-selection-status"{% endif %}>{% if step == 5 %}Build my taste profile{% else %}Continue →{% endif %}</button>
+        </span>
       </footer>
     </form>
     {% set side_image=context_image('welcome' if step < 5 else 'completion') %}<aside class="taste-summary" aria-label="Your taste so far"><img class="summary-image" src="{{ side_image.src }}" alt="" width="{{ side_image.width }}" height="{{ side_image.height }}" loading="lazy"><span aria-hidden="true">✦</span><h2>Your taste so far</h2><p>{{ draft.get('city','Pick a city to begin') }}</p><div class="summary-chips">{% for item in draft.get('preferred_cuisines',[])[:3] %}<span>{{ item }}</span>{% endfor %}{% for item in draft.get('favourite_dishes',[])[:3] %}<span>{{ item }}</span>{% endfor %}</div><small>Each answer makes your recommendations feel more like you.</small></aside>

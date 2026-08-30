@@ -637,7 +637,7 @@ async def onboarding_submit(
             "favourite_dishes_text",
             "favourite_dishes_suggestions",
         )
-        if len(favourites) < 3:
+        if len(favourites) < 1:
             draft["favourite_dishes"] = favourites
             return templates.TemplateResponse(
                 request,
@@ -647,7 +647,7 @@ async def onboarding_submit(
                     user,
                     step=step,
                     draft=draft,
-                    error="Choose at least three foods.",
+                    error="Choose at least one food to get started.",
                 ),
                 status_code=422,
             )

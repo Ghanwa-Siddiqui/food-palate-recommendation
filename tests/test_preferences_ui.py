@@ -57,10 +57,10 @@ def test_onboarding_navigation_validation_and_preserved_choices(
     second = web_client.get("/onboarding/2")
     too_few = web_client.post(
         "/onboarding/2",
-        data={"csrf_token": _csrf(second), "favourite_dishes_text": "Biryani, biryani"},
+        data={"csrf_token": _csrf(second), "favourite_dishes_text": ""},
     )
     assert too_few.status_code == 422
-    assert "Biryani" in too_few.text
+    assert "Choose at least one food to get started." in too_few.text
     back = web_client.post(
         "/onboarding/2",
         data={"csrf_token": _csrf(too_few), "direction": "back"},
