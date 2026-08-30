@@ -19,10 +19,10 @@ def test_every_onboarding_step_has_progress_accessible_controls_and_no_duplicate
     web_client, backend_client
 ):
     _login(web_client, backend_client, onboarded=False)
-    for step in range(1, 6):
+    for step in range(1, 5):
         response = web_client.get(f"/onboarding/{step}")
         assert response.status_code == 200
-        assert f"Step {step} of 5" in response.text
+        assert f"Step {step} of 4" in response.text
         assert 'aria-current="step"' in response.text
         assert 'class="quiz-layout"' in response.text
         parser = IdCollector()
@@ -72,7 +72,7 @@ def test_onboarding_navigation_validation_and_preserved_choices(
     assert 'value="Chinese" checked' in revisited
 
 
-def test_budget_and_slider_validation_preserve_values(web_client, backend_client):
+def test_slider_validation_preserves_values(web_client, backend_client):
     _login(web_client, backend_client, onboarded=False)
     third = web_client.get("/onboarding/3")
     bad_slider = web_client.post(
@@ -80,14 +80,6 @@ def test_budget_and_slider_validation_preserve_values(web_client, backend_client
         data={"csrf_token": _csrf(third), "spice_preference": "9"},
     )
     assert bad_slider.status_code == 422
-    fifth = web_client.get("/onboarding/5")
-    bad_budget = web_client.post(
-        "/onboarding/5",
-        data={"csrf_token": _csrf(fifth), "budget_min": "2000", "budget_max": "500"},
-    )
-    assert bad_budget.status_code == 422
-    assert 'value="2000"' in bad_budget.text
-    assert 'value="500"' in bad_budget.text
 
 
 def test_edit_preferences_load_save_error_and_csrf(web_client, backend_client):

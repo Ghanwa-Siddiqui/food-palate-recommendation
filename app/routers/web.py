@@ -569,7 +569,7 @@ def onboarding_step(
     user = _current_user(request, auth)
     if user is None:
         return _login_redirect(request)
-    if step not in range(1, 6):
+    if step not in range(1, 5):
         return RedirectResponse("/onboarding/1", 303)
     return templates.TemplateResponse(
         request,
@@ -594,7 +594,7 @@ async def onboarding_submit(
     user = _current_user(request, auth)
     if user is None:
         return _login_redirect(request)
-    if step not in range(1, 6):
+    if step not in range(1, 5):
         return RedirectResponse("/onboarding/1", 303)
     form = await request.form()
     if not _valid_csrf(request, form.get("csrf_token")):
@@ -681,13 +681,7 @@ async def onboarding_submit(
             ),
             require_halal=form.get("require_halal") == "true",
         )
-    elif step == 5:
         try:
-            budget_min = float(form.get("budget_min", 0))
-            budget_max = float(form.get("budget_max", 1500))
-            draft.update(budget_min=budget_min, budget_max=budget_max)
-            if budget_min < 0 or budget_max < budget_min:
-                raise ValueError
             answers = OnboardingAnswers.model_validate(draft)
             payload = answers.model_dump()
             payload["taste_vector"] = build_taste_vector(answers)
@@ -701,10 +695,7 @@ async def onboarding_submit(
                     user,
                     step=step,
                     draft=draft,
-                    error=(
-                        "Check that your minimum budget does not exceed your maximum, "
-                        "then try again."
-                    ),
+                    error="Something went wrong saving your answers. Please try again.",
                 ),
                 status_code=422,
             )

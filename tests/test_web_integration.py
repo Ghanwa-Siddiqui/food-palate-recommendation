@@ -229,7 +229,6 @@ def test_onboarding_persists_complete_384_vector(web_client, backend_client):
                 "require_halal": "true",
             },
         ),
-        (5, {"budget_min": "300", "budget_max": "2000"}),
     ):
         page = web_client.get(f"/onboarding/{step}")
         response = web_client.post(

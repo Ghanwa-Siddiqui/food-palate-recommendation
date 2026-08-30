@@ -17,9 +17,11 @@ class RankingFeedService:
     def _effective_preferences(user: User, requested: FeedPreferences) -> FeedPreferences:
         updates = {}
         supplied = requested.model_fields_set
+        # Budget is intentionally NOT defaulted from the stored profile: it's a
+        # per-visit choice made through the feed's own sidebar filter, not an
+        # app-wide constraint like dietary/allergy/halal (those stay defaulted
+        # below since they're safety requirements, not taste preferences).
         defaults = {
-            "budget_min": float(user.budget_min),
-            "budget_max": float(user.budget_max),
             "dietary_restrictions": user.dietary_requirements,
             "allergies": user.allergies,
             "disliked_ingredients": user.disliked_ingredients,
