@@ -267,22 +267,34 @@ _BACKOFFS = [5, 15, 30, 60, 120]
 
 
 def _signup_or_login(url: str, key: str, row: dict) -> httpx.Response:
+    """Try login before signup.
+
+    Supabase's signup endpoint carries a much tighter burst rate limit than
+    its password-login endpoint (observed directly: repeated 429s from
+    /auth/v1/signup for accounts that already exist, while /auth/v1/token
+    for the same accounts goes through cleanly). Since this script is
+    idempotent and re-run to resume, most calls are for a user this batch
+    already created in a prior run - trying login first means those calls
+    never touch the endpoint that's actually rate-limited. A brand new user
+    still gets created correctly: login fails (no such account), and the
+    code falls through to signup exactly as before.
+    """
     headers = {"apikey": key, "Authorization": f"Bearer {key}"}
     response = httpx.post(
-        f"{url.rstrip('/')}/auth/v1/signup",
+        f"{url.rstrip('/')}/auth/v1/token?grant_type=password",
         headers=headers,
-        json={
-            "email": row["email"],
-            "password": row["password"],
-            "data": {"name": row["display_name"], "role": "customer"},
-        },
+        json={"email": row["email"], "password": row["password"]},
         timeout=45,
     )
-    if response.status_code in {400, 409, 422}:
+    if response.status_code >= 400 and response.status_code != 429:
         response = httpx.post(
-            f"{url.rstrip('/')}/auth/v1/token?grant_type=password",
+            f"{url.rstrip('/')}/auth/v1/signup",
             headers=headers,
-            json={"email": row["email"], "password": row["password"]},
+            json={
+                "email": row["email"],
+                "password": row["password"],
+                "data": {"name": row["display_name"], "role": "customer"},
+            },
             timeout=45,
         )
     return response
@@ -470,7 +482,7 @@ def verify(
     )
     if (
         len(reviews) != len(feedback)
-        or len(tried) != len(users)
+        or len(tried) != len(feedback)
         or any(r.processing_status != "complete" for r in reviews)
         or any(len(list(r.review_embedding or [])) != 384 for r in reviews)
     ):
@@ -617,7 +629,7 @@ def main() -> None:
         name = exc.__class__.__name__
         raise SystemExit(f"Wave-2 seed transaction stopped on {name}; rerun to resume") from exc
     print(
-        f"APPLIED: verified {len(users)} wave-2 customers, {len(users)} tried "
+        f"APPLIED: verified {len(users)} wave-2 customers, {len(feedback)} tried "
         f"interactions and {len(feedback)} processed reviews"
     )
 
